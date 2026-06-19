@@ -5,6 +5,7 @@ import { getTranslation } from '../i18n/translations'
 import './site-header'
 import './breadcrumb'
 import './page-hero'
+import { utilities } from '../styles/utilities'
 
 export type StaticPageKey = 'about' | 'contact' | 'blog'
 
@@ -15,7 +16,7 @@ export class CcgStaticPage extends LitElement {
   @property({ type: String }) lang: Lang = 'en'
   @property({ type: String }) page: StaticPageKey = 'about'
 
-  static styles = css`
+  static styles = [utilities, css`
     :host {
       display: block;
       background: var(--canvas);
@@ -55,7 +56,7 @@ export class CcgStaticPage extends LitElement {
       letter-spacing: 0.04em;
       color: var(--gold-bright);
     }
-  `
+  `]
 
   render() {
     const t = getTranslation(this.lang)

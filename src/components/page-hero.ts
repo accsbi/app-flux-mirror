@@ -1,5 +1,6 @@
 import { LitElement, css, html, nothing } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
+import { utilities } from '../styles/utilities'
 
 // 全ページ共通のヒーローバナー（1024×500 画像の上にタイトルを重ねる）。
 // app-flux PageHero.astro を踏襲。画像パスは prop で渡す（ハードコードしない）。
@@ -14,7 +15,7 @@ export class CcgPageHero extends LitElement {
       heading は画像の alt（アクセシビリティ/SEO）として引き続き使う。 */
   @property({ type: Boolean }) hideOverlay = false
 
-  static styles = css`
+  static styles = [utilities, css`
     :host {
       display: block;
     }
@@ -94,7 +95,7 @@ export class CcgPageHero extends LitElement {
       color: rgba(255, 255, 255, 0.86);
       font-size: clamp(0.9rem, 1.6vw, 1.1rem);
     }
-  `
+  `]
 
   render() {
     return html`

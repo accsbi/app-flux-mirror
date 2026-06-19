@@ -11,6 +11,7 @@ import {
 import { getTranslation, SITE_TITLE } from '../i18n/translations'
 import './site-header'
 import './breadcrumb'
+import { utilities } from '../styles/utilities'
 
 // 各ゲームの詳細画面。命名規約に沿って画像（feat / icon / info1..8）を組み立て表示する。
 // info 画像は存在するものだけ出す（規約パスを順に読み込み、404 は除外）。
@@ -22,7 +23,7 @@ export class CcgDetailPage extends LitElement {
   @state() private notFound = false
   @state() private infoImages: string[] = []
 
-  static styles = css`
+  static styles = [utilities, css`
     :host {
       display: block;
       background: var(--canvas);
@@ -222,7 +223,7 @@ export class CcgDetailPage extends LitElement {
       letter-spacing: 0.04em;
       color: var(--gold-bright);
     }
-  `
+  `]
 
   connectedCallback(): void {
     super.connectedCallback()
