@@ -33,6 +33,7 @@ import {
   sharedResultBannerStyles
 } from '../../shared/ui/styles/shared-game-ui-styles'
 import { sharedGameHostStyles, sharedGameStageStyles } from '../../shared/ui/styles/shared-game-layout-styles'
+import { utilities } from '../../shared/ui/styles/utilities'
 import { classicBlueActionButtonStyles } from '../../shared/ui/classic-button.styles'
 import { recoverSharedCoin, runNoMoreBetSequence, scheduleCoinRecoveryDialogIfZero, sharedNoMoreBetStyles, sharedResultOverlayStyles } from '../../shared/ui/styles/shared'
 import { runToolbarSizeCheck } from '../../shared/ui/chrome/toolbar-size-check'
@@ -1497,7 +1498,7 @@ export class BlackjackGameTable extends LitElement {
     `
   }
 
-  static styles = [sharedOverlayStyles, sharedBetStatusStyles, sharedCoinRecoveryStyles, sharedNoMoreBetStyles, sharedResultOverlayStyles, sharedResultBannerStyles, sharedGameHostStyles, sharedGameStageStyles, css`
+  static styles = [sharedOverlayStyles, sharedBetStatusStyles, sharedCoinRecoveryStyles, sharedNoMoreBetStyles, sharedResultOverlayStyles, sharedResultBannerStyles, sharedGameHostStyles, sharedGameStageStyles, utilities, css`
     :host {
       width: 100vw;
       height: 100vh;

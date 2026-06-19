@@ -40,6 +40,7 @@ import {
 } from './memory-battle-game-table.helpers'
 import { memoryBattleGameTableStyles } from './memory-battle-game-table.styles'
 import { sharedOverlayStyles } from '../../shared/ui/styles/shared-game-ui-styles'
+import { utilities } from '../../shared/ui/styles/utilities'
 import {
   type BattleTraceLine,
   type BoardCard,
@@ -1979,5 +1980,5 @@ export class MemoryBattleGameTable extends LitElement {
     `
   }
 
-  static styles = [sharedOverlayStyles, memoryBattleGameTableStyles]
+  static styles = [sharedOverlayStyles, utilities, memoryBattleGameTableStyles]
 }
