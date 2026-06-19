@@ -22,6 +22,7 @@ import type { Card, Declaration, GameState, Player } from './high-low-types'
 import { sharedGameHostStyles, sharedGameStageStyles } from '../../shared/ui/styles/shared-game-layout-styles'
 import { sharedBetStatusStyles, sharedOverlayStyles } from '../../shared/ui/styles/shared-game-ui-styles'
 import { applyStageScale } from '../../shared/ui/styles/stage-layout'
+import { utilities } from '../../shared/ui/styles/utilities'
 import { coinIcon } from '../../shared/ui/icons/coin-icon'
 import '../../shared/ui/chrome/game-top-header'
 import '../../shared/ui/chrome/game-footer-bar'
@@ -513,6 +514,7 @@ export class HighLowGameTable extends LitElement {
     sharedGameStageStyles,
     sharedBetStatusStyles,
     sharedOverlayStyles,
+    utilities,
     css`
     /* 英語UI（説明以外）は Cinzel。日本語/中国語グリフは明朝にフォールバック。 */
     :host { font-family: 'Cinzel', 'Noto Serif JP', 'Hiragino Mincho ProN', Georgia, serif; }
