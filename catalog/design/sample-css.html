@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classic Button Color Samples</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 32px;
+
+      color: #222;
+      background: #f3f1eb;
+
+      font-family:
+        Arial,
+        sans-serif;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+
+      font-family:
+        Cinzel,
+        "Times New Roman",
+        Georgia,
+        serif;
+
+      font-size: 30px;
+    }
+
+    .description {
+      margin: 0 0 28px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .button-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .button-item {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .button-label {
+      color: #555;
+      font-size: 12px;
+    }
+
+    .simple-button {
+      width: 210px;
+      height: 60px;
+
+      border: 2px solid #c99832;
+      border-radius: 999px;
+
+      color: #f3c968;
+
+      font-family:
+        Cinzel,
+        "Times New Roman",
+        Georgia,
+        serif;
+
+      font-size: 24px;
+      font-style: italic;
+      font-weight: 700;
+      line-height: 1;
+
+      cursor: pointer;
+
+      box-shadow:
+        0 3px 5px rgb(0 0 0 / 30%);
+
+      transition:
+        filter 140ms ease,
+        transform 140ms ease,
+        box-shadow 140ms ease;
+    }
+
+    /* 01. 青系 */
+    .simple-button--blue {
+      background: linear-gradient(180deg, #142a4a 0%, #071529 100%);
+    }
+
+    /* 02. 明るい青系 */
+    .simple-button--light-blue {
+      background: linear-gradient(180deg, #3478a8 0%, #174466 100%);
+    }
+
+    /* 03. 水色系 */
+    .simple-button--sky-blue {
+      background: linear-gradient(180deg, #58a9c7 0%, #27667f 100%);
+    }
+
+    /* 04. 紺色系 */
+    .simple-button--navy {
+      background: linear-gradient(180deg, #17233d 0%, #080e1d 100%);
+    }
+
+    /* 05. 青紫系 */
+    .simple-button--indigo {
+      background: linear-gradient(180deg, #343e7c 0%, #181d4a 100%);
+    }
+
+    /* 06. 緑系 */
+    .simple-button--green {
+      background: linear-gradient(180deg, #17452f 0%, #062719 100%);
+    }
+
+    /* 07. 明るい緑系 */
+    .simple-button--light-green {
+      background: linear-gradient(180deg, #4f8f5d 0%, #245032 100%);
+    }
+
+    /* 08. 深緑系 */
+    .simple-button--dark-green {
+      background: linear-gradient(180deg, #153523 0%, #07170f 100%);
+    }
+
+    /* 09. オリーブ系 */
+    .simple-button--olive {
+      background: linear-gradient(180deg, #64652d 0%, #343515 100%);
+    }
+
+    /* 10. ミント系 */
+    .simple-button--mint {
+      background: linear-gradient(180deg, #58a88c 0%, #2d6653 100%);
+    }
+
+    /* 11. 赤系 */
+    .simple-button--red {
+      background: linear-gradient(180deg, #a52424 0%, #590d0d 100%);
+    }
+
+    /* 12. 明るい赤系 */
+    .simple-button--bright-red {
+      background: linear-gradient(180deg, #d63b32 0%, #8d1712 100%);
+    }
+
+    /* 13. 赤茶色系 */
+    .simple-button--red-brown {
+      background: linear-gradient(180deg, #7a3425 0%, #3d1712 100%);
+    }
+
+    /* 14. ワインレッド系 */
+    .simple-button--wine {
+      background: linear-gradient(180deg, #70233a 0%, #35101d 100%);
+    }
+
+    /* 15. バーガンディ系 */
+    .simple-button--burgundy {
+      background: linear-gradient(180deg, #5c1f2d 0%, #280b13 100%);
+    }
+
+    /* 16. ピンク系 */
+    .simple-button--pink {
+      background: linear-gradient(180deg, #c45c7a 0%, #743047 100%);
+    }
+
+    /* 17. 茶色系 */
+    .simple-button--brown {
+      background: linear-gradient(180deg, #704525 0%, #35200f 100%);
+    }
+
+    /* 18. 明るい茶色系 */
+    .simple-button--light-brown {
+      background: linear-gradient(180deg, #a46b3d 0%, #5d351c 100%);
+    }
+
+    /* 19. こげ茶系 */
+    .simple-button--dark-brown {
+      background: linear-gradient(180deg, #4c3020 0%, #21130c 100%);
+    }
+
+    /* 20. 銅色系 */
+    .simple-button--copper {
+      background: linear-gradient(180deg, #a8542a 0%, #5b2914 100%);
+    }
+
+    /* 21. オレンジ系 */
+    .simple-button--orange {
+      background: linear-gradient(180deg, #cc6c22 0%, #7d3510 100%);
+    }
+
+    /* 22. 黄色系 */
+    .simple-button--yellow {
+      color: #241700;
+      border-color: #9a6b10;
+      background: linear-gradient(180deg, #f2d66b 0%, #c39120 100%);
+    }
+
+    /* 23. 明るい黄色系 */
+    .simple-button--light-yellow {
+      color: #2b1c00;
+      border-color: #a87512;
+      background: linear-gradient(180deg, #fff2a6 0%, #d7ad3a 100%);
+    }
+
+    /* 24. 山吹色系 */
+    .simple-button--mustard {
+      color: #201400;
+      border-color: #8e5c08;
+      background: linear-gradient(180deg, #d9a62d 0%, #9f6b10 100%);
+    }
+
+    /* 25. 黄土色系 */
+    .simple-button--ochre {
+      color: #211500;
+      border-color: #80530d;
+      background: linear-gradient(180deg, #c89435 0%, #805318 100%);
+    }
+
+    /* 26. 紫系 */
+    .simple-button--purple {
+      background: linear-gradient(180deg, #6f3a86 0%, #341844 100%);
+    }
+
+    /* 27. 深い紫系 */
+    .simple-button--dark-purple {
+      background: linear-gradient(180deg, #4a285e 0%, #21102d 100%);
+    }
+
+    /* 28. 赤紫系 */
+    .simple-button--magenta {
+      background: linear-gradient(180deg, #91335f 0%, #4f1732 100%);
+    }
+
+    /* 29. グレー系 */
+    .simple-button--gray {
+      background: linear-gradient(180deg, #666666 0%, #363636 100%);
+    }
+
+    /* 30. 明るいグレー系 */
+    .simple-button--light-gray {
+      background: linear-gradient(180deg, #929292 0%, #5a5a5a 100%);
+    }
+
+    /* 31. 暗いグレー系 */
+    .simple-button--dark-gray {
+      background: linear-gradient(180deg, #474747 0%, #242424 100%);
+    }
+
+    /* 32. 青みのあるグレー系 */
+    .simple-button--blue-gray {
+      background: linear-gradient(180deg, #586876 0%, #2d3943 100%);
+    }
+
+    /* 33. 茶色みのあるグレー系 */
+    .simple-button--warm-gray {
+      background: linear-gradient(180deg, #746a60 0%, #403832 100%);
+    }
+
+    /* 34. 黒系 */
+    .simple-button--black {
+      background: linear-gradient(180deg, #252525 0%, #080808 100%);
+    }
+
+    /* 35. やや明るい黒系 */
+    .simple-button--soft-black {
+      background: linear-gradient(180deg, #383838 0%, #151515 100%);
+    }
+
+    /* 36. チャコール系 */
+    .simple-button--charcoal {
+      background: linear-gradient(180deg, #35383b 0%, #17191b 100%);
+    }
+
+    /* 37. 白系 */
+    .simple-button--white {
+      color: #6c4713;
+      background: linear-gradient(180deg, #ffffff 0%, #d7d7d7 100%);
+    }
+
+    /* 38. クリーム系 */
+    .simple-button--cream {
+      color: #694519;
+      background: linear-gradient(180deg, #fff1c9 0%, #d7b878 100%);
+    }
+
+    /* 39. ベージュ系 */
+    .simple-button--beige {
+      color: #5b3b13;
+      background: linear-gradient(180deg, #d9c39c 0%, #9e8059 100%);
+    }
+
+    /* 40. 金色系 */
+    .simple-button--gold {
+      color: #241700;
+      border-color: #7f5208;
+      background: linear-gradient(180deg, #f0cf73 0%, #a56d17 100%);
+    }
+
+    /* 41. 銀色系 */
+    .simple-button--silver {
+      color: #303030;
+      background: linear-gradient(180deg, #d2d4d7 0%, #7e8388 100%);
+    }
+
+    /* 42. ターコイズ系 */
+    .simple-button--turquoise {
+      background: linear-gradient(180deg, #279895 0%, #105251 100%);
+    }
+
+    /* 43. 青緑系 */
+    .simple-button--teal {
+      background: linear-gradient(180deg, #176d70 0%, #073638 100%);
+    }
+
+    /* ホバー時 */
+    .simple-button:hover {
+      filter: brightness(1.15);
+      transform: translateY(-2px);
+
+      box-shadow:
+        0 5px 8px rgb(0 0 0 / 35%);
+    }
+
+    /* 押下時 */
+    .simple-button:active {
+      filter: brightness(0.9);
+      transform: translateY(1px);
+
+      box-shadow:
+        0 2px 3px rgb(0 0 0 / 30%);
+    }
+
+    /* キーボード操作時 */
+    .simple-button:focus-visible {
+      outline: 3px solid #e7bd5b;
+      outline-offset: 3px;
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 20px;
+      }
+
+      .button-list {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .simple-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Classic Button Color Samples</h1>
+
+  <p class="description">
+    クラシカルなボタンの配色サンプルです。
+  </p>
+
+  <div class="button-list">
+    <div class="button-item">
+      <span class="button-label">01. 青系</span>
+      <button class="simple-button simple-button--blue">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">02. 明るい青系</span>
+      <button class="simple-button simple-button--light-blue">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">03. 水色系</span>
+      <button class="simple-button simple-button--sky-blue">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">04. 紺色系</span>
+      <button class="simple-button simple-button--navy">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">05. 青紫系</span>
+      <button class="simple-button simple-button--indigo">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">06. 緑系</span>
+      <button class="simple-button simple-button--green">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">07. 明るい緑系</span>
+      <button class="simple-button simple-button--light-green">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">08. 深緑系</span>
+      <button class="simple-button simple-button--dark-green">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">09. オリーブ系</span>
+      <button class="simple-button simple-button--olive">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">10. ミント系</span>
+      <button class="simple-button simple-button--mint">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">11. 赤系</span>
+      <button class="simple-button simple-button--red">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">12. 明るい赤系</span>
+      <button class="simple-button simple-button--bright-red">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">13. 赤茶色系</span>
+      <button class="simple-button simple-button--red-brown">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">14. ワインレッド系</span>
+      <button class="simple-button simple-button--wine">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">15. バーガンディ系</span>
+      <button class="simple-button simple-button--burgundy">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">16. ピンク系</span>
+      <button class="simple-button simple-button--pink">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">17. 茶色系</span>
+      <button class="simple-button simple-button--brown">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">18. 明るい茶色系</span>
+      <button class="simple-button simple-button--light-brown">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">19. こげ茶系</span>
+      <button class="simple-button simple-button--dark-brown">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">20. 銅色系</span>
+      <button class="simple-button simple-button--copper">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">21. オレンジ系</span>
+      <button class="simple-button simple-button--orange">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">22. 黄色系</span>
+      <button class="simple-button simple-button--yellow">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">23. 明るい黄色系</span>
+      <button class="simple-button simple-button--light-yellow">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">24. 山吹色系</span>
+      <button class="simple-button simple-button--mustard">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">25. 黄土色系</span>
+      <button class="simple-button simple-button--ochre">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">26. 紫系</span>
+      <button class="simple-button simple-button--purple">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">27. 深い紫系</span>
+      <button class="simple-button simple-button--dark-purple">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">28. 赤紫系</span>
+      <button class="simple-button simple-button--magenta">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">29. グレー系</span>
+      <button class="simple-button simple-button--gray">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">30. 明るいグレー系</span>
+      <button class="simple-button simple-button--light-gray">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">31. 暗いグレー系</span>
+      <button class="simple-button simple-button--dark-gray">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">32. 青みのあるグレー系</span>
+      <button class="simple-button simple-button--blue-gray">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">33. 茶色みのあるグレー系</span>
+      <button class="simple-button simple-button--warm-gray">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">34. 黒系</span>
+      <button class="simple-button simple-button--black">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">35. やや明るい黒系</span>
+      <button class="simple-button simple-button--soft-black">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">36. チャコール系</span>
+      <button class="simple-button simple-button--charcoal">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">37. 白系</span>
+      <button class="simple-button simple-button--white">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">38. クリーム系</span>
+      <button class="simple-button simple-button--cream">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">39. ベージュ系</span>
+      <button class="simple-button simple-button--beige">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">40. 金色系</span>
+      <button class="simple-button simple-button--gold">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">41. 銀色系</span>
+      <button class="simple-button simple-button--silver">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">42. ターコイズ系</span>
+      <button class="simple-button simple-button--turquoise">START</button>
+    </div>
+
+    <div class="button-item">
+      <span class="button-label">43. 青緑系</span>
+      <button class="simple-button simple-button--teal">START</button>
+    </div>
+  </div>
+</body>
+</html>

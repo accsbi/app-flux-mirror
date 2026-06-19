@@ -1,0 +1,11 @@
+id,stage,reward_coin,pair_capture_chance_percent,image,enemy_name_ja,enemy_name_en,enemy_name_zh,profile_ja,profile_en,profile_zh
+001,1,20,10,memory-battle/character/enemy/stage_1.webp,‘ºl,Villager,‘º–¯,í“¬ŒoŒ±‚Ì‚È‚¢ˆê”ÊlBÅ‰‚Ì—ûK‘Šè,A common villager with no combat experience. Your first practice opponent.,–v—L?“l??“I•’Ê‘º–¯BÅ‰“I???èB
+002,2,30,20,memory-battle/character/enemy/stage_2.webp,ğê‚ÌŒ‚Á•¥‚¢,Tavern Drunk,ğ?çË?,“®‚«‚Ír‚¢‚ª—\‘ª‚µ‚É‚­‚¢‘Šè,A rough and unpredictable opponent whose movements are difficult to read.,?ì‘e–ìŠ?ˆÈ??“I?èB
+003,3,40,30,memory-battle/character/enemy/stage_3.webp,“‘¯,Bandit,“?,‘f‘‚­A‚¸‚éŒ«‚¢í‚¢•û‚ğ‚·‚é,A swift and cunning fighter who relies on underhanded tactics.,s?•q·C¡?g—pàÂàÏè’i?“l“I“?B
+004,4,50,40,memory-battle/character/enemy/stage_4.webp,é–å‚Ì‰q•º,Gate Guard,é??•º,é‚ğç‚éŒP—û‚³‚ê‚½•ºm,A trained soldier assigned to guard the castle gate.,??ç?é?A??—L‘f“Im•ºB
+005,5,70,50,memory-battle/character/enemy/stage_5.webp,—b•º,Mercenary,?•º,ÀíŒoŒ±‚ª–L•x‚È‹à‚ÅŒÙ‚í‚ê‚½ím,A hired warrior with extensive experience in real combat.,óŒÙì?A?—L?•x????“I?mB
+006,6,90,60,memory-battle/character/enemy/stage_6.webp,‹Rm,Royal Knight,c‰Æ?m,ŠZ‚ÆŒ•‚ğ‘•”õ‚µ‚½³®‚È‹Rm,A formally appointed knight equipped with armor and a sword.,gú?bAè??“I³®?mB
+007,7,120,70,memory-battle/character/enemy/stage_7.webp,‹Rm’c’·,Knight Commander,?m??,‹Rm’c‚ğ—¦‚¢‚én—û‚ÌwŠöŠ¯,A highly skilled commander who leads the kingdom's knights.,—¦??m?A???•x“Iw?Š¯B
+008,8,150,80,memory-battle/character/enemy/stage_8.webp,Œöİ,Duke,Œöİ,‰¤‘‚Ì‘å—Ì’n‚ğ¡‚ß‚é—L—Í‹M‘°,A powerful noble who governs a vast territory within the kingdom.,?¡‰¤‘‘å•Ğ?’n“I???‘°B
+009,9,200,90,memory-battle/character/enemy/stage_9.webp,‹{’ì–‚pt,Court Sorcerer,?’ì–‚–@?,‰¤‹{‚Éd‚¦‚é’m—ª‚Æ–‚–@‚Ìg‚¢è,A master of strategy and magic who serves in the royal court.,˜•ò‰¤?A¸’Ê’m—ª—^–‚–@“I‚èB
+010,10,300,100,memory-battle/character/enemy/stage_10.webp,ˆÃ•‰¤,Dark King,üKˆÃ”V‰¤,‰¤‘‚ğx”z‚·‚éÅIƒ{ƒX‹‰‚ÌŒNåBˆêØ‚Ì‚Æ‚è‚±‚Ú‚µ‚à‚ä‚é‚³‚È‚¢B,A final-boss-level ruler who dominates the kingdom. He will not forgive a single mistake.,?¡®˜¢‰¤‘“IÅ?ñ??ŒNåB?•s‰ï•ú?”C‰½ˆêŸ¸?B

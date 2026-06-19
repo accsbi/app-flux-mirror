@@ -1,0 +1,8 @@
+node_modules/
+dist/
+*.tar.gz
+.DS_Store
+*.log
+
+# scripts/ is its own nested git repo (and fully captured in the tarball backup)
+scripts/

@@ -1,0 +1,119 @@
+/* Classic Card Games Collection — Design System "Royal Card Room".
+   クラシック・カジノ調（額縁の金線・Cinzel セリフ見出し・装飾区切り）。
+   - 配色は「ロイヤルネイビー × ゴールド」: 深紺フェルト＋シャンパンゴールド＋深紅。
+   - 温かいアイボリー紙のキャンバスに、紙テクスチャと金のヘアライン。
+   - 見出し/ブランド/ボタンは Cinzel セリフ、本文は明朝（Noto Serif JP）。
+   既存の Lit 部品が参照する変数名は維持し、値だけを差し替えている
+   （:root のカスタムプロパティは Shadow DOM を貫通する）。
+   フォントは各 HTML の <head> で <link>+preconnect 読込（CSS内 @import は
+   描画ブロック＆リフロー＝「ガクン」の原因になるため使わない）。 */
+
+:root {
+  --max-width: 1200px;
+
+  /* ── Surfaces / Canvas（温かいアイボリー紙） ── */
+  --canvas: #ece3d0; /* ページの主キャンバス（load-bearing） */
+  --canvas-dark: #e2d6bd; /* ページ背景グラデの沈み側 */
+  --ceramic: #e6dcc4; /* ゾーン区切りのやや濃いクリーム */
+  --surface: #fbf4e4; /* カード/モーダル＝紙 */
+  --surface-dark: #efe2c9; /* 紙の沈み側（カードグラデ用） */
+  --neutral-cool: #f3ebd8; /* 静かなユーティリティ面 */
+
+  /* ── Navy 4-tier（フェルト＝深紺）と差し色 ── */
+  --green: #142a4a; /* 見出し/ブランドのインク（旧 Starbucks Green の役割） */
+  --green-accent: #7a1f2b; /* 主 CTA / リンク / アクティブ下線＝深紅 */
+  --green-house: #0c1d34; /* 深いフィーチャー帯/フッター＝濃紺フェルト */
+  --green-uplift: #1c3a5e; /* 装飾アクセント（明るい紺） */
+  --green-light: #ecdcae; /* 淡い金の地（バッジ地・暗面の小見出し） */
+
+  /* ── Gold（一般アクセントとして解禁） ── */
+  --gold: #c9a24a; /* シャンパンゴールド（主アクセント） */
+  --gold-bright: #e6c87d; /* ハイライト側 */
+  --gold-deep: #9c7a2e; /* 影側 / 金線の濃い端 */
+  --gold-line: #b9933c; /* 額縁ヘアラインの基準色 */
+
+  /* ── Text ── */
+  --text: #241c12; /* 明色面の主テキスト（温かい濃インク） */
+  --text-soft: #6c5d46; /* 副次/メタ */
+  --on-dark: #fbf3df; /* 濃紺面の主テキスト（温白） */
+  --on-dark-soft: rgba(251, 243, 223, 0.72); /* 濃紺面の副次 */
+
+  --border: #d8c7a2; /* 入力境界（金がかった生成り） */
+  --hairline: #e6dcc4; /* テーブル罫線 */
+  --color-border: var(--gold-deep); /* page-hero フォールバックの上書き（金枠） */
+
+  /* ── Radius ── */
+  --radius-card: 16px;
+  --radius-pill: 50px;
+  --radius-frame: 22px; /* ヒーロー等の大きな額縁 */
+
+  /* ── Elevation（単発の重い影は避け、低アルファを重ねる。色は温かい焦茶系） ── */
+  --shadow-card: 0 12px 25px rgba(38, 21, 8, 0.16),
+    0 0 0.5px rgba(38, 21, 8, 0.2);
+  --shadow-nav: 0 3px 0 rgba(20, 15, 8, 0.22), 0 7px 18px rgba(0, 0, 0, 0.16);
+  --shadow-soft: 0 14px 35px rgba(34, 20, 8, 0.14);
+
+  /* ── Spacing（16px を基準律動に） ── */
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 40px;
+  --space-7: 48px;
+  --space-9: 64px;
+
+  --outer-gutter: 16px;
+
+  /* ── Type ── */
+  /* 本文＝明朝。Cinzel は日本語グリフを持たないので本文には使わない。 */
+  --font-sans: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho',
+    'Noto Serif SC', 'Times New Roman', serif;
+  /* 見出し/ブランド/ボタンのラテン＝Cinzel（日本語は明朝にフォールバック） */
+  --font-display: 'Cinzel', 'Noto Serif JP', 'Hiragino Mincho ProN', serif;
+  --tracking: 0; /* 明朝本文は素直に。装飾的な字間は各見出しで個別指定 */
+
+  /* ボタン共通のアクティブ押下スケール（署名的マイクロインタラクション） */
+  --button-active-scale: 0.96;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--canvas);
+  color: var(--text);
+  font-family: var(--font-sans);
+  letter-spacing: var(--tracking);
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--text);
+  line-height: 1.8;
+  /* 紙テクスチャ：上からの淡い光、極細の縦罫、アイボリーの縦グラデ */
+  background: radial-gradient(
+      circle at 50% 0%,
+      rgba(255, 255, 255, 0.6),
+      transparent 42%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(76, 50, 21, 0.015) 0,
+      rgba(76, 50, 21, 0.015) 1px,
+      transparent 1px,
+      transparent 6px
+    ),
+    linear-gradient(180deg, var(--canvas) 0%, var(--canvas-dark) 100%);
+  background-attachment: fixed;
+}
+
+a {
+  color: inherit;
+}

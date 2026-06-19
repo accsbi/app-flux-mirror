@@ -1,0 +1,19 @@
+{
+  "name": "classic-card-games-collection",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lit": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "typescript": "~5.9.3",
+    "vite": "^5.4.21"
+  }
+}

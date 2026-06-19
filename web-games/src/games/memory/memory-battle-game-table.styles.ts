@@ -1,0 +1,944 @@
+import { css } from 'lit'
+import { STAGE_HEIGHT, STAGE_WIDTH } from '../../shared/ui/styles/stage-layout'
+import { appFontFamily } from '../../shared/ui/styles/fonts'
+
+export const memoryBattleGameTableStyles = css`
+  :host {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(90deg, #060a0b 0%, #122126 25%, #122126 75%, #060a0b 100%);
+    color: #eef4f9;
+    font-family: ${appFontFamily};
+  }
+
+  .game-shell {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: hidden;
+  }
+
+  .stage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: ${STAGE_WIDTH}px;
+    height: var(--stage-logical-height, ${STAGE_HEIGHT}px);
+    /* ヘッダー/ステータスの実高さに依存せず、stage-body を残り全部へ広げる縦flex。
+       これで枠下端が常にフッター(Feedback)直前まで届く。 */
+    display: flex;
+    flex-direction: column;
+    transform: translate(var(--stage-offset-left, 0px), var(--stage-offset-top, 0px))
+      scale(var(--game-scale, 1));
+    transform-origin: top left;
+    background:
+      linear-gradient(180deg, rgba(7, 34, 23, 0.2), rgba(7, 34, 23, 0.3)),
+      #163138;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    contain: layout paint;
+  }
+
+  .battle-trace-panel {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 52px;
+    max-height: 128px;
+    overflow: auto;
+    display: grid;
+    gap: 4px;
+    padding: 10px 12px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(3, 18, 16, 0.78);
+    color: #eafff3;
+    font-size: 12px;
+    line-height: 1.35;
+    text-align: left;
+    z-index: 45;
+    white-space: normal;
+  }
+
+  .battle-trace-panel strong {
+    color: #fff7c2;
+    font-size: 13px;
+  }
+
+  .trace-line.is-match {
+    color: #ff7b7b;
+    font-weight: 900;
+    text-shadow: 0 0 10px rgba(255, 42, 42, 0.45);
+  }
+
+  .primary-btn,
+  .secondary-btn {
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #f4fbff;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* ヘッダー(game-top-header)・ステータス・フッターの左右インセットを card 系(.table)と統一。
+     High&Low 基準=8px。これが無いとヘッダーだけ端まで広がり、ステータス/フッターと不揃いになる。 */
+  .stage > game-top-header {
+    display: block;
+    box-sizing: border-box;
+    padding: 4px 8px 0;
+  }
+
+  .status-strip {
+    display: grid;
+    grid-template-columns: minmax(128px, max-content) minmax(0, 1fr);
+    gap: 6px;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 8px 8px;
+  }
+
+  .meta-chip {
+    min-height: 38px;
+    padding: 0 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(8, 24, 20, 0.56);
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 14px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  /* COIN は他ゲーム(.bet-status)と同じ「枠なしの素テキスト」に統一。チップの枠/背景は付けない。 */
+  .coin-chip {
+    min-width: 0;
+    min-height: 0;
+    padding: 0 8px 4px;
+    border: 0;
+    background: none;
+    border-radius: 0;
+    gap: 0.3em;
+    font-size: 22px;
+    font-weight: 800;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    letter-spacing: 0.01em;
+    justify-content: center;
+  }
+  /* ステージ選択画面（title）は敵情報が無いので COIN を画面中央に。
+     ゲーム中（敵情報あり）は現状の2カラム配置を維持。 */
+  .status-strip.is-coin-only {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+  .status-strip.is-coin-only .enemy-status-chip {
+    display: none;
+  }
+
+  .coin-chip-icon,
+  .coin-chip-label,
+  .coin-chip-value {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* 値は COIN ラベルと同じサイズ（枠が無くなったので縮小不要＝他ゲームと同様）。 */
+  .coin-chip-value,
+  .coin-chip-value.is-small,
+  .coin-chip-value.is-tiny {
+    font-size: inherit;
+    line-height: 1;
+    letter-spacing: 0.01em;
+  }
+
+  .status-copy {
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.35;
+    color: #d5e8dc;
+    width: 100%;
+    text-align: left;
+  }
+
+  .enemy-status-chip {
+    min-width: 0;
+    min-height: 38px;
+    padding: 0 4px 0 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(8, 24, 20, 0.56);
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  .enemy-status-chip.is-placeholder {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .enemy-status-level {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 16px;
+    font-weight: 900;
+    color: #d5e8dc;
+    line-height: 1;
+    white-space: nowrap;
+    text-align: center;
+    flex: 1 1 auto;
+  }
+
+  .enemy-status-thumb {
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 10px 16px rgba(0, 0, 0, 0.22);
+  }
+
+  .stage-body {
+    /* .stage が縦flexなので、ヘッダー/ステータスの下の残り高さを全部使う。
+       下padding 55px = フッター領域56px(下8px・上pad込み)の Feedback ボタン上端(= H-52px)の
+       3px 上まで枠を伸ばす。これで枠はボタン直前まで届きつつ接触しない。 */
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 0 10px 55px;
+    box-sizing: border-box;
+    display: grid;
+    align-items: start;
+  }
+
+  .stage-body > .content-card,
+  .stage-body > .battle-panel {
+    min-height: 100%;
+    align-self: stretch;
+  }
+
+  .region-footer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* Feedback ボタンの左右インセット(8px)・下余白(pad-bottom 既定4px)を card 系フッターと統一。
+       card 系は .table(padding 0 8px)+ footer pad-bottom 4px。Memory も同値に揃える。
+       高さも card 系(blackjack/high-low の region-footer = stage 高の 8%)に統一。
+       absolute なので 8% は位置決め祖先 .stage の高さ基準＝card 系と同値。 */
+    height: 8%;
+    padding: 0 8px;
+    box-sizing: border-box;
+    display: grid;
+    align-items: end;
+    z-index: 5;
+  }
+
+  .content-card,
+  .battle-panel {
+    width: 100%;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(7, 24, 18, 0.52);
+    box-shadow: 0 18px 34px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(10px);
+    padding: 20px 18px;
+    box-sizing: border-box;
+  }
+
+  .decision-card {
+    display: grid;
+    grid-template-rows: auto auto auto auto;
+    align-items: start;
+    align-content: start;
+    gap: 12px;
+  }
+
+  .draw-battle-card {
+    gap: 8px;
+    padding-top: 28px;
+  }
+
+  .turn-select-card {
+    grid-template-rows: auto minmax(56px, 1fr) auto;
+    gap: 0;
+  }
+
+  .decision-copy-block {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+  }
+
+  .draw-battle-card .decision-copy-block {
+    gap: 12px;
+  }
+
+  .decision-status-block {
+    min-height: 56px;
+    display: grid;
+    align-items: start;
+  }
+
+  .decision-status-copy {
+    text-align: center;
+    justify-self: center;
+  }
+
+  .decision-actions {
+    align-self: end;
+  }
+
+  .decision-spacer {
+    min-height: 56px;
+  }
+
+  .center-card {
+    display: grid;
+    align-content: start;
+    justify-items: center;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .result-card {
+    grid-template-rows: auto auto auto;
+    align-content: start;
+    justify-items: stretch;
+    gap: 0;
+  }
+
+  .result-card h2,
+  .result-card p {
+    width: 100%;
+    text-align: left;
+    justify-self: stretch;
+  }
+
+  /* 練習結果は画像バナーが無く全部テキスト（タイトル/要約/メッセージ/ボタン）。勝敗結果用の
+     .result-card は gap:0 のため、そのままだと文字が詰まる。練習結果だけ：
+       ・要素間に均等な余白（gap）
+       ・カード枠(壁)に文字/ボタンが密着しないよう左右にしっかり余白（padding）
+       ・文字は左寄せのまま（中央寄せにしない）／上から並べる
+     にして整える（勝敗結果には不干渉）。 */
+  .result-card--practice {
+    align-content: start;
+    gap: 16px;
+    padding: 24px;
+  }
+
+  .result-card--practice h2 {
+    line-height: 1.35;
+  }
+
+  .result-card--practice p {
+    line-height: 1.6;
+  }
+
+  .result-card--practice .stack-actions {
+    margin-top: 8px;
+  }
+
+  .result-media {
+    min-height: 168px;
+    display: grid;
+    align-items: end;
+    justify-items: center;
+    padding-top: 8px;
+  }
+
+  .result-copy-block {
+    display: grid;
+    gap: 8px;
+    align-content: start;
+    padding-top: 16px;
+  }
+
+  .result-title-text {
+    align-self: center;
+    text-align: center !important;
+    font-size: 56px !important;
+    line-height: 1;
+    color: #fff04a;
+    text-shadow:
+      0 0 10px rgba(255, 240, 74, 0.95),
+      0 0 20px rgba(255, 240, 74, 0.5),
+      0 10px 18px rgba(0, 0, 0, 0.45);
+  }
+
+  .result-spacer {
+    min-height: 56px;
+  }
+
+  .result-actions {
+    align-self: start;
+    padding-top: 0;
+  }
+
+  .stage-select-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: calc(10px * var(--stage-height-ratio, 1));
+  }
+
+  .stage-select-btn {
+    min-height: calc(84px * var(--stage-height-ratio, 1));
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(8, 24, 20, 0.62);
+    color: #f4fbff;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 8px 10px 8px 16px;
+    font-size: clamp(14px, calc(18px * var(--stage-height-ratio, 1)), 20px);
+    font-weight: 800;
+    text-align: left;
+  }
+
+  /* 解放済みステージ＝青系クラシック（濃紺×金）。他ゲームの操作ボタンと色を統一。 */
+  .stage-select-btn.is-unlocked {
+    background:
+      radial-gradient(ellipse at 50% 18%, rgb(255 255 255 / 6%), transparent 50%),
+      linear-gradient(180deg, #15233a 0%, #0c1d34 40%, #06101f 100%);
+    color: #f4cf7a;
+    border: 2px solid #b9933c;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+  }
+
+  .stage-select-btn.is-locked {
+    background: rgba(9, 16, 18, 0.62);
+    color: rgba(244, 251, 255, 0.42);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .stage-select-btn:disabled {
+    cursor: default;
+  }
+
+  .stage-select-btn--practice {
+    grid-column: 1 / -1;
+    min-height: calc(76px * var(--stage-height-ratio, 1));
+  }
+
+  .stage-select-btn--practice .stage-select-main {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .stage-select-btn--practice .stage-select-copy {
+    width: 100%;
+    justify-items: center;
+  }
+
+  .stage-select-btn--practice .stage-select-label {
+    width: 100%;
+    font-size: clamp(18px, calc(24px * var(--stage-height-ratio, 1)), 32px);
+    text-align: center;
+  }
+
+  .stage-select-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) min(calc(56px * var(--stage-height-ratio, 1)), 68px);
+    align-items: center;
+    column-gap: 10px;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .stage-select-main--practice {
+    grid-template-columns: 1fr;
+  }
+
+  .stage-select-label {
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .stage-select-copy {
+    min-width: 0;
+    display: grid;
+    justify-items: start;
+    align-content: center;
+    gap: 8px;
+  }
+
+  .stage-select-clear-row {
+    width: 100%;
+    min-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .stage-clear-badge {
+    font-size: 12px;
+    line-height: 1;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: rgba(255, 245, 139, 0.18);
+    color: #fff7c2;
+  }
+
+  .stage-select-thumb {
+    width: min(calc(56px * var(--stage-height-ratio, 1)), 68px);
+    height: min(calc(56px * var(--stage-height-ratio, 1)), 68px);
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.08);
+    flex: 0 0 min(calc(56px * var(--stage-height-ratio, 1)), 68px);
+  }
+
+  .stage-select-thumb.is-locked-thumb {
+    opacity: 0.55;
+    filter: saturate(0.75);
+  }
+
+  .stage-select-placeholder {
+    min-height: 24px;
+  }
+
+  .practice-select-block {
+    width: 100%;
+    display: grid;
+    gap: 8px;
+    text-align: left;
+  }
+
+  .practice-select-label {
+    font-size: 18px;
+    font-weight: 800;
+    color: #f4fbff;
+  }
+
+  .practice-select {
+    width: 100%;
+    min-height: 56px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(8, 24, 20, 0.72);
+    color: #f4fbff;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 0 16px;
+    box-sizing: border-box;
+  }
+
+  .content-card h1,
+  .content-card h2,
+  .content-card p {
+    margin: 0;
+  }
+
+  .content-card h1,
+  .content-card h2 {
+    font-size: 32px;
+    line-height: 1.15;
+  }
+
+  .content-card p {
+    font-size: 20px;
+    line-height: 1.45;
+    white-space: pre-line;
+  }
+
+  .enemy-name {
+    font-size: 26px;
+    font-weight: 800;
+    color: #fff6b5;
+  }
+
+  .enemy-profile-block {
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  .enemy-profile {
+    width: 100%;
+    text-align: left;
+    justify-self: stretch;
+  }
+
+  .enemy-portrait-wrap {
+    width: min(100%, 280px);
+    border-radius: 22px;
+    background: radial-gradient(circle at top, rgba(255, 255, 255, 0.14), rgba(8, 24, 20, 0.28));
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    padding: 12px;
+    box-sizing: border-box;
+  }
+
+  .enemy-portrait {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.34));
+  }
+
+  .primary-btn,
+  .secondary-btn {
+    min-height: 76px;
+    font-size: 22px;
+    padding: 0 20px;
+    width: 100%;
+  }
+
+  /* Web版（タブレット以上）では少し小さめでOK */
+  @media (min-width: 768px) {
+    .primary-btn,
+    .secondary-btn {
+      min-height: 68px;
+    }
+  }
+
+  /* 決定系=青系クラシック（濃紺×金・外枠1本線）。OK/Start/Next/Continue/Retry/先攻後攻 等。 */
+  .primary-btn {
+    border: 2px solid #b9933c;
+    background:
+      radial-gradient(ellipse at 50% 18%, rgb(255 255 255 / 6%), transparent 50%),
+      linear-gradient(180deg, #15233a 0%, #0c1d34 40%, #06101f 100%);
+    color: #f4cf7a;
+    font-family: "Cinzel", "Times New Roman", Georgia, serif;
+    text-shadow: 0 1px 0 #05101d;
+    box-shadow: 0 2px 0 #04101d, 0 4px 8px rgb(0 0 0 / 40%);
+  }
+
+  .primary-btn:hover:not(:disabled) {
+    filter: brightness(1.16);
+    box-shadow: 0 2px 0 #04101d, 0 4px 10px rgb(0 0 0 / 40%), 0 0 14px rgb(244 207 122 / 45%);
+  }
+
+  .primary-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  /* 副ボタン=緑系クラシック（金×緑・外枠1本線）。戻る/メニュー等。 */
+  .secondary-btn {
+    border: 2px solid #b77a28;
+    background:
+      radial-gradient(ellipse at 50% 18%, rgb(255 255 255 / 6%), transparent 50%),
+      linear-gradient(180deg, #173a27 0%, #092719 38%, #03150d 100%);
+    color: #f4cf7a;
+    font-family: "Cinzel", "Times New Roman", Georgia, serif;
+    text-shadow: 0 1px 0 #3f2108;
+    box-shadow: 0 2px 0 #2c1806, 0 4px 8px rgb(0 0 0 / 40%);
+  }
+
+  .secondary-btn:hover {
+    filter: brightness(1.12);
+  }
+
+  .stack-actions {
+    width: 100%;
+    display: grid;
+    gap: 16px;
+  }
+
+  .stack-actions.is-reserved {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .result-banner {
+    width: min(280px, 100%);
+    margin: 0 auto;
+  }
+
+  .result-banner img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter:
+      drop-shadow(0 0 12px rgba(255, 235, 150, 0.95))
+      drop-shadow(0 0 24px rgba(255, 235, 150, 0.55))
+      drop-shadow(0 12px 24px rgba(0, 0, 0, 0.4));
+  }
+
+  .result-message {
+    min-height: 56px;
+    display: grid;
+    align-items: center;
+  }
+
+  .draw-battle-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 20px 0 0;
+  }
+
+  .draw-card-panel {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .draw-card-owner {
+    min-height: 32px;
+    display: grid;
+    place-items: center;
+    line-height: 1.1;
+    color: #f4fbff;
+  }
+
+  .draw-card-owner.is-placeholder {
+    visibility: hidden;
+  }
+
+  .draw-card-button {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    transition: transform 180ms ease, filter 180ms ease;
+  }
+
+  .draw-card-button:disabled {
+    cursor: default;
+  }
+
+  .draw-card-button.is-winner {
+    filter: drop-shadow(0 0 18px rgba(255, 228, 120, 0.85));
+  }
+
+  .draw-card {
+    width: 120px;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.4));
+  }
+
+  .draw-battle-card .status-copy,
+  .turn-select-card .status-copy,
+  .decision-copy-block p {
+    line-height: 1.6;
+  }
+
+  .draw-battle-card .decision-status-block {
+    min-height: 40px;
+  }
+
+  .draw-battle-card .draw-battle-actions {
+    min-height: 142px;
+    align-self: start;
+  }
+
+  .battle-panel {
+    display: grid;
+    grid-template-rows: 48px minmax(0, 1fr);
+    align-content: start;
+    gap: 0;
+    /* 下padding を詰めて20枚(5行)が大画面では収まるようカード領域の高さを確保。 */
+    padding: 10px 8px 4px;
+    overflow: hidden;
+  }
+
+  .battle-fixed-head {
+    width: min(100%, 398px);
+    min-height: 48px;
+    margin: 8px auto 0;
+  }
+
+  .score-row {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .score-row.is-practice {
+    justify-content: center;
+  }
+
+  .score-board {
+    display: grid;
+    grid-template-columns: 95px 32px 95px;
+    align-items: center;
+    column-gap: 8px;
+  }
+
+  .quit-battle-btn {
+    width: 96px;
+    min-height: 32px;
+    padding: 0 12px;
+    border: 1px solid #b77a28;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #173a27, #092719);
+    color: #f4cf7a;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.22);
+    justify-self: start;
+  }
+
+  .score-row.is-practice .quit-battle-btn {
+    width: 148px;
+    min-height: 36px;
+    font-size: 14px;
+    justify-self: center;
+  }
+
+  .score-pill {
+    width: 95px;
+    min-height: 30px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(8, 24, 20, 0.56);
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .turn-arrow {
+    min-height: 30px;
+    display: grid;
+    place-items: center;
+    font-size: 24px;
+    font-weight: 900;
+    color: rgba(236, 247, 255, 0.5);
+    transition: color 120ms ease, filter 120ms ease;
+  }
+
+  .turn-arrow.is-player-turn,
+  .turn-arrow.is-cpu-turn {
+    color: #fffde1;
+    filter:
+      drop-shadow(0 0 10px rgba(255, 228, 84, 0.95))
+      drop-shadow(0 0 20px rgba(255, 228, 84, 0.55));
+  }
+
+  .battle-status {
+    min-height: 20px;
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    color: #f4fbff;
+    padding: 1px 8px;
+    justify-self: center;
+  }
+
+  .card-grid-area {
+    position: relative;
+    min-height: 0;
+    display: grid;
+    align-items: start;
+    /* 枠を広げてもスマホの小さい画面では20枚が収まり切らないことがあるため、
+       はみ出した分はこの枠内でスクロールさせる(横は固定)。 */
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .deal-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 20;
+  }
+
+  .deal-overlay-image {
+    width: min(70%, 360px);
+    height: auto;
+    filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.45));
+    animation: deal-overlay-pop 0.28s ease-out;
+  }
+
+  @keyframes deal-overlay-pop {
+    from {
+      transform: scale(0.6);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: min(100%, calc(446px * var(--stage-height-ratio, 1)));
+    margin: 8px auto 0;
+    column-gap: calc(7px * var(--stage-height-ratio, 1));
+    row-gap: calc(5px * var(--stage-height-ratio, 1));
+    justify-content: center;
+    align-content: start;
+    align-items: start;
+  }
+
+  .memory-card {
+    aspect-ratio: 0.78;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .memory-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.36));
+  }
+
+  .memory-card.matched {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  /* .overlay / .modal は shared-game-ui-styles.ts の sharedOverlayStyles に集約（唯一の正）。
+     ここでは再定義しない。 */
+
+  .match-banner {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: min(280px, calc(100% - 60px));
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 40;
+  }
+
+  .match-banner img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter:
+      drop-shadow(0 0 12px rgba(255, 235, 150, 0.95))
+      drop-shadow(0 0 24px rgba(255, 235, 150, 0.55))
+      drop-shadow(0 12px 24px rgba(0, 0, 0, 0.4));
+  }
+
+  /* フィードバックのダイアログ／スタイルは共通部品 <game-feedback> 側に集約。 */
+`

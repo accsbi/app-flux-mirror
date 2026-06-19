@@ -1,0 +1,121 @@
+{
+  "default_language": "en",
+  "app_info": {
+    "app_id": "005",
+    "app_name": "highlowgame",
+    "version": "1.0.1"
+  },
+  "languages": {
+    "en": {
+      "menu": {
+        "title": "Classic Simple High & Low",
+        "start": "START",
+        "overview_info": "Guide / Overview",
+        "settings": "Settings",
+        "back": "Back"
+      },
+      "overview_info": {
+        "overview_intro": "Classic Simple High & Low is an easy card game you play against the CPU.\n\nEach side holds 26 cards and fights over the two cards in play. Each turn, one side calls HIGH or LOW, guessing whether their card beats the other.\n\nNo sign-up and no online play. Just a quick, relaxing card game with a classic, vintage design. Cards are dealt at random."
+      },
+      "settings": {
+        "language": "Language",
+        "sound_effect": "Sound Effect",
+        "bgm": "BGM",
+        "clear_cache": "Clear Cache",
+        "clear_cache_confirm_message": "Clear cache (temporary data)? Your coins and progress are kept."
+      },
+      "game": {
+        "home": "Home",
+        "leave_game": "Return to menu?",
+        "rules_text": "・Each turn, one side is Attack and the other is Defend. The roles swap every turn.\n・On Attack, tap HIGH or LOW to guess if your card is higher or lower.\n・Right (BINGO): you take both cards. Wrong (MISS): both cards are gone.\n・When the decks run out, the side with more cards wins.",
+        "rules_ok": "OK",
+        "rules_dont_show": "Don't show this again"
+      },
+      "ads": {
+        "remove_ads_benefit_1_title": "About Removing Ads",
+        "remove_ads_benefit_1_desc": "To continue development and operation, we kindly ask for your understanding regarding ad display in this app.\n\nYou can also remove ads via in-app purchase. One purchase removes ads.",
+        "remove_ads_benefit_2_title": "After Removing Ads",
+        "remove_ads_benefit_2_desc": "When ads are removed, there is no external ad connection, so offline play is available.\n\nExample: You can play in places with weak or no signal, such as on an airplane.",
+        "purchase_button": "Purchase",
+        "already_purchased": "Already Purchased",
+        "purchase_success_message": "Thank you for your purchase! Ads have been removed from the app.",
+        "purchase_failed": "Purchase failed. Please try again.",
+        "purchase_error": "An error occurred during purchase. Please try again."
+      }
+    },
+    "ja": {
+      "menu": {
+        "title": "Classic Simple High & Low",
+        "start": "START",
+        "overview_info": "ガイド / 概要",
+        "settings": "設定",
+        "back": "戻る"
+      },
+      "overview_info": {
+        "overview_intro": "Classic Simple High & Low は、CPU と対戦する、やさしいカードゲームです。\n\nおたがい26枚を持ち、場の2枚を奪い合います。毎ターン、片方が HIGH か LOW を宣言し、自分のカードが相手より上か下かを当てます。\n\n登録もオンライン対戦もありません。クラシックで落ち着いた見た目の、すきま時間にぴったりのトランプゲームです。カードはすべてランダムです。"
+      },
+      "settings": {
+        "language": "言語",
+        "sound_effect": "効果音",
+        "bgm": "BGM",
+        "clear_cache": "キャッシュクリア",
+        "clear_cache_confirm_message": "キャッシュクリア（一時データ削除）を実行します。コインや進捗は保持されます。"
+      },
+      "game": {
+        "home": "ホーム",
+        "leave_game": "メニューに戻りますか?",
+        "rules_text": "・毎ターン、片方が Attack（攻め）、もう片方が Defend（守り）。役割は毎ターン交代します。\n・Attack のときは、HIGH か LOW をタップして、上か下かを当てます。\n・当たり（BINGO）なら2枚もらえます。外れ（MISS）なら2枚とも流れます。\n・山札がなくなったとき、カードが多いほうの勝ちです。",
+        "rules_ok": "OK",
+        "rules_dont_show": "次回から表示しない"
+      },
+      "ads": {
+        "remove_ads_benefit_1_title": "広告削除について",
+        "remove_ads_benefit_1_desc": "本アプリは、開発・運用を継続するため 広告表示へのご理解をお願いいたします。\n\nアプリ内課金により 広告を非表示 にすることもできます。1度の課金で広告が外れます。",
+        "remove_ads_benefit_2_title": "広告削除後",
+        "remove_ads_benefit_2_desc": "広告を非表示にすることにより、外部との接続(広告表示)がなく、オフラインプレイが可能になります。\n\n例：飛行機の中など、電波がない／弱い場所でも遊べます。",
+        "purchase_button": "購入する",
+        "already_purchased": "購入済み",
+        "purchase_success_message": "ご購入ありがとうございます！アプリから広告が削除されました。",
+        "purchase_failed": "購入に失敗しました。もう一度お試しください。",
+        "purchase_error": "購入中にエラーが発生しました。もう一度お試しください。"
+      }
+    },
+    "zh": {
+      "menu": {
+        "title": "Classic Simple High & Low",
+        "start": "开始",
+        "overview_info": "指南 / 概述",
+        "settings": "设置",
+        "back": "返回"
+      },
+      "overview_info": {
+        "overview_intro": "Classic Simple High & Low 是一款与 CPU 对战、上手简单的纸牌游戏。\n\n双方各持 26 张牌，争夺场上的两张牌。每回合，一方宣告 HIGH 或 LOW，猜自己的牌比对方更大还是更小。\n\n无需注册，也没有在线对战。这是一款外观经典、沉稳的纸牌游戏，很适合零碎时间游玩。所有牌均为随机。"
+      },
+      "settings": {
+        "language": "语言",
+        "sound_effect": "音效",
+        "bgm": "背景音乐",
+        "clear_cache": "清除缓存",
+        "clear_cache_confirm_message": "将执行清除缓存（临时数据）。硬币与进度会被保留。"
+      },
+      "game": {
+        "home": "主页",
+        "leave_game": "返回菜单吗？",
+        "rules_text": "・每回合，一方为 Attack（进攻），另一方为 Defend（防守），角色每回合互换。\n・进攻时，点 HIGH 或 LOW，猜自己的牌更大还是更小。\n・猜中（BINGO）可获得两张牌；猜错（MISS）两张牌都作废。\n・牌堆用完时，牌数较多的一方获胜。",
+        "rules_ok": "确定",
+        "rules_dont_show": "下次不再显示"
+      },
+      "ads": {
+        "remove_ads_benefit_1_title": "关于去广告",
+        "remove_ads_benefit_1_desc": "为持续开发与运营，本应用恳请你理解广告展示。\n\n你也可以通过应用内购买关闭广告。一次购买即可关闭广告。",
+        "remove_ads_benefit_2_title": "去广告后",
+        "remove_ads_benefit_2_desc": "关闭广告后，不再有外部广告连接，可进行离线游玩。\n\n例如：在飞机上等无信号或弱信号环境中也可以游玩。",
+        "purchase_button": "购买",
+        "already_purchased": "已购买",
+        "purchase_success_message": "感谢您的购买！应用中的广告已被移除。",
+        "purchase_failed": "购买失败。请重试。",
+        "purchase_error": "购买过程中出现错误，请重试。"
+      }
+    }
+  }
+}

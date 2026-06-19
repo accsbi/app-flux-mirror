@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classic Button - Color Candidates</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+JP:wght@600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <!--
+    現行の主 CTA デザイン（金の多重額縁 × フェルト中央 = .web-link-btn 系統）を
+    そのまま使い、中央フェルトの配色だけを sample-css.html の 43 色に差し替えた
+    「カラー違い候補」です。デザイン（額縁・艶・押し込み）は全色で共通。
+    明るい色（黄・白・クリーム・金・銀など）は文字色を濃色に自動切替しています。
+  -->
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 32px;
+      color: #f3efe2;
+      background: radial-gradient(ellipse at 50% 0%, #14233d 0%, #0a1424 60%, #06101d 100%);
+      font-family: Arial, sans-serif;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-family: 'Cinzel', 'Noto Serif JP', 'Times New Roman', Georgia, serif;
+      font-size: 30px;
+      color: #f0cf73;
+    }
+
+    .description { margin: 0 0 28px; color: #b5bccb; font-size: 14px; line-height: 1.6; }
+
+    .button-list { display: flex; flex-wrap: wrap; gap: 18px; }
+    .button-item { display: flex; flex-direction: column; gap: 7px; width: 230px; }
+    .button-label { color: #cfd6c8; font-size: 12px; }
+
+    /* ============================================================
+       共通: 金の多重額縁ボタン（中央フェルトは --felt で差し替え）
+       ============================================================ */
+    .cbtn {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      min-height: 60px;
+      padding: 12px 22px;
+
+      border: 2px solid #9c7a2e;
+      border-radius: 50px;
+
+      font-family: 'Cinzel', 'Noto Serif JP', 'Times New Roman', Georgia, serif;
+      font-size: 22px;
+      font-weight: 700;
+      font-style: italic;
+      letter-spacing: 0.04em;
+      line-height: 1;
+      white-space: nowrap;
+      cursor: pointer;
+
+      background:
+        radial-gradient(ellipse at 50% 20%, rgba(255,255,255,.08), transparent 48%),
+        var(--felt, linear-gradient(180deg, #1b3358 0%, #0a1c33 35%, #06101d 100%));
+
+      box-shadow:
+        0 3px 0 #05101c,
+        0 7px 12px rgba(0,0,0,.42),
+        inset 0 0 0 2px #c9a24a,
+        inset 0 0 0 4px #142336,
+        inset 0 0 0 6px #9c7a2e,
+        inset 0 8px 10px rgba(255,255,255,.05),
+        inset 0 -10px 16px rgba(0,0,0,.4);
+
+      transition: transform 150ms ease, filter 150ms ease;
+    }
+
+    /* 文字: 金グラデ（暗い背景用・既定） */
+    .cbtn .label {
+      position: relative;
+      z-index: 2;
+      background: linear-gradient(180deg, #fff0ad 0%, #e2b95d 30%, #a96820 63%, #f0ce75 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 2px 0 #3f2108);
+    }
+
+    /* 明るい背景用: 文字を濃色ベタ＋上向きハイライト */
+    .cbtn.light .label {
+      background: none;
+      -webkit-background-clip: border-box;
+      background-clip: border-box;
+      color: var(--ink, #241700);
+      filter: none;
+      text-shadow: 0 1px 0 rgba(255,255,255,.4);
+    }
+    /* 明るい背景では内側の濃紺リングも金寄りにして馴染ませる */
+    .cbtn.light {
+      box-shadow:
+        0 3px 0 #6b4509,
+        0 7px 12px rgba(0,0,0,.4),
+        inset 0 0 0 2px #fff0ad,
+        inset 0 0 0 4px #a56d17,
+        inset 0 0 0 6px #7f5208,
+        inset 0 8px 10px rgba(255,255,255,.35),
+        inset 0 -10px 16px rgba(0,0,0,.18);
+    }
+
+    .cbtn:hover  { filter: brightness(1.1); transform: translateY(-2px); }
+    .cbtn:active { filter: brightness(0.92); transform: translateY(2px); }
+    .cbtn:focus-visible { outline: 3px solid #e6c87d; outline-offset: 4px; }
+
+    /* ============================================================
+       43 色（sample-css.html の配色をそのまま中央フェルトに）
+       ============================================================ */
+    .f-blue        { --felt: linear-gradient(180deg, #142a4a 0%, #071529 100%); }
+    .f-light-blue  { --felt: linear-gradient(180deg, #3478a8 0%, #174466 100%); }
+    .f-sky-blue    { --felt: linear-gradient(180deg, #58a9c7 0%, #27667f 100%); }
+    .f-navy        { --felt: linear-gradient(180deg, #17233d 0%, #080e1d 100%); }
+    .f-indigo      { --felt: linear-gradient(180deg, #343e7c 0%, #181d4a 100%); }
+    .f-green       { --felt: linear-gradient(180deg, #17452f 0%, #062719 100%); }
+    .f-light-green { --felt: linear-gradient(180deg, #4f8f5d 0%, #245032 100%); }
+    .f-dark-green  { --felt: linear-gradient(180deg, #153523 0%, #07170f 100%); }
+    .f-olive       { --felt: linear-gradient(180deg, #64652d 0%, #343515 100%); }
+    .f-mint        { --felt: linear-gradient(180deg, #58a88c 0%, #2d6653 100%); }
+    .f-red         { --felt: linear-gradient(180deg, #a52424 0%, #590d0d 100%); }
+    .f-bright-red  { --felt: linear-gradient(180deg, #d63b32 0%, #8d1712 100%); }
+    .f-red-brown   { --felt: linear-gradient(180deg, #7a3425 0%, #3d1712 100%); }
+    .f-wine        { --felt: linear-gradient(180deg, #70233a 0%, #35101d 100%); }
+    .f-burgundy    { --felt: linear-gradient(180deg, #5c1f2d 0%, #280b13 100%); }
+    .f-pink        { --felt: linear-gradient(180deg, #c45c7a 0%, #743047 100%); }
+    .f-brown       { --felt: linear-gradient(180deg, #704525 0%, #35200f 100%); }
+    .f-light-brown { --felt: linear-gradient(180deg, #a46b3d 0%, #5d351c 100%); }
+    .f-dark-brown  { --felt: linear-gradient(180deg, #4c3020 0%, #21130c 100%); }
+    .f-copper      { --felt: linear-gradient(180deg, #a8542a 0%, #5b2914 100%); }
+    .f-orange      { --felt: linear-gradient(180deg, #cc6c22 0%, #7d3510 100%); }
+    .f-yellow      { --felt: linear-gradient(180deg, #f2d66b 0%, #c39120 100%); --ink: #241700; }
+    .f-light-yellow{ --felt: linear-gradient(180deg, #fff2a6 0%, #d7ad3a 100%); --ink: #2b1c00; }
+    .f-mustard     { --felt: linear-gradient(180deg, #d9a62d 0%, #9f6b10 100%); --ink: #201400; }
+    .f-ochre       { --felt: linear-gradient(180deg, #c89435 0%, #805318 100%); --ink: #211500; }
+    .f-purple      { --felt: linear-gradient(180deg, #6f3a86 0%, #341844 100%); }
+    .f-dark-purple { --felt: linear-gradient(180deg, #4a285e 0%, #21102d 100%); }
+    .f-magenta     { --felt: linear-gradient(180deg, #91335f 0%, #4f1732 100%); }
+    .f-gray        { --felt: linear-gradient(180deg, #666666 0%, #363636 100%); }
+    .f-light-gray  { --felt: linear-gradient(180deg, #929292 0%, #5a5a5a 100%); }
+    .f-dark-gray   { --felt: linear-gradient(180deg, #474747 0%, #242424 100%); }
+    .f-blue-gray   { --felt: linear-gradient(180deg, #586876 0%, #2d3943 100%); }
+    .f-warm-gray   { --felt: linear-gradient(180deg, #746a60 0%, #403832 100%); }
+    .f-black       { --felt: linear-gradient(180deg, #252525 0%, #080808 100%); }
+    .f-soft-black  { --felt: linear-gradient(180deg, #383838 0%, #151515 100%); }
+    .f-charcoal    { --felt: linear-gradient(180deg, #35383b 0%, #17191b 100%); }
+    .f-white       { --felt: linear-gradient(180deg, #ffffff 0%, #d7d7d7 100%); --ink: #6c4713; }
+    .f-cream       { --felt: linear-gradient(180deg, #fff1c9 0%, #d7b878 100%); --ink: #694519; }
+    .f-beige       { --felt: linear-gradient(180deg, #d9c39c 0%, #9e8059 100%); --ink: #5b3b13; }
+    .f-gold        { --felt: linear-gradient(180deg, #f0cf73 0%, #a56d17 100%); --ink: #241700; }
+    .f-silver      { --felt: linear-gradient(180deg, #d2d4d7 0%, #7e8388 100%); --ink: #303030; }
+    .f-turquoise   { --felt: linear-gradient(180deg, #279895 0%, #105251 100%); }
+    .f-teal        { --felt: linear-gradient(180deg, #176d70 0%, #073638 100%); }
+
+    @media (max-width: 520px) {
+      body { padding: 20px; }
+      .button-item { width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Classic Button — Color Candidates</h1>
+
+  <p class="description">
+    現行デザイン（金の多重額縁 × フェルト中央＝ <code>.web-link-btn</code> 系統）はそのまま、<br>
+    中央フェルトの配色だけを sample-css.html の 43 色に差し替えたカラー候補です。<br>
+    01 の濃紺が現在の使用色です。気に入った色を選んでください（適用はこちらで対応します）。
+  </p>
+
+  <div class="button-list">
+    <div class="button-item"><span class="button-label">01. 青系（現在の色）</span><button class="cbtn f-blue"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">02. 明るい青系</span><button class="cbtn f-light-blue"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">03. 水色系</span><button class="cbtn f-sky-blue"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">04. 紺色系</span><button class="cbtn f-navy"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">05. 青紫系</span><button class="cbtn f-indigo"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">06. 緑系</span><button class="cbtn f-green"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">07. 明るい緑系</span><button class="cbtn f-light-green"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">08. 深緑系</span><button class="cbtn f-dark-green"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">09. オリーブ系</span><button class="cbtn f-olive"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">10. ミント系</span><button class="cbtn f-mint"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">11. 赤系</span><button class="cbtn f-red"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">12. 明るい赤系</span><button class="cbtn f-bright-red"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">13. 赤茶色系</span><button class="cbtn f-red-brown"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">14. ワインレッド系</span><button class="cbtn f-wine"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">15. バーガンディ系</span><button class="cbtn f-burgundy"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">16. ピンク系</span><button class="cbtn f-pink"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">17. 茶色系</span><button class="cbtn f-brown"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">18. 明るい茶色系</span><button class="cbtn f-light-brown"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">19. こげ茶系</span><button class="cbtn f-dark-brown"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">20. 銅色系</span><button class="cbtn f-copper"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">21. オレンジ系</span><button class="cbtn f-orange"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">22. 黄色系</span><button class="cbtn light f-yellow"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">23. 明るい黄色系</span><button class="cbtn light f-light-yellow"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">24. 山吹色系</span><button class="cbtn light f-mustard"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">25. 黄土色系</span><button class="cbtn light f-ochre"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">26. 紫系</span><button class="cbtn f-purple"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">27. 深い紫系</span><button class="cbtn f-dark-purple"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">28. 赤紫系</span><button class="cbtn f-magenta"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">29. グレー系</span><button class="cbtn f-gray"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">30. 明るいグレー系</span><button class="cbtn f-light-gray"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">31. 暗いグレー系</span><button class="cbtn f-dark-gray"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">32. 青みのあるグレー系</span><button class="cbtn f-blue-gray"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">33. 茶色みのあるグレー系</span><button class="cbtn f-warm-gray"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">34. 黒系</span><button class="cbtn f-black"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">35. やや明るい黒系</span><button class="cbtn f-soft-black"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">36. チャコール系</span><button class="cbtn f-charcoal"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">37. 白系</span><button class="cbtn light f-white"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">38. クリーム系</span><button class="cbtn light f-cream"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">39. ベージュ系</span><button class="cbtn light f-beige"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">40. 金色系</span><button class="cbtn light f-gold"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">41. 銀色系</span><button class="cbtn light f-silver"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">42. ターコイズ系</span><button class="cbtn f-turquoise"><span class="label">START</span></button></div>
+    <div class="button-item"><span class="button-label">43. 青緑系</span><button class="cbtn f-teal"><span class="label">START</span></button></div>
+  </div>
+</body>
+</html>
