@@ -2,6 +2,7 @@ import { LitElement, css, html, nothing } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import type { GameEntry, Lang } from '../data/games-catalog'
 import { getTranslation } from '../i18n/translations'
+import { utilities } from '../styles/utilities'
 
 // 1ゲームのカード。app-flux games-apps.astro のカード構造/CSS を移植。
 // 注目画像 → Mobile/Web バッジ → タイトル → 3行説明 → Details(準備中) →
@@ -11,7 +12,7 @@ export class CcgGameCard extends LitElement {
   @property({ attribute: false }) game!: GameEntry
   @property({ type: String }) lang: Lang = 'en'
 
-  static styles = css`
+  static styles = [utilities, css`
     :host {
       display: flex;
       flex-direction: column;
@@ -255,7 +256,7 @@ export class CcgGameCard extends LitElement {
       outline: 3px solid var(--gold-bright);
       outline-offset: 4px;
     }
-  `
+  `]
 
   render() {
     const g = this.game

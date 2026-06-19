@@ -2,6 +2,7 @@ import { LitElement, css, html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { LANGS, type Lang } from '../data/games-catalog'
 import { getTranslation, SITE_TITLE } from '../i18n/translations'
+import { utilities } from '../styles/utilities'
 
 // 言語切替は「コード(en/ja/zh)」ではなく必ずフルラベルで出す（既存 app-flux と同じ）。
 const LANG_LABELS: Record<Lang, string> = { en: 'English', ja: '日本語', zh: '中文' }
@@ -18,7 +19,7 @@ export class CcgSiteHeader extends LitElement {
   /** /{lang}/ の後ろのパス（言語切替時に同じページへ留まるため）。例: 'games-apps/blackjack/' */
   @property({ type: String }) langPath = ''
 
-  static styles = css`
+  static styles = [utilities, css`
     :host {
       position: sticky;
       top: 0;
@@ -168,7 +169,7 @@ export class CcgSiteHeader extends LitElement {
         gap: 16px;
       }
     }
-  `
+  `]
 
   render() {
     const t = getTranslation(this.lang)

@@ -6,6 +6,7 @@ import './site-header'
 import './game-card'
 import './breadcrumb'
 import './page-hero'
+import { utilities } from '../styles/utilities'
 
 // TOP（ゲーム一覧ページ）。CSV + 説明JSON を実行時 fetch し、3列カードで表示。
 // app-flux games-apps.astro の構成（PageHero + genre 見出し + CardGrid columns=3）を踏襲。
@@ -16,7 +17,7 @@ export class CcgCatalogPage extends LitElement {
   @state() private loading = true
   @state() private error = ''
 
-  static styles = css`
+  static styles = [utilities, css`
     :host {
       display: block;
       background: var(--canvas);
@@ -153,7 +154,7 @@ export class CcgCatalogPage extends LitElement {
       max-width: 60ch;
       line-height: 1.7;
     }
-  `
+  `]
 
   connectedCallback(): void {
     super.connectedCallback()

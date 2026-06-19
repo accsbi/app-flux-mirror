@@ -2,6 +2,7 @@ import { LitElement, css, html, type TemplateResult, nothing } from 'lit'
 import { customElement, state, query } from 'lit/decorators.js'
 import { buildGameAssetUrl } from '../../shared/infra/game-asset-url'
 import { sharedGameHostStyles, sharedGameStageStyles } from '../../shared/ui/styles/shared-game-layout-styles'
+import { utilities } from '../../shared/ui/styles/utilities'
 import { sharedOverlayStyles, sharedBetStatusStyles } from '../../shared/ui/styles/shared-game-ui-styles'
 import { loadSharedCoin } from '../../shared/infra/shared-coin-store'
 import { applyStageScale, STAGE_WIDTH } from '../../shared/ui/styles/stage-layout'
@@ -137,6 +138,7 @@ export class OldMaidGameTable extends LitElement {
     sharedGameStageStyles,
     sharedOverlayStyles,
     sharedBetStatusStyles,
+    utilities,
     css`
       /* 他ゲーム(blackjack/casino-war/high-low/memory)と同一のヘッダー/フッター規約。
          フッター位置がズレないよう flex 縦並び + --footer-height-rate/--table-row-gap を統一。 */

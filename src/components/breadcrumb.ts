@@ -1,5 +1,6 @@
 import { LitElement, css, html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
+import { utilities } from '../styles/utilities'
 
 export interface BreadcrumbItem {
   label: string
@@ -11,7 +12,7 @@ export interface BreadcrumbItem {
 export class CcgBreadcrumb extends LitElement {
   @property({ attribute: false }) items: BreadcrumbItem[] = []
 
-  static styles = css`
+  static styles = [utilities, css`
     nav {
       margin: 0 0 16px;
     }
@@ -44,7 +45,7 @@ export class CcgBreadcrumb extends LitElement {
     .current {
       color: var(--text);
     }
-  `
+  `]
 
   render() {
     return html`
