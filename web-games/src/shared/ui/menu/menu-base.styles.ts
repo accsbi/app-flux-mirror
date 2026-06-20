@@ -41,7 +41,10 @@ export const menuBaseStyles = css`
   h1 {
     margin: 0;
     font-family: "Cinzel", "Times New Roman", Georgia, serif;
-    font-size: 32px;
+    /* 英語タイトル最長 "Classic Poker (Five-card draw)"(30字) が1行で収まるよう縮小。
+       画面幅に応じて可変（狭い端末ほど小さく）。あふれる場合は ellipsis で省略し、
+       タイトルが横にあふれてコイン表示を画面外へ押し出すのを防ぐ。 */
+    font-size: clamp(16px, 5.4vw, 26px);
     font-weight: 700;
     line-height: 1.2;
     letter-spacing: 0.01em;
