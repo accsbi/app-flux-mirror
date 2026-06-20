@@ -1028,16 +1028,13 @@ export class CasinoWarGameTable extends LitElement {
 
   private resultMessageImage(target: 'dealer' | 'player'): 'win' | 'lose' | 'tie' | null {
     if (this.phase === 'tie_choice') {
-      // TIE のメッセージPNGはカードに被って見えず、両者に出す意味もないため非表示。
-      // 戻す場合は次行を有効化: return 'tie'
-      return null
+      return 'tie'
     }
     if (this.phase !== 'result' || !this.roundResult) {
       return null
     }
     if (this.roundResult === 'TIE') {
-      // 同上: TIE の result-overlay-image は出さない。戻す場合は次行を有効化: return 'tie'
-      return null
+      return 'tie'
     }
     if (this.roundResult === 'WIN') {
       return target === 'player' ? 'win' : 'lose'
@@ -1782,9 +1779,11 @@ export class CasinoWarGameTable extends LitElement {
       max-height: 150px;
       z-index: 5;
     }
+    /* TIE は両者のカードに被って見えづらいので、元の小さいサイズ（共有 .is-tie）に戻す。
+       上の大きい既定を TIE のときだけ打ち消す。WIN/LOSE は大きいまま。 */
     .result-overlay-image.is-tie {
-      width: min(420px, 142%);
-      max-height: 165px;
+      width: min(320px, 76%);
+      max-height: 108px;
     }
 
     .tie-choice-panel {
