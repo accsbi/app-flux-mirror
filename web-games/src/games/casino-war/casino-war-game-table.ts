@@ -1028,13 +1028,16 @@ export class CasinoWarGameTable extends LitElement {
 
   private resultMessageImage(target: 'dealer' | 'player'): 'win' | 'lose' | 'tie' | null {
     if (this.phase === 'tie_choice') {
-      return 'tie'
+      // TIE のメッセージPNGはカードに被って見えず、両者に出す意味もないため非表示。
+      // 戻す場合は次行を有効化: return 'tie'
+      return null
     }
     if (this.phase !== 'result' || !this.roundResult) {
       return null
     }
     if (this.roundResult === 'TIE') {
-      return 'tie'
+      // 同上: TIE の result-overlay-image は出さない。戻す場合は次行を有効化: return 'tie'
+      return null
     }
     if (this.roundResult === 'WIN') {
       return target === 'player' ? 'win' : 'lose'
