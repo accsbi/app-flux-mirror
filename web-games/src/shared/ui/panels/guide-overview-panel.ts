@@ -42,6 +42,12 @@ export class GuideOverviewPanel extends LitElement {
     }
     const t = line.trim()
 
+    // 水平線（--- / *** / ___）は区切り線として描画。
+    // これが無いと下の箇条書き判定が "---" を拾って "• --" と表示してしまう。
+    if (/^([-*_])\1{2,}$/.test(t)) {
+      return html`<hr class="guide-hr" aria-hidden="true" />`
+    }
+
     const heading = /^(#{1,6})\s+(.*)$/.exec(t)
     if (heading) {
       const level = Math.min(heading[1].length, 4)
@@ -173,6 +179,12 @@ export class GuideOverviewPanel extends LitElement {
 
     .guide-spacer {
       min-height: 12px;
+    }
+    .guide-hr {
+      border: 0;
+      height: 1px;
+      margin: 12px 0;
+      background: rgba(255, 255, 255, 0.18);
     }
   `, classicButtonStyles]
 }
