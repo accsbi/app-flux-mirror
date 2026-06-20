@@ -59,24 +59,34 @@ export class NumpadDialogPanel extends LitElement {
   render() {
     return html`
       <section class="overlay">
-        <div class="modal">
-          <h3>${this.title}</h3>
-          <div class="display">${this.displayValue || '0'}</div>
-          <div class="numpad">
+        <div class="bet-modal">
+          <div class="bet-emblem">♜</div>
+
+          <div class="bet-header">
+            <span class="header-line"></span>
+            <h2>${this.title}</h2>
+            <span class="header-line"></span>
+          </div>
+
+          <div class="bet-display">${this.displayValue || '0'}</div>
+
+          <div class="number-grid">
             ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => html`
-              <button class="numpad-btn" @click=${() => this.appendToInput(String(num))}>${num}</button>
+              <button class="key" type="button" @click=${() => this.appendToInput(String(num))}>${num}</button>
             `)}
-            <button class="numpad-btn clear" @click=${() => this.clearInput()}>C</button>
-            <button class="numpad-btn" @click=${() => this.appendToInput('0')}>0</button>
-            <button class="numpad-btn backspace" @click=${() => this.backspaceInput()}>←</button>
+            <button class="key key-clear" type="button" @click=${() => this.clearInput()}>C</button>
+            <button class="key" type="button" @click=${() => this.appendToInput('0')}>0</button>
+            <button class="key key-back" type="button" @click=${() => this.backspaceInput()}>←</button>
           </div>
-          <div class="min-max-buttons">
-            <button class="min-max-btn" @click=${this.setMin}>MIN</button>
-            <button class="min-max-btn" @click=${this.setMax}>MAX</button>
+
+          <div class="limit-grid">
+            <button class="wide-key" type="button" @click=${this.setMin}>♛ <span>MIN</span></button>
+            <button class="wide-key" type="button" @click=${this.setMax}><span>MAX</span> ♛</button>
           </div>
-          <div class="buttons">
-            <button class="action-btn cancel" @click=${this.cancel}>Cancel</button>
-            <button class="action-btn confirm" @click=${this.confirm}>OK</button>
+
+          <div class="action-grid">
+            <button class="action-button cancel-button" type="button" @click=${this.cancel}>CANCEL</button>
+            <button class="action-button ok-button" type="button" @click=${this.confirm}>OK</button>
           </div>
         </div>
       </section>
@@ -84,141 +94,281 @@ export class NumpadDialogPanel extends LitElement {
   }
 
   static styles = css`
+    /* catalog/design/tenkey-sample.html を参考にした中世風UI。挙動は不変。 */
     :host {
       display: block;
+      --panel-dark: #10291c;
+      --panel-middle: #173825;
+      --panel-light: #234a32;
+      --gold-light: #f5dc8a;
+      --gold: #c89a3a;
+      --gold-dark: #72501d;
+      --button-top: #493525;
+      --button-bottom: #251b14;
+      --red-top: #7f2c24;
+      --red-bottom: #431713;
+      --blue-top: #24547e;
+      --blue-bottom: #102c48;
+      --gray-top: #45484a;
+      --gray-bottom: #252729;
+      --text-light: #f6e6b3;
+      --shadow: rgba(0, 0, 0, 0.65);
     }
 
     .overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      inset: 0;
       background: rgba(5, 10, 11, 0.85);
       display: grid;
       place-items: center;
-      padding: 12px;
+      padding: 56px 12px 16px;
       z-index: 100;
+      overflow: auto;
     }
 
-    .modal {
-      width: 96%;
-      padding: 16px;
-      border-radius: 14px;
-      border: 3px solid #dccb42;
-      background: rgba(13, 84, 33, 0.98);
-      display: grid;
-      gap: 16px;
-      text-align: center;
+    button {
+      font: inherit;
+    }
+
+    .bet-modal {
+      position: relative;
+      width: min(100%, 440px);
+      padding: 64px 22px 26px;
+      color: var(--text-light);
+      font-family: "Cinzel", Georgia, "Times New Roman", serif;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.035), transparent 35%),
+        linear-gradient(180deg, var(--panel-light), var(--panel-dark));
+      border: 3px solid var(--gold);
+      border-radius: 20px;
+      box-shadow:
+        0 0 0 2px #35250f,
+        0 0 0 5px var(--gold-dark),
+        0 18px 40px var(--shadow),
+        inset 0 0 28px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.16);
       box-sizing: border-box;
     }
 
-    h3 {
-      margin: 0;
-      font-size: clamp(18px, 4.5vw, 24px);
-      font-weight: 800;
-      color: #ffd730;
+    /* 上部のアーチ */
+    .bet-modal::before {
+      content: "";
+      position: absolute;
+      top: -24px;
+      left: 50%;
+      width: 74%;
+      height: 48px;
+      transform: translateX(-50%);
+      background: var(--panel-middle);
+      border: 3px solid var(--gold);
+      border-bottom: 0;
+      border-radius: 50% 50% 0 0 / 90% 90% 0 0;
+      box-shadow: 0 -2px 0 #38270f, inset 0 6px 12px rgba(255, 255, 255, 0.035);
     }
 
-    .display {
-      width: 100%;
-      min-height: 80px;
-      padding: 0 12px;
-      border-radius: 12px;
-      border: 2px solid rgba(240, 215, 51, 0.6);
-      background: radial-gradient(circle at 35% 30%, #fff2b8, #f1b743 55%, #ab5f11);
-      color: #241b05;
-      font-size: clamp(24px, 6vw, 32px);
-      font-weight: 800;
-      text-align: center;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+    /* 内側の細い金枠 */
+    .bet-modal::after {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      pointer-events: none;
+      border: 1px solid rgba(229, 185, 85, 0.54);
+      border-radius: 13px;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+    }
+
+    .bet-emblem {
+      position: absolute;
+      z-index: 2;
+      top: -50px;
+      left: 50%;
+      width: 76px;
+      height: 76px;
+      transform: translateX(-50%);
       display: grid;
       place-items: center;
-      box-sizing: border-box;
+      color: var(--gold-light);
+      font-size: 34px;
+      line-height: 1;
+      background: linear-gradient(145deg, #264c35, #0d2016);
+      border: 4px solid var(--gold);
+      border-radius: 18px 18px 28px 28px;
+      box-shadow:
+        0 0 0 2px #3d2b11,
+        0 8px 15px rgba(0, 0, 0, 0.55),
+        inset 0 0 12px rgba(0, 0, 0, 0.5);
     }
 
-    .numpad {
+    .bet-header {
+      position: relative;
+      z-index: 1;
       display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .bet-header h2 {
+      margin: 0;
+      color: var(--gold-light);
+      font-size: clamp(20px, 5.4vw, 30px);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-shadow: 0 2px 0 #5e4015, 0 4px 7px rgba(0, 0, 0, 0.65);
+    }
+
+    .header-line {
+      position: relative;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .header-line::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 8px;
+      height: 8px;
+      transform: translate(-50%, -50%) rotate(45deg);
+      background: var(--panel-dark);
+      border: 1px solid var(--gold);
+    }
+
+    .bet-display {
+      position: relative;
+      z-index: 1;
+      min-height: 86px;
+      margin-bottom: 18px;
+      display: grid;
+      place-items: center;
+      color: var(--gold-light);
+      font-size: clamp(40px, 12vw, 56px);
+      font-weight: 700;
+      background: linear-gradient(180deg, #0a1810, #102619);
+      border: 3px solid var(--gold);
+      border-radius: 14px;
+      box-shadow:
+        0 0 0 2px #3e2b10,
+        inset 0 0 18px rgba(0, 0, 0, 0.7),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 8px 12px rgba(0, 0, 0, 0.3);
+      text-shadow: 0 2px 0 #6d4b1b, 0 4px 5px rgba(0, 0, 0, 0.65);
+      overflow: hidden;
+    }
+
+    .number-grid,
+    .limit-grid,
+    .action-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 10px;
+    }
+
+    .number-grid {
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin: 8px 0;
-      width: 100%;
     }
 
-    .numpad-btn {
-      min-height: 80px;
-      border-radius: 12px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      background: linear-gradient(180deg, #a06a34, #5e3818);
-      color: #f4fbff;
-      font-size: clamp(20px, 5vw, 28px);
-      font-weight: 800;
+    .limit-grid,
+    .action-grid {
+      grid-template-columns: repeat(2, 1fr);
+      margin-top: 12px;
+    }
+
+    .key,
+    .wide-key,
+    .action-button {
+      position: relative;
+      min-width: 0;
+      border: 2px solid var(--gold);
+      color: var(--text-light);
       cursor: pointer;
-      transition: opacity 120ms ease;
+      background: linear-gradient(180deg, var(--button-top), var(--button-bottom));
+      box-shadow:
+        0 0 0 1px #2f200d,
+        0 6px 0 #120d09,
+        0 9px 12px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0 rgba(255, 255, 255, 0.11),
+        inset 0 -8px 14px rgba(0, 0, 0, 0.18);
+      text-shadow: 0 2px 0 #4c3515, 0 3px 5px rgba(0, 0, 0, 0.75);
+      transition: transform 120ms ease, filter 120ms ease;
+      clip-path: polygon(
+        8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px),
+        calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px);
     }
 
-    .numpad-btn:active {
-      opacity: 0.7;
+    .key {
+      min-height: 64px;
+      font-size: clamp(26px, 7vw, 34px);
+      font-weight: 700;
     }
 
-    .numpad-btn.clear {
-      background: linear-gradient(180deg, #d14545, #a13333);
+    .wide-key {
+      min-height: 60px;
+      font-size: clamp(17px, 4.6vw, 23px);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      background: linear-gradient(180deg, #25462f, #112c1d);
     }
 
-    .numpad-btn.backspace {
-      background: linear-gradient(180deg, #5a5a5a, #3a3a3a);
+    .wide-key span {
+      margin: 0 8px;
     }
 
-    .min-max-buttons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+    .action-button {
+      min-height: 64px;
+      font-size: clamp(17px, 4.6vw, 23px);
+      font-weight: 700;
+      letter-spacing: 0.04em;
     }
 
-    .min-max-btn {
-      min-height: 72px;
-      border-radius: 12px;
-      border: 2px solid rgba(255, 255, 255, 0.28);
-      background: linear-gradient(180deg, #a06a34, #5e3818);
-      color: #f4fbff;
-      font-size: clamp(16px, 4vw, 20px);
-      font-weight: 800;
-      cursor: pointer;
-      transition: opacity 120ms ease;
+    .key-clear,
+    .cancel-button {
+      background: linear-gradient(180deg, var(--red-top), var(--red-bottom));
     }
 
-    .min-max-btn:active {
-      opacity: 0.8;
+    .key-back {
+      background: linear-gradient(180deg, var(--gray-top), var(--gray-bottom));
     }
 
-    .buttons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+    .ok-button {
+      background: linear-gradient(180deg, var(--blue-top), var(--blue-bottom));
     }
 
-    .action-btn {
-      min-height: 72px;
-      border-radius: 12px;
-      border: 2px solid rgba(255, 255, 255, 0.28);
-      font-size: clamp(16px, 4vw, 20px);
-      font-weight: 800;
-      cursor: pointer;
-      transition: opacity 120ms ease;
+    /* キー内側の金ヘアライン */
+    .key::before,
+    .wide-key::before,
+    .action-button::before {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      pointer-events: none;
+      border: 1px solid rgba(247, 218, 137, 0.29);
+      clip-path: polygon(
+        6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px),
+        calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
     }
 
-    .action-btn.cancel {
-      background: linear-gradient(180deg, #5a5a5a, #3a3a3a);
-      color: #f4fbff;
+    .key:hover,
+    .wide-key:hover,
+    .action-button:hover {
+      filter: brightness(1.1);
     }
 
-    .action-btn.confirm {
-      background: #1b68d6;
-      color: #f4fbff;
-    }
-
-    .action-btn:active {
-      opacity: 0.8;
+    .key:active,
+    .wide-key:active,
+    .action-button:active {
+      transform: translateY(4px);
+      box-shadow:
+        0 0 0 1px #2f200d,
+        0 2px 0 #120d09,
+        inset 0 3px 10px rgba(0, 0, 0, 0.28);
     }
   `
 }
