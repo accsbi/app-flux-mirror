@@ -40,9 +40,10 @@ export const sharedNoMoreBetStyles = css`
     z-index: 4;
   }
 
+  /* サイズは全ゲーム共通（単一ソース）。casino-war で調整した大きさに統一。 */
   .no-more-bet-image {
     display: block;
-    width: min(72%, 288px);
+    width: min(96%, 460px);
     max-width: 100%;
     height: auto;
     filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.55));
@@ -50,6 +51,8 @@ export const sharedNoMoreBetStyles = css`
 `
 
 export const sharedResultOverlayStyles = css`
+  /* WIN / LOSE / TIE の既定サイズ（blackjack 用＝控えめ。手札の数字が隠れない大きさ）。
+     casino-war は1枚勝負で大きく見せたいので、casino-war 側のローカルで上書きする。 */
   .result-overlay-image {
     position: absolute;
     left: 50%;

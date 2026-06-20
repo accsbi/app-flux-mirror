@@ -478,7 +478,7 @@ export class HighLowStandaloneApp extends LitElement {
           .settingsLabel=${this.chrome.settings}
           .backLabel=${isAndroidApp() ? '' : this.chrome.back}
           .storeNotice=${isAndroidApp() ? '' : this.chrome.alsoOnGooglePlay}
-          .storeTitle=${isAndroidApp() ? '' : HIGH_LOW_WEB_LINKS.title}
+          .storeTitle=${isAndroidApp() ? '' : (getGameTitle('high-low') ?? HIGH_LOW_WEB_LINKS.title)}
           .storeUrl=${isAndroidApp() ? '' : HIGH_LOW_WEB_LINKS.storeUrl}
           .storeBadgeSrc=${isAndroidApp() ? '' : HIGH_LOW_WEB_LINKS.storeBadgeUrl}
           .storeBadgeAlt=${HIGH_LOW_WEB_LINKS.storeBadgeAlt}

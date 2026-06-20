@@ -57,7 +57,7 @@ import {
   type MemoryWinResultMode,
   type TurnOwner
 } from './memory-battle-game-table.types'
-import { renderMemoryBattleHeader, renderMemoryBattleScreen, renderMemoryBattleStatus } from './memory-battle-game-table.screens'
+import { renderMemoryBattleHeader, renderMemoryBattleScreen, renderMemoryBattleStatus, renderEnemyInfoOverlay } from './memory-battle-game-table.screens'
 import { renderSettingsPanel } from '../../shared/ui/panels/settings-modal'
 import '../../shared/ui/panels/guide-overview-panel'
 import '../../shared/ui/panels/confirm-dialog-panel'
@@ -122,6 +122,10 @@ export class MemoryBattleGameTable extends LitElement {
 
   @state()
   private screen: MemoryBattleScreen = 'enemy-intro'
+
+  // ゲーム中に敵画像をタップしたときの敵情報オーバーレイ（画面遷移せず重ねて表示）。
+  @state()
+  private showEnemyInfo = false
 
   @state()
   private currentTurn: TurnOwner = 'player'
@@ -1698,6 +1702,10 @@ export class MemoryBattleGameTable extends LitElement {
   }
 
   handleSystemBack(): boolean {
+    if (this.showEnemyInfo) {
+      this.showEnemyInfo = false
+      return true
+    }
     if (this.isSoundHelpOpen) {
       this.isSoundHelpOpen = false
       this.resumeBattleAutomation()
@@ -1749,6 +1757,16 @@ export class MemoryBattleGameTable extends LitElement {
 
   public shouldShowEnemyStatus(): boolean {
     return this.screen === 'enemy-intro' || this.screen === 'draw-battle' || this.screen === 'battle' || this.screen === 'practice-setup' || this.screen === 'result-practice'
+  }
+
+  // 敵画像タップ → 敵情報をふわっと重ねる / 閉じる（カード表示へ戻る）。
+  public openEnemyInfo(): void {
+    if (this.isPracticeMode()) return // 練習モードは敵が居ないので出さない
+    this.showEnemyInfo = true
+  }
+
+  public closeEnemyInfo(): void {
+    this.showEnemyInfo = false
   }
 
   private renderHeader() {
@@ -1813,6 +1831,7 @@ export class MemoryBattleGameTable extends LitElement {
               @footer-feedback=${this.onFooterFeedback}
             ></game-footer-bar>
           </section>
+          ${this.showEnemyInfo ? renderEnemyInfoOverlay(this) : null}
           ${isMemoryTraceVisible() && (this.screen === 'battle' || this.battleTraceLines.length > 0)
         ? html`
               <aside class="battle-trace-panel" aria-label="Memory battle trace">

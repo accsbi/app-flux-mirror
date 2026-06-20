@@ -210,6 +210,55 @@ export const memoryBattleGameTableStyles = css`
     border: 1px solid rgba(255, 255, 255, 0.16);
     box-shadow: 0 10px 16px rgba(0, 0, 0, 0.22);
   }
+  /* 敵チップはタップで情報を出せる。 */
+  .enemy-status-chip.is-tappable {
+    cursor: pointer;
+  }
+  .enemy-status-chip.is-tappable:hover {
+    filter: brightness(1.08);
+  }
+
+  /* 敵情報オーバーレイ（ふわっと表示・✕/背景タップで閉じる）。 */
+  .enemy-info-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    background: rgba(5, 10, 11, 0.72);
+    animation: enemyInfoFade 0.18s ease-out;
+  }
+  @keyframes enemyInfoFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .enemy-info-card {
+    position: relative;
+    width: min(92%, 440px);
+    max-height: 88vh;
+    overflow-y: auto;
+    animation: enemyInfoPop 0.2s ease-out;
+  }
+  @keyframes enemyInfoPop {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .enemy-info-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(8, 18, 20, 0.85);
+    color: #f2f6f7;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+  }
 
   .stage-body {
     /* .stage が縦flexなので、ヘッダー/ステータスの下の残り高さを全部使う。
@@ -469,6 +518,17 @@ export const memoryBattleGameTableStyles = css`
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+  /* ステージ番号の下に敵名（村人 等）。小さめ・1行。 */
+  .stage-select-enemy-name {
+    font-size: clamp(11px, calc(13px * var(--stage-height-ratio, 1)), 15px);
+    font-weight: 700;
+    line-height: 1.1;
+    opacity: 0.92;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
   }
 
   .stage-select-copy {
@@ -813,6 +873,14 @@ export const memoryBattleGameTableStyles = css`
     font-size: 14px;
     font-weight: 800;
     white-space: nowrap;
+  }
+  /* 手番側のスコア（あなた N / CPU N）も矢印と一緒に光らせる。 */
+  .score-pill.is-active {
+    color: #fffde1;
+    border-color: rgba(255, 228, 84, 0.85);
+    box-shadow:
+      0 0 10px rgba(255, 228, 84, 0.55),
+      inset 0 0 8px rgba(255, 228, 84, 0.25);
   }
 
   .turn-arrow {

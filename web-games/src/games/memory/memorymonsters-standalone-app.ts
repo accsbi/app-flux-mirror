@@ -586,7 +586,7 @@ export class MemoryMonstersStandaloneApp extends LitElement {
           .backLabel=${this.isAndroidApp() ? '' : t.backLabel}
           .extraActionLabel=${this.isAndroidApp() ? t.removeAds : ''}
           .storeNotice=${this.isAndroidApp() ? '' : getSharedChromeText(this.language).alsoOnGooglePlay}
-          .storeTitle=${this.isAndroidApp() ? '' : MEMORY_BATTLE_WEB_LINKS.title}
+          .storeTitle=${this.isAndroidApp() ? '' : t.title}
           .storeUrl=${this.isAndroidApp() ? '' : MEMORY_BATTLE_WEB_LINKS.storeUrl}
           .storeBadgeSrc=${this.isAndroidApp() ? '' : MEMORY_BATTLE_WEB_LINKS.storeBadgeUrl}
           .storeBadgeAlt=${MEMORY_BATTLE_WEB_LINKS.storeBadgeAlt}

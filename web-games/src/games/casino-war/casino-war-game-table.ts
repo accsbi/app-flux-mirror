@@ -1771,17 +1771,17 @@ export class CasinoWarGameTable extends LitElement {
       filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.55));
     }
 
+    /* NO MORE BETS は共有(shared-game-flow.ts)の統一サイズを使用（blackjack と同じ）。
+       WIN/LOSE/TIE は casino-war は1枚勝負なので大きく見せる（共有の小さめ既定を上書き）。
+       ※ blackjack は手札の数字が隠れないよう共有の控えめサイズのまま。 */
     .result-overlay-image {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: min(280px, 72%);
-      max-height: 96px;
-      height: auto;
-      object-fit: contain;
-      pointer-events: none;
+      width: min(380px, 132%);
+      max-height: 150px;
       z-index: 5;
+    }
+    .result-overlay-image.is-tie {
+      width: min(420px, 142%);
+      max-height: 165px;
     }
 
     .tie-choice-panel {

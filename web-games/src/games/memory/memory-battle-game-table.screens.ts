@@ -36,7 +36,13 @@ export function renderMemoryBattleStatus(host: MemoryBattleRenderHost) {
       </div>
       ${showEnemyStatus
         ? html`
-            <div class="enemy-status-chip">
+            <div
+              class="enemy-status-chip is-tappable"
+              role="button"
+              tabindex="0"
+              title=${enemyName}
+              @click=${() => host.openEnemyInfo()}
+            >
               <span class="enemy-status-level">${host.currentEnemyStatusLabel()}</span>
               ${enemyImagePath ? html`<img class="enemy-status-thumb" src=${enemyImagePath} alt=${enemyName} />` : null}
             </div>
@@ -100,6 +106,7 @@ function renderTitleScreen(host: MemoryBattleRenderHost) {
               <div class="stage-select-main">
                 <div class="stage-select-copy">
                   <span class="stage-select-label">${formatTemplate(t.stageLabel, { stage })}</span>
+                  <span class="stage-select-enemy-name">${isUnlocked ? enemyName : '???'}</span>
                   ${isCleared
                     ? html`<span class="stage-clear-badge">${t.stageClearedLabel}</span>`
                     : html`<span class="stage-select-placeholder" aria-hidden="true"></span>`}
@@ -133,6 +140,30 @@ function renderPracticeSetup(host: MemoryBattleRenderHost) {
         <button class="secondary-btn" @click=${host.returnToStageSelect}>${t.returnToStageSelect}</button>
       </div>
     </section>
+  `
+}
+
+// ゲーム中に敵画像をタップしたときに、画面遷移せず「ふわっと」重ねて出す敵情報。
+// 内容は enemy-intro（スタートバトル前）と同じ。✕/背景タップでカード表示へ戻る。
+export function renderEnemyInfoOverlay(host: MemoryBattleRenderHost) {
+  const t = host.texts()
+  const enemy = host.currentEnemy()
+  const enemyName = host.currentEnemyName()
+  const enemyProfile = host.currentEnemyProfile()
+  const enemyImagePath = host.currentEnemyImagePath()
+  return html`
+    <div class="enemy-info-overlay" @click=${() => host.closeEnemyInfo()}>
+      <section class="content-card center-card enemy-info-card" @click=${(e: Event) => e.stopPropagation()}>
+        <button class="enemy-info-close" @click=${() => host.closeEnemyInfo()} aria-label="close">✕</button>
+        <h2>${formatTemplate(t.enemyIntroTitle, { stage: enemy.stage })}</h2>
+        ${enemyImagePath
+          ? html`<div class="enemy-portrait-wrap"><img class="enemy-portrait" src=${enemyImagePath} alt=${enemyName} /></div>`
+          : null}
+        <p class="enemy-name">${enemyName}</p>
+        <div class="enemy-profile-block"><p class="enemy-profile">${enemyProfile}</p></div>
+        <p>${formatTemplate(t.enemyReward, { coin: enemy.reward_coin })}</p>
+      </section>
+    </div>
   `
 }
 
@@ -260,9 +291,9 @@ function renderBattle(host: MemoryBattleRenderHost) {
           ${isPracticeMode
             ? null
             : html`<div class="score-board">
-                <span class="score-pill">${formatTemplate(t.playerScore, { score: host.playerPairs })}</span>
+                <span class="score-pill ${isPlayerTurn ? 'is-active' : ''}">${formatTemplate(t.playerScore, { score: host.playerPairs })}</span>
                 <span class="turn-arrow ${isPlayerTurn ? 'is-player-turn' : isCpuTurn ? 'is-cpu-turn' : ''}">${host.turnArrowSymbol()}</span>
-                <span class="score-pill">${formatTemplate(t.cpuScore, { score: host.cpuPairs })}</span>
+                <span class="score-pill ${isCpuTurn ? 'is-active' : ''}">${formatTemplate(t.cpuScore, { score: host.cpuPairs })}</span>
               </div>`}
         </div>
       </div>
