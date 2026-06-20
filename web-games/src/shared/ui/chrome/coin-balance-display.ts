@@ -46,7 +46,9 @@ export class CoinBalanceDisplay extends LitElement {
       display: inline-flex;
       align-items: baseline;
       gap: 6px;
-      font-size: 18px;
+      /* 既定 18px。呼び出し側が --coin-font-size を指定するとそれに追従
+         （アイコンは coinIcon の 1em なので自動で一緒に拡縮する）。 */
+      font-size: var(--coin-font-size, 18px);
       font-weight: 700;
       letter-spacing: 0.02em;
       color: #ffd76a;

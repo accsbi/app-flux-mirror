@@ -228,6 +228,8 @@ export class StandaloneGameMenu extends LitElement {
       .menu-coin {
         flex: 0 0 auto;
         margin-left: auto;
+        /* 戻る/BACK ボタンの文字（back-btn-text）と同じ大きさに揃える。 */
+        --coin-font-size: clamp(18px, 4.4vw, 24px);
       }
 
       /* 戻るボタンもクラシック（金×緑）。menu-btn を小型化した版。
