@@ -84,9 +84,9 @@ type RuntimeMemoryConfigWindow = Window & {
 function resolveMemoryAppConfigUrl(): string {
   const runtimeWindow = window as RuntimeMemoryConfigWindow
   if (runtimeWindow.__ANDROID_APP__) {
-    return './assets/configs/memory_app_config.json'
+    return './assets/configs/memory-battle_app_config.json'
   }
-  return new URL(`${import.meta.env.BASE_URL}web-games/game-assets/configs/memory_app_config.json`, window.location.href).toString()
+  return new URL(`${import.meta.env.BASE_URL}web-games/game-assets/configs/memory-battle_app_config.json`, window.location.href).toString()
 }
 
 export async function loadMemoryAppConfig(): Promise<MemoryAppConfigRoot> {
@@ -98,7 +98,7 @@ export async function loadMemoryAppConfig(): Promise<MemoryAppConfigRoot> {
     } else {
       memoryAppConfigPromise = fetch(resolveMemoryAppConfigUrl(), { cache: 'no-cache' }).then(async (response) => {
         if (!response.ok) {
-          throw new Error(`Failed to load memory_app_config.json: ${response.status}`)
+          throw new Error(`Failed to load memory-battle_app_config.json: ${response.status}`)
         }
         return validateMemoryAppConfig((await response.json()) as MemoryAppConfigRoot)
       })
@@ -113,7 +113,7 @@ function validateMemoryAppConfig(config: MemoryAppConfigRoot): MemoryAppConfigRo
     return typeof value !== 'string' || value.length === 0
   })
   if (missingAssetKeys.length > 0) {
-    throw new Error(`memory_app_config.json is missing required asset keys: ${missingAssetKeys.join(', ')}`)
+    throw new Error(`memory-battle_app_config.json is missing required asset keys: ${missingAssetKeys.join(', ')}`)
   }
   return config
 }

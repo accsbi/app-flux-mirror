@@ -50,36 +50,6 @@ BET倍率
 6. 最後までジョーカーを持っていた人が、最下位です。
 
 
-### [ ゲームガイド ] {GUIDE}
-
-■ シンプル ババ抜き ガイド
-
-4人（あなた＋CPU3人）で遊ぶシンプルなババ抜きです。ペアを作って捨てていき、最後にジョーカー（ババ）を持つ人にならないようにします。
-
-■ 遊び方
-1. BETを決めて [START] をタップ。4人にカードが配られます（52枚＋ジョーカー1枚）。
-2. 手札にある同じ数字のペアは、自動で中央に捨てられます。
-3. 自分の番に、となりのプレイヤーの手札から1枚引きます。
-4. 引いたカードでペアができたら、そのまま捨てられます。
-5. 手札がなくなると「あがり」。あがった順に 1位・2位・3位・4位 となります。
-6. 最後までジョーカー（ババ）を持っていた人が最下位です。
-
-■ ルールのポイント
-- 同じ数字のカードが2枚そろうとペアになり、捨てられます。
-- 相手から引くカードは選べますが、表面は見えません。
-- 最後までジョーカー（ババ）を持っている人が負けです。
-
-■ 戦略のヒント
-- 各プレイヤーの手札枚数や、直前に引いた位置を意識すると選びやすくなります。
-- ペアがそろったらすぐ捨てて、手札を減らしましょう。
-- 終盤は相手の行動からジョーカーの位置を推測できることがあります。
-
-■ BET倍率
-- 1位 ×2.0
-- 2位 ×1.5
-- 3位 ×0.5
-- 4位 ×0
-
 ### [ 課金アイテム ] {Google / APP / WEB}
 
 * 開発・運営を継続するため、広告表示についてご理解いただけますようお願い申し上げます。
@@ -155,36 +125,6 @@ BET payout
 5. When your hand is empty, you finish. Players finish in order: 1st, 2nd, 3rd, 4th.
 6. The player still holding the Joker at the very end comes in last.
 
-### [ Game Guide ] {GUIDE}
-
-■ Simple Old Maid Guide
-
-A simple game of Old Maid for 4 players: you and three CPUs. Make pairs and discard them, and try not to be the one left holding the Joker (Old Maid).
-
-■ How to Play
-1. Choose your BET and tap [START]. Cards are dealt to all 4 players (52 cards + 1 Joker).
-2. Matching pairs in your hand are discarded to the center automatically.
-3. On your turn, draw one card from the next player's hand.
-4. If the drawn card makes a pair, it is discarded.
-5. When your hand is empty, you finish. Players finish in order: 1st, 2nd, 3rd, 4th.
-6. The player still holding the Joker at the very end comes in last.
-
-■ Rule Tips
-- A pair is two cards with the same number.
-- You can choose which card to draw, but you cannot see its face.
-- The player holding the Joker at the end loses.
-
-■ Strategy Tips
-- Watch each player's hand count and the position you last drew from.
-- Discard pairs as soon as they form to reduce your hand.
-- Near the end, you may be able to guess where the Joker is.
-
-■ BET Payout
-- 1st place: x2.0
-- 2nd place: x1.5
-- 3rd place: x0.5
-- 4th place: x0
-
 ### [ In-App Purchases ] {Google / APP / WEB}
 
 * Ads help us keep making and running the app. Thank you for understanding.
@@ -259,36 +199,6 @@ BET倍率
 4. 抽到的牌若能凑成对子，就丢弃。
 5. 手牌清空即「完成」。按完成顺序排为 第1、第2、第3、第4。
 6. 直到最后还拿着鬼牌的人，排在最后一名。
-
-### [ 游戏指南 ] {GUIDE}
-
-■ 简单抽鬼牌 指南
-
-4人游戏（你和3位CPU）的简单抽鬼牌。凑成对子并丢弃，尽量不要成为最后拿着鬼牌（JOKER）的人。
-
-■ 玩法
-1. 选择 BET 并点击 [START]。向4位玩家发牌（52张＋鬼牌1张）。
-2. 手牌中相同点数的对子会自动丢到中央。
-3. 轮到你时，从下一位玩家的手牌中抽一张。
-4. 抽到的牌若凑成对子，会被丢弃。
-5. 手牌清空即「完成」。按完成顺序排为 第1、第2、第3、第4。
-6. 直到最后还拿着鬼牌的人，排在最后一名。
-
-■ 规则要点
-- 相同点数的两张牌组成对子并丢弃。
-- 你可以选择抽哪一张，但看不到牌面。
-- 最后持有鬼牌（JOKER）的一方失败。
-
-■ 策略提示
-- 注意每位玩家的手牌数量及你上次抽牌的位置。
-- 凑成对子后立即丢弃以减少手牌。
-- 末期可根据对手行为推测鬼牌位置。
-
-■ BET倍率
-- 第1名：×2.0
-- 第2名：×1.5
-- 第3名：×0.5
-- 第4名：×0
 
 ### [ 内购项目 ] {Google / APP / WEB}
 
