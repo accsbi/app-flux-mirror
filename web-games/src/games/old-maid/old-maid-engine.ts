@@ -49,7 +49,7 @@ export class OldMaidEngine {
 
   /**
    * 新規ゲーム: 親を決めて配る（ペアはまだ除去しない＝Flutter の decideParentAndDeal 相当）。
-   * 初期ペアの除去は arrange シーンの OK で removeAllPairs() を呼んで行う。
+   * 初期ペアの除去は arrange シーンの OK で removeOnePair() を繰り返し（2枚ずつ中央へ）行う。
    */
   start(): void {
     const deck = buildDeck()
@@ -114,6 +114,24 @@ export class OldMaidEngine {
     const kept: OMCard[] = []
     hand.forEach((c, idx) => (toRemove.has(idx) ? this.discarded.push(c) : kept.push(c)))
     this.hands[seat] = kept
+  }
+
+  /**
+   * seat の手札から「最初に見つかった1ペア」だけを捨て札へ移す（初期整理の演出用）。
+   * 捨てたら true、ペアが無ければ false。2枚ずつ中央へ捨てるアニメに使う。
+   */
+  removeOnePair(seat: Seat): boolean {
+    const hand = this.hands[seat]
+    for (let i = 0; i < hand.length; i++) {
+      for (let j = i + 1; j < hand.length; j++) {
+        if (hand[i].value === hand[j].value && hand[i].value !== 0) {
+          this.discarded.push(hand[i], hand[j])
+          this.hands[seat] = hand.filter((_, idx) => idx !== i && idx !== j)
+          return true
+        }
+      }
+    }
+    return false
   }
 
   /** 手札0になった席を終了登録（順位＝終了順）。 */

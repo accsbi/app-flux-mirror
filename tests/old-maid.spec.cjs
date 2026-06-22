@@ -130,6 +130,9 @@ async function main() {
   for (let i = 0; i < 2; i++) { await clickByText('OK'); await p.waitForTimeout(350) }
   await clickByText('START')
   await p.waitForTimeout(400)
+  // 親決め前に SELECT BET モーダルが出るので、既定BETのまま START で確定する。
+  await clickByText('START')
+  await p.waitForTimeout(400)
   let st = await advanceToPlayer()
   check('board renders', st.found)
   check('NO avatar images during play (cards only)', st.avatarImgs === 0, `(got ${st.avatarImgs})`)

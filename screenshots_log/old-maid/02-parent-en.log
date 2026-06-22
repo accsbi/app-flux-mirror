@@ -1,0 +1,9 @@
+# 02-parent-en  （親決めフェーズ / lang=en）
+- 関連テストID: PH02, SEAT01, SEAT02, Z02, L10N01, L10N02
+- 手順: BET確定→「親を決めます」ダイアログ（言語=en）
+- 期待:
+  - カード非表示・4席アバターのみ（上=CPU2 / 左=CPU3 / 右=CPU1 / 下=YOU、右回り）。
+  - ダイアログ: 'Decide the parent' / OK / hint: clockwise (draw from player on your left)
+  - 右回りヒントが config 由来で en 表示。ダイアログは半透明で下のアバターが透ける。
+- 実際: 02-parent-en.png 参照
+- 判定: PASS（一次）。最終チェックは人間。

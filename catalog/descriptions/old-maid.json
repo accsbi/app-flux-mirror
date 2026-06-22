@@ -17,7 +17,7 @@
             "app",
             "web"
           ],
-          "body": "Classic Simple Old Maid は、CPU と対戦できる、1人で気軽に楽しめるシンプルなババ抜きです。\n\n参加するのは4人：あなたと、3人の CPU です。ペアを作って捨てていき、最後にジョーカー（ババ）を持っている人にならないようにします。\n\n登録もオンライン対戦もありません。また、Old Maid 初心者でも簡単に楽しめます。"
+          "body": "Classic Simple Old Maid は、CPU と対戦できる、1人で気軽に楽しめるシンプルなババ抜きです。\n\n参加するのは4人：あなたと、3人の CPU です。ペアを作って捨てていき、最後にジョーカー(ババ)を持っている人にならないようにします。\n\n登録もオンライン対戦もありません。また、Old Maid 初心者でも簡単に楽しめます。"
         },
         {
           "heading": "アプリの特徴",
@@ -33,7 +33,7 @@
             "app",
             "web"
           ],
-          "body": "手順\n\n1. [START]をタップして開始。各プレイヤーにカードが配られます（52枚＋ジョーカー1枚）。\n2. 手札にあるペアは、捨てられて自動的に整理されます。\n3. あなたの番に、となりのプレイヤーの手札から1枚引きます。\n4. 引いたカードでペアができたら捨てます。\n5. 手札がなくなると「あがり」。あがった順に 1位・2位・3位・4位 となります。\n6. 最後までジョーカーを持っていた人が、最下位です。"
+          "body": "手順\n\n1. [START]をタップして開始。各プレイヤーにカードが配られます(52枚＋ジョーカー1枚)。\n2. 手札にあるペアは、捨てられて自動的に整理されます。\n3. あなたの番に、となりのプレイヤーの手札から1枚引きます。\n4. 引いたカードでペアができたら捨てます。\n5. 手札がなくなると「あがり」。あがった順に 1位・2位・3位・4位 となります。\n6. 最後までジョーカーを持っていた人が、最下位です。"
         },
         {
           "heading": "注意事項",
@@ -53,7 +53,7 @@
           "targets": [
             "google"
           ],
-          "body": "A simple Old Maid card game with a classic look. Play against three CPU players and try not to be left with the Joker."
+          "body": "A simple Old Maid card game with a classic look."
         },
         {
           "heading": "App Description",
@@ -62,7 +62,7 @@
             "app",
             "web"
           ],
-          "body": "Classic Simple Old Maid is an easy card game you can play on your own against the CPU.\n\nFour players take part: you and three CPU players. Make pairs, drop them, and try not to be the last one holding the Joker.\n\nNo sign-up and no online play. Just a quick, relaxing card game with a classic, vintage design. Cards are dealt at random."
+          "body": "Classic Simple Old Maid is a simple Old Maid game you can enjoy on your own against the CPU.\n\nFour players take part: you and three CPU players. Make pairs and drop them, and try not to be the last one holding the Joker.\n\nThere is no sign-up and no online play, and even Old Maid beginners can enjoy it with ease."
         },
         {
           "heading": "App Features",
@@ -70,7 +70,7 @@
             "google",
             "web"
           ],
-          "body": "・Classic card-room look: gold frames and a calm, vintage table.\n・Simple rules and easy one-hand play — great for small screens.\n・Light and fast. Made to run smoothly even on older Android phones."
+          "body": "・Designed for portrait orientation, with easy one-hand play on a smartphone.\n・Tuned to stay clear and easy to operate even on small phone screens.\n・Supports Android 8 and up, running comfortably even on older Android devices.\n・Optimized to run light and smooth."
         },
         {
           "heading": "How to Play",
@@ -78,7 +78,7 @@
             "app",
             "web"
           ],
-          "body": "Steps\n\n1. Tap START to begin. Each player is dealt cards (52 cards plus one Joker).\n2. Drop any pairs in your hand right away.\n3. On your turn, draw one card from the next player's hand (you can pick which, but you can't see it).\n4. If the drawn card makes a pair, drop it.\n5. When your hand is empty, you finish. Players finish in order: 1st, 2nd, 3rd, 4th.\n6. The player still holding the Joker at the very end comes in last.\n\n・To quit, tap HOME at the top left.\n\nSimple Tips\n\n・Drop a pair as soon as you make one to keep your hand small.\n・Watch how many cards each player has.\n・Near the end, you can often guess where the Joker is."
+          "body": "Steps\n\n1. Tap START to begin. Each player is dealt cards (52 cards plus one Joker).\n2. Drop any pairs in your hand right away.\n3. On your turn, draw one card from the next player's hand.\n4. If the drawn card makes a pair, drop it.\n5. When your hand is empty, you finish. Players finish in order: 1st, 2nd, 3rd, 4th.\n6. The player still holding the Joker at the very end comes in last."
         },
         {
           "heading": "Notes",
@@ -98,7 +98,7 @@
           "targets": [
             "google"
           ],
-          "body": "一款外观经典、简单的抽鬼牌（Old Maid）。与三名 CPU 对战，尽量不要让鬼牌（JOKER）留在自己手里。"
+          "body": "一款外观经典、简单的抽鬼牌(Old Maid)。"
         },
         {
           "heading": "应用说明",
@@ -107,7 +107,7 @@
             "app",
             "web"
           ],
-          "body": "Classic Simple Old Maid 是一款可与 CPU 对战、也能独自轻松游玩的简单纸牌游戏。\n\n共有四名玩家：你和三名 CPU。凑成对子并丢弃，尽量不要成为最后还拿着鬼牌的人。\n\n无需注册，也没有在线对战。这是一款外观经典、沉稳的纸牌游戏，很适合零碎时间游玩。所有牌均为随机。"
+          "body": "Classic Simple Old Maid 是一款可与 CPU 对战、也能独自轻松游玩的简单纸牌游戏。\n\n共有四名玩家：你和三名 CPU。凑成对子并丢弃，尽量不要成为最后还拿着鬼牌的人。\n\n无需注册，也没有在线对战。而且即使是抽鬼牌新手也能轻松上手。"
         },
         {
           "heading": "应用特点",
@@ -115,7 +115,7 @@
             "google",
             "web"
           ],
-          "body": "・经典牌室风格：金色边框，沉稳复古的牌桌。\n・规则简单、单手即可操作，小屏幕也好用。\n・轻巧流畅，即使较旧的 Android 手机也能顺畅运行。"
+          "body": "・支持竖屏，在智能手机上也便于单手操作。\n・经过调整，即使在小屏手机上也清晰易看、便于操作。\n・支持 Android 8 及以上，旧款 Android 也能流畅游玩。\n・经过性能优化，轻巧流畅。"
         },
         {
           "heading": "玩法",
@@ -123,7 +123,7 @@
             "app",
             "web"
           ],
-          "body": "步骤\n\n1. 点击 START 开始。给每位玩家发牌（52 张加 1 张鬼牌）。\n2. 手牌中的对子立刻丢弃。\n3. 轮到你时，从下一位玩家的手牌中抽一张（可以选位置，但看不到牌面）。\n4. 抽到的牌若能凑成对子，就丢弃。\n5. 手牌清空即「完成」。按完成顺序排为 第1、第2、第3、第4。\n6. 直到最后还拿着鬼牌的人，排在最后一名。\n\n・如需退出，请点击左上角 HOME。\n\n简单提示\n\n・一凑成对子就立刻丢弃，保持手牌精简。\n・留意每位玩家的手牌数量。\n・到了末期，常常能猜出鬼牌的位置。"
+          "body": "步骤\n\n1. 点击 START 开始。给每位玩家发牌(52 张加 1 张鬼牌)。\n2. 手牌中的对子立刻丢弃。\n3. 轮到你时，从下一位玩家的手牌中抽一张。\n4. 抽到的牌若能凑成对子，就丢弃。\n5. 手牌清空即「完成」。按完成顺序排为 第1、第2、第3、第4。\n6. 直到最后还拿着鬼牌的人，排在最后一名。"
         },
         {
           "heading": "注意事项",

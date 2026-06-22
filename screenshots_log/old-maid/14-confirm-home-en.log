@@ -1,0 +1,7 @@
+# 14-confirm-home-en  （ホーム確認モーダルの透明統一 / lang=en）
+- 関連テストID: Z01, Z02, RES02
+- 手順: プレイ中→ヘッダー Home → 確認ダイアログ
+- 期待: settings/guide/確認/コイン補充/結果/各ダイアログと同一の see-through 透明統一。
+  背後の盤面が透ける。Cancel/OK が機能。
+- 実際: 14-confirm-home-en.png 参照（'Home / Return to menu? / Cancel / OK'、背後の盤面透過）
+- 判定: PASS（一次）。最終チェックは人間。

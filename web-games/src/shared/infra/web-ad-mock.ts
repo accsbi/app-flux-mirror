@@ -15,6 +15,13 @@ export const WEB_AD_COUNT_KEY = 'card_games_web_ad_count'
 // （詳細は memory-battle-game-table.ts の requestAd）。間隔判定には使わず表示カウントの記録だけに使う。
 export const MEMORY_WEB_AD_COUNT_KEY = 'memorymonsters_web_ad_count'
 
+// old-maid 専用の広告カウント（他カードゲームとは別系統＝独自ルール）。
+// 広告タイミングは「7ごと」ではなく「Player の手札が初めて3枚以下になった時点・1ゲーム1回」
+// （old-maid-game-table.ts の maybeShowHandCountAd）。間隔判定には使わず、モック表示カウントの記録だけ。
+// ★重要: old-maid と memory は共通カウント WEB_AD_COUNT_KEY(card_games_web_ad_count) を増やさない。
+//   他カードゲームから遊びに来ても 1 とカウントせず、各自専用キーのみで完結する（独自ルール）。
+export const OLD_MAID_WEB_AD_COUNT_KEY = 'oldmaid_web_ad_count'
+
 // WEB かスマホアプリ(Android)かの単一判定。
 export function isAndroidApp(): boolean {
   return (window as Window & { __ANDROID_APP__?: boolean }).__ANDROID_APP__ === true
