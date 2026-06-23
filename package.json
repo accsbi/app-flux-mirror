@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "build:android": "vite build --config vite.android.config.ts",
+    "sync:android": "node tools/sync-android.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
