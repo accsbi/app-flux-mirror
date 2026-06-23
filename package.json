@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:android": "vite build --config vite.android.config.ts",
     "preview": "vite preview"
   },
   "dependencies": {
