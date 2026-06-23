@@ -1,11 +1,12 @@
 // WSL→Win 同期（Win に BAT/BASH を作らず WSL 完結）。
 // 使い方:  node tools/sync-android.mjs old-maid
 //   1) ANDROID_GAME=<game> で web を Android 用ビルド（dist-android, base:'./'）
-//   2) Flutter プロジェクト(<id>_<slug>) の assets/www へクリーンコピー
+//   2) android/app/src/main/assets/www へクリーンコピー（app-flux 同様の Android assets。
+//      WebViewAssetLoader が appassets.androidplatform.net/assets/www/... で読む。再帰OK・pubspec不要・
+//      Flutter root に assets/ を作らない＝二重 assets/ を避ける）
 //   3) 他ゲームの asset を剪定（per-game アプリなので APK を軽くする）
-//   4) pubspec.yaml の assets: を実在ディレクトリで再生成（Flutter は再帰アセット非対応）
 import { execSync } from 'node:child_process'
-import { readFileSync, writeFileSync, rmSync, mkdirSync, cpSync, readdirSync, statSync } from 'node:fs'
+import { readFileSync, rmSync, mkdirSync, cpSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 
 const ALLOW = ['old-maid', 'memory-battle', 'high-low'] // 今回 Android 化する3つのみ
@@ -25,7 +26,7 @@ for (const line of csv.slice(1)) { const c = line.split(','); if ((c[fi] || '').
 if (!id) { console.error(`id not found for ${game} in games-list.csv`); process.exit(1) }
 
 const WIN = join(WIN_ROOT, `${id}_${game}`)
-const www = join(WIN, 'assets/www')
+const www = join(WIN, 'android/app/src/main/assets/www')
 
 // 1) build:android
 console.log(`[1/4] build:android (${game}) ...`)
@@ -48,20 +49,5 @@ for (const f of readdirSync(cfgDir)) {
   if (!f.includes(game) && f !== 'remove_ads_ui.json') rmSync(join(cfgDir, f))
 }
 
-// 4) pubspec.yaml の assets: を再生成
-console.log('[4/4] regenerate pubspec assets')
-const dirs = []
-;(function walk(d) {
-  for (const n of readdirSync(d)) {
-    const full = join(d, n)
-    if (statSync(full).isDirectory()) { dirs.push(full); walk(full) }
-  }
-})(www)
-const rel = dirs.map((d) => d.slice(WIN.length + 1).replace(/\\/g, '/')).sort()
-const assetLines = ['assets/www', ...rel].map((d) => `    - ${d}/`).join('\n')
-const pubPath = join(WIN, 'pubspec.yaml')
-let pub = readFileSync(pubPath, 'utf8')
-pub = pub.replace(/(\n {2}assets:\n)[\s\S]*$/, `$1${assetLines}\n`)
-writeFileSync(pubPath, pub)
-
-console.log(`synced ${game} → ${WIN} (asset dirs: ${rel.length + 1}). Win 側で flutter run / Android Studio を実行。`)
+// Android assets は再帰的に取り込まれるため pubspec への列挙は不要。
+console.log(`synced ${game} → android/app/src/main/assets/www. Win 側で flutter run / Android Studio を実行。`)

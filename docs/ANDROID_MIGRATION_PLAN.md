@@ -25,13 +25,12 @@
 
 ## 2. WSL→Win 導線（コピー）
 ```
-WSL:  cd playing_cards && npm run build:android -- old-maid   # base:'./' の dist/（web の old-maid.html をそのまま使う）
-WSL:  cp -r dist/* /mnt/c/Users/dev/pj/google_play_store_app/00004_old-maid/assets/www/   # WSL から直接（要 pubspec の assets 宣言）
+WSL:  cd playing_cards && npm run sync:android old-maid   # build:android → android/app/src/main/assets/www へコピー＋他ゲーム剪定
 Win:  Android Studio で 00004_old-maid(Flutter) を開く → Run（USB実機）
 Win:  chrome://inspect で WebView を Inspect（web 側デバッグ）
 ```
-- Flutter は WebView で `assets/www/old-maid.html` を読み、**`UserScript` で `__ANDROID_APP__=true` を注入**（B-2）。メニューは web が Android モードで描画。
-- 配置先（Flutter assets）は P2 で確定（`<project>/assets/www/` を pubspec.yaml に宣言）。
+- **配置先＝`android/app/src/main/assets/www/`（app-flux DOC 準拠の Android assets）**。Flutter プロジェクト root に `assets/` を作らない（二重 `assets/www/assets/` を避ける）。Android assets は再帰取り込みなので pubspec への列挙も不要。
+- Flutter は `flutter_inappwebview` の **`WebViewAssetLoader`**（`AssetsPathHandler('/assets/')`）で `https://appassets.androidplatform.net/assets/www/old-maid.html` を読み、**`UserScript(AT_DOCUMENT_START)` で `__ANDROID_APP__=true` を注入**（B-2）。メニューは web が Android モードで描画。
 - `build:android` は新規 Vite config（`vite.android.config.ts`：`base:'./'`、出力 `dist/`、対象ゲームの html を input）。**WEB 用 `vite.config.ts` は触らない**（web 配信はそのまま）。
 
 ## 3. Android メニューの方針（2案比較・採用=B-2）
