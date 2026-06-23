@@ -94,71 +94,21 @@ export const memoryBattleGameTableStyles = css`
     padding: 4px 8px 0;
   }
 
+  /* ステータスは他ゲームと統一した共有 .bet-status（COIN/BET/STAGE）＋右端に敵サムネ。
+     flex 1 行で固定し、要素が増えても折り返さない（＝盤面が下に押し出されるスクロール防止）。 */
   .status-strip {
-    display: grid;
-    grid-template-columns: minmax(128px, max-content) minmax(0, 1fr);
-    gap: 6px;
+    display: flex;
     align-items: center;
+    gap: 8px;
     width: 100%;
     box-sizing: border-box;
-    padding: 0 8px 8px;
+    padding: 0 8px 2px;
   }
-
-  .meta-chip {
-    min-height: 38px;
-    padding: 0 10px;
-    border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    background: rgba(8, 24, 20, 0.56);
-    display: inline-flex;
-    align-items: center;
-    justify-content: flex-start;
-    font-size: 14px;
-    font-weight: 800;
-    white-space: nowrap;
-  }
-
-  /* COIN は他ゲーム(.bet-status)と同じ「枠なしの素テキスト」に統一。チップの枠/背景は付けない。 */
-  .coin-chip {
+  .status-strip .bet-status {
+    flex: 1 1 auto;
     min-width: 0;
-    min-height: 0;
-    padding: 0 8px 4px;
-    border: 0;
-    background: none;
-    border-radius: 0;
-    gap: 0.3em;
-    font-size: 22px;
-    font-weight: 800;
-    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-    letter-spacing: 0.01em;
-    justify-content: center;
+    padding-bottom: 0;
   }
-  /* ステージ選択画面（title）は敵情報が無いので COIN を画面中央に。
-     ゲーム中（敵情報あり）は現状の2カラム配置を維持。 */
-  .status-strip.is-coin-only {
-    grid-template-columns: 1fr;
-    justify-items: center;
-  }
-  .status-strip.is-coin-only .enemy-status-chip {
-    display: none;
-  }
-
-  .coin-chip-icon,
-  .coin-chip-label,
-  .coin-chip-value {
-    display: inline-flex;
-    align-items: center;
-  }
-
-  /* 値は COIN ラベルと同じサイズ（枠が無くなったので縮小不要＝他ゲームと同様）。 */
-  .coin-chip-value,
-  .coin-chip-value.is-small,
-  .coin-chip-value.is-tiny {
-    font-size: inherit;
-    line-height: 1;
-    letter-spacing: 0.01em;
-  }
-
   .status-copy {
     font-size: 12px;
     font-weight: 700;
@@ -166,56 +116,6 @@ export const memoryBattleGameTableStyles = css`
     color: #d5e8dc;
     width: 100%;
     text-align: left;
-  }
-
-  .enemy-status-chip {
-    min-width: 0;
-    min-height: 38px;
-    padding: 0 4px 0 12px;
-    border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    background: rgba(8, 24, 20, 0.56);
-    display: inline-flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    overflow: hidden;
-  }
-
-  .enemy-status-chip.is-placeholder {
-    visibility: hidden;
-    pointer-events: none;
-  }
-
-  .enemy-status-level {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 16px;
-    font-weight: 900;
-    color: #d5e8dc;
-    line-height: 1;
-    white-space: nowrap;
-    text-align: center;
-    flex: 1 1 auto;
-  }
-
-  .enemy-status-thumb {
-    flex: 0 0 32px;
-    width: 32px;
-    height: 32px;
-    border-radius: 10px;
-    object-fit: cover;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    box-shadow: 0 10px 16px rgba(0, 0, 0, 0.22);
-  }
-  /* 敵チップはタップで情報を出せる。 */
-  .enemy-status-chip.is-tappable {
-    cursor: pointer;
-  }
-  .enemy-status-chip.is-tappable:hover {
-    filter: brightness(1.08);
   }
 
   /* 敵情報オーバーレイ（ふわっと表示・✕/背景タップで閉じる）。 */
@@ -620,6 +520,13 @@ export const memoryBattleGameTableStyles = css`
     white-space: pre-line;
   }
 
+  /* 練習セットアップの注意（COIN は使わない）。本文より一段控えめに。 */
+  .practice-coin-note {
+    font-size: 16px;
+    color: #ffe08a;
+    opacity: 0.85;
+  }
+
   .enemy-name {
     font-size: 26px;
     font-weight: 800;
@@ -637,21 +544,22 @@ export const memoryBattleGameTableStyles = css`
     justify-self: stretch;
   }
 
+  /* 色付き背景の正方形画像を枠いっぱいにきれいに収める（余白なし・角丸クリップ・cover）。 */
   .enemy-portrait-wrap {
     width: min(100%, 280px);
-    border-radius: 22px;
-    background: radial-gradient(circle at top, rgba(255, 255, 255, 0.14), rgba(8, 24, 20, 0.28));
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    padding: 12px;
+    border-radius: 18px;
+    border: 2px solid rgba(220, 203, 66, 0.55);
+    overflow: hidden;
+    padding: 0;
     box-sizing: border-box;
+    box-shadow: 0 14px 22px rgba(0, 0, 0, 0.34);
   }
 
   .enemy-portrait {
     display: block;
     width: 100%;
-    height: auto;
-    object-fit: contain;
-    filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.34));
+    aspect-ratio: 1;
+    object-fit: cover;
   }
 
   .primary-btn,
@@ -713,6 +621,62 @@ export const memoryBattleGameTableStyles = css`
     display: grid;
     gap: 16px;
   }
+
+  /* 報酬（報酬:×倍率）＋「報酬について？」ヘルプを横並び・中央。 */
+  .enemy-reward-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 0;
+  }
+  .enemy-reward-value {
+    font-size: 24px;
+    font-weight: 800;
+    color: #ffd730;
+    white-space: nowrap;
+  }
+  .reward-help-btn {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(0, 0, 0, 0.3);
+    color: #f4cf7a;
+    font-size: 15px;
+    line-height: 1;
+    border-radius: 999px;
+    padding: 8px 16px;
+    cursor: pointer;
+  }
+  .reward-help-btn:hover {
+    filter: brightness(1.15);
+  }
+  .reward-help-mult {
+    font-weight: 800;
+    color: #ffd730;
+  }
+
+  /* BET ボタン（金枠の決定系。スタートバトルの直前に置く）。 */
+  .bet-cta-btn {
+    width: 100%;
+    min-height: 76px;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    border: 2px solid #dccb42;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #a06a34, #5e3818);
+    color: #ffe9b0;
+    font-family: "Cinzel", "Times New Roman", Georgia, serif;
+    cursor: pointer;
+    box-shadow: 0 2px 0 #2c1806, 0 4px 8px rgb(0 0 0 / 40%);
+  }
+  .bet-cta-btn:hover {
+    filter: brightness(1.12);
+  }
+  .bet-cta-btn.is-placed {
+    background: linear-gradient(180deg, #2c6f3a, #14411f);
+    color: #d8ffcf;
+  }
+
 
   .stack-actions.is-reserved {
     visibility: hidden;
@@ -807,16 +771,17 @@ export const memoryBattleGameTableStyles = css`
 
   .battle-panel {
     display: grid;
-    grid-template-rows: 48px minmax(0, 1fr);
+    /* ヘッダー行は敵ポートレート(大)を収める高さ。カードと重ならないようにする。 */
+    grid-template-rows: 100px minmax(0, 1fr);
     align-content: start;
     gap: 0;
-    /* 下padding を詰めて20枚(5行)が大画面では収まるようカード領域の高さを確保。 */
-    padding: 10px 8px 4px;
+    /* 上 padding を詰めてカード領域(20枚=5行)の高さを最大化＝スクロール抑止。 */
+    padding: 2px 8px 4px;
     overflow: hidden;
   }
 
   .battle-fixed-head {
-    width: min(100%, 398px);
+    width: min(100%, 470px);
     min-height: 48px;
     margin: 8px auto 0;
   }
@@ -828,6 +793,32 @@ export const memoryBattleGameTableStyles = css`
     gap: 12px;
   }
 
+  /* 敵（村人）ポートレートを CPU スコアの隣＝行の右端に大きく表示（タップで敵情報）。
+     Give Up と YOU/CPU は左寄せのまま、ポートレートは margin-left:auto で右へ寄せる。 */
+  /* 敵キャラ（色付き背景の正方形画像）を四角の枠いっぱいにきれいに収める。
+     余白なし・角丸クリップ・cover でフレームを埋める（透過にはしない＝画像の色背景をそのまま使う）。 */
+  .battle-enemy-portrait {
+    flex: 0 0 auto;
+    padding: 0;
+    border: 2px solid rgba(220, 203, 66, 0.6);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    line-height: 0;
+    display: block;
+    box-sizing: border-box;
+  }
+  .battle-enemy-portrait img {
+    display: block;
+    width: 88px;
+    height: 88px;
+    object-fit: cover;
+  }
+  .battle-enemy-portrait.is-active {
+    border-color: rgba(255, 221, 120, 0.95);
+    box-shadow: 0 0 12px rgba(255, 221, 120, 0.5);
+  }
+
   .score-row.is-practice {
     justify-content: center;
   }
@@ -837,12 +828,15 @@ export const memoryBattleGameTableStyles = css`
     grid-template-columns: 95px 32px 95px;
     align-items: center;
     column-gap: 8px;
+    flex: 0 0 auto;
   }
 
   .quit-battle-btn {
     width: 96px;
+    flex: 0 0 auto;
     min-height: 32px;
     padding: 0 12px;
+    white-space: nowrap;
     border: 1px solid #b77a28;
     border-radius: 999px;
     background: linear-gradient(180deg, #173a27, #092719);
@@ -917,6 +911,7 @@ export const memoryBattleGameTableStyles = css`
     min-height: 0;
     display: grid;
     align-items: start;
+    box-sizing: border-box;
     /* 枠を広げてもスマホの小さい画面では20枚が収まり切らないことがあるため、
        はみ出した分はこの枠内でスクロールさせる(横は固定)。 */
     overflow-y: auto;
@@ -956,8 +951,8 @@ export const memoryBattleGameTableStyles = css`
   .card-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    width: min(100%, calc(446px * var(--stage-height-ratio, 1)));
-    margin: 8px auto 0;
+    width: min(100%, calc(420px * var(--stage-height-ratio, 1)));
+    margin: 0 auto;
     column-gap: calc(7px * var(--stage-height-ratio, 1));
     row-gap: calc(5px * var(--stage-height-ratio, 1));
     justify-content: center;

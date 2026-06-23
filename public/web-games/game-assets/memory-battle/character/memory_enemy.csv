@@ -1,0 +1,11 @@
+id,stage,reward_coin,pair_capture_chance_percent,image,enemy_name_ja,enemy_name_en,enemy_name_zh,profile_ja,profile_en,profile_zh
+001,1,20,10,memory-battle/character/stage_1.webp,���l,Villager,����,�퓬�o���̂Ȃ���ʐl�B�ŏ��̗��K����,A common villager with no combat experience. Your first practice opponent.,�v�L?�l??�I���ʑ����B�ŏ��I???��B
+002,2,30,20,memory-battle/character/stage_2.webp,����̐�������,Tavern Drunk,��?��?,�����͍r�����\�����ɂ�������,A rough and unpredictable opponent whose movements are difficult to read.,?��e�슎?��??�I?��B
+003,3,40,30,memory-battle/character/stage_3.webp,����,Bandit,��?,�f�����A���錫���킢��������,A swift and cunning fighter who relies on underhanded tactics.,�s?�q���C��?�g�p���ώ�i?�l�I��?�B
+004,4,50,40,memory-battle/character/stage_4.webp,���̉q��,Gate Guard,��??��,������P�����ꂽ���m,A trained soldier assigned to guard the castle gate.,??��?��?�A??�L�f�I�m���B
+005,5,70,50,memory-battle/character/stage_5.webp,�b��,Mercenary,?��,����o�����L�x�ȋ��Ōق�ꂽ��m,A hired warrior with extensive experience in real combat.,��ٍ�?�A?�L?�x????�I?�m�B
+006,6,90,60,memory-battle/character/stage_6.webp,�R�m,Royal Knight,�c��?�m,�Z�ƌ��𑕔����������ȋR�m,A formally appointed knight equipped with armor and a sword.,�g��?�b�A�莝??�I����?�m�B
+007,7,120,70,memory-battle/character/stage_7.webp,�R�m�c��,Knight Commander,?�m??,�R�m�c�𗦂���n���̎w����,A highly skilled commander who leads the kingdom's knights.,��??�m?�A???�x�I�w?���B
+008,8,150,80,memory-battle/character/stage_8.webp,����,Duke,����,�����̑�̒n�����߂�L�͋M��,A powerful noble who governs a vast territory within the kingdom.,?���������?�n�I???���B
+009,9,200,90,memory-battle/character/stage_9.webp,�{�얂�p�t,Court Sorcerer,?�얂�@?,���{�Ɏd����m���Ɩ��@�̎g����,A master of strategy and magic who serves in the royal court.,����?�A���ʒm���^���@�I����B
+010,10,300,100,memory-battle/character/stage_10.webp,�Í���,Dark King,�K�ÔV��,�������x�z����ŏI�{�X���̌N��B��؂̂Ƃ肱�ڂ�����邳�Ȃ��B,A final-boss-level ruler who dominates the kingdom. He will not forgive a single mistake.,?�����������I��?��??�N��B?�s���?�C���ꎟ��?�B

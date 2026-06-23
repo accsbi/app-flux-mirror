@@ -1,0 +1,108 @@
+========== 日本語 / Japanese ==========
+
+[Title]
+Classic Simple Memory Battle (shinkei-suijyaku)
+
+[Short description]
+クラシックデザインのシンプルな神経衰弱です。
+
+[Full description]
+[ アプリの概要 ]
+Classic Simple Memory Battle は、1人で気軽に遊べる、神経衰弱のトランプカードゲームです。
+
+1人用、個性的なキャラのCPU対戦できます。神経衰弱が初心者でも簡単に楽しめます。
+
+[ アプリの特徴 ]
+・ 縦画面のプレイを想定しての設計、スマートフォン片手でも操作しやすいです。
+・ 小さいスマホ画面でも見やすく、操作しやすいように調整しています。
+・ Android 8 から対応、古いAndroidでも快適に遊べます。
+・ 特別な演出やエフェクトを軽減、最適化し、軽量でなめらかに遊べるようにしています。
+
+[ 課金アイテム ]
+・ 開発・運営を継続するため、広告表示についてご理解いただけますようお願い申し上げます。
+・ 課金されますと、広告の非表示やオフラインプレイ(機内モード、電波の届かない場所など)が可能になります。
+・ 注 : アプリの更新や外部リンクを開くときは、インターネットが必要です。
+
+[ 注意事項 ]
+・ 現金・賞品・暗号資産などは使いません。ギャンブル目的のアプリではありません。
+・ 動作が重いときは、メニューの設定からキャッシュクリアをお試しください。
+・ 不具合やクラッシュが続く場合は、端末の設定からアプリのストレージデータを削除して、完全リセットを行ってください。
+
+[ 対応言語 ]
+・ 英語 / 日本語 / 中国語（簡体字）
+・ 注：プレイ中の一部の言葉は、英語で表示されることがあります。
+
+
+========== English ==========
+
+[Title]
+Classic Simple Memory Battle (shinkei-suijyaku)
+
+[Short description]
+A simple memory-matching card game with a classic look. Play solo practice, or take on CPU rivals in battle mode.
+
+[Full description]
+[ App Description ]
+Classic Simple Memory Battle is an easy memory-matching card game you can play on your own.
+
+Flip cards two at a time and find matching pairs. Warm up in solo practice, or face CPU rivals turn by turn in battle mode.
+
+No sign-up and no online play. Just a quick, relaxing card game with a classic, vintage design. Cards are dealt at random.
+
+[ App Features ]
+- Designed for portrait play, comfortable to operate with one hand on a smartphone.
+- Tuned to stay readable and easy to operate even on small phone screens.
+- Supports Android 8 and later, running smoothly even on older Android devices.
+- Special effects are reduced and optimized, so it stays light and smooth.
+
+[ In-App Purchases ]
+- Ads help us keep making and running the app. Thank you for understanding.
+- A one-time purchase removes ads and lets you play offline (airplane mode, no-signal areas, and so on).
+- Note: You still need the internet to update the app or open outside links.
+
+[ Notes ]
+- No real money, prizes, or crypto are used. This app is not for gambling.
+- If the app feels slow, open Settings in the menu and clear the cache.
+- If problems continue, delete the app's data in your device settings for a full reset.
+
+[ Supported Languages ]
+- English / Japanese / Chinese (Simplified)
+- Note: Some words shown during play may be in English.
+
+
+========== 中文 / Chinese (Simplified) ==========
+
+[Title]
+Classic Simple Memory Battle (shinkei-suijyaku)
+
+[Short description]
+一款外观经典、简单的翻牌配对（记忆）游戏。可单人练习，也可在对战模式中挑战 CPU。
+
+[Full description]
+[ 应用说明 ]
+Classic Simple Memory Battle 是一款可以独自轻松游玩、上手简单的翻牌配对（记忆）游戏。
+
+每次翻开两张牌，找出相同的一对。可在单人练习中热身，也可在对战模式中与 CPU 轮流对战。
+
+无需注册，也没有在线对战。这是一款外观经典、沉稳的纸牌游戏，很适合零碎时间游玩。所有牌均为随机。
+
+[ 应用特点 ]
+- 专为竖屏游玩设计，单手握持手机也便于操作。
+- 即使在小屏幕手机上，也调整得清晰易读、易于操作。
+- 支持 Android 8 及以上，较旧的 Android 设备也能流畅运行。
+- 已精简并优化特殊演出与特效，轻巧流畅。
+
+[ 内购项目 ]
+- 广告能帮助我们持续制作和运营这款应用，感谢您的理解。
+- 一次购买即可去除广告，还能在离线时（飞行模式、无信号的地方等）游玩。
+- 注：更新应用或打开外部链接时，仍需要联网。
+
+[ 注意事项 ]
+- 不使用任何现金、奖品或加密资产。本应用并非用于赌博。
+- 如果运行变慢，请在菜单的设置中清除缓存。
+- 如果仍有问题，可在设备设置中删除该应用的数据，恢复到初始状态。
+
+[ 支持语言 ]
+- 英语 / 日语 / 中文（简体）
+- 注：游玩过程中的部分文字可能以英文显示。
+

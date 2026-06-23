@@ -23,31 +23,16 @@ export function renderMemoryBattleHeader(host: MemoryBattleRenderHost) {
 }
 
 export function renderMemoryBattleStatus(host: MemoryBattleRenderHost) {
-  const enemyImagePath = host.currentEnemyImagePath()
-  const enemyName = host.currentEnemyName()
   const showEnemyStatus = host.shouldShowEnemyStatus()
+  // 「COIN / BET / STAGE」を共有 .bet-status（他ゲームと統一）で1行表示。
+  // BET / STAGE は BET 確定後の対戦中だけ出す（shouldShowEnemyStatus）。それ以外は COIN のみ。
+  const stage = host.currentEnemy().stage
 
   return html`
-    <section class="status-strip ${host.screen === 'title' ? 'is-coin-only' : ''}">
-      <div class="meta-chip coin-chip">
-        <span class="coin-chip-icon">${coinIcon()}</span>
-        <span class="coin-chip-label">COIN</span>
-        <span class="coin-chip-value ${host.coinValueSizeClass()}">${host.coin}</span>
-      </div>
-      ${showEnemyStatus
-        ? html`
-            <div
-              class="enemy-status-chip is-tappable"
-              role="button"
-              tabindex="0"
-              title=${enemyName}
-              @click=${() => host.openEnemyInfo()}
-            >
-              <span class="enemy-status-level">${host.currentEnemyStatusLabel()}</span>
-              ${enemyImagePath ? html`<img class="enemy-status-thumb" src=${enemyImagePath} alt=${enemyName} />` : null}
-            </div>
-          `
-        : html`<div class="enemy-status-chip is-placeholder" aria-hidden="true"></div>`}
+    <section class="status-strip ${showEnemyStatus ? '' : 'is-coin-only'}">
+      <header class="bet-status">
+        ${coinIcon()} COIN ${host.coin}${showEnemyStatus ? html` / BET ${host.currentBet} / STAGE ${stage}` : ''}
+      </header>
     </section>
   `
 }
@@ -127,6 +112,7 @@ function renderPracticeSetup(host: MemoryBattleRenderHost) {
     <section class="content-card center-card">
       <h2>${t.practiceSetupTitle}</h2>
       <p>${t.practiceSetupMessage}</p>
+      <p class="practice-coin-note">${t.practiceCoinNote}</p>
       <label class="practice-select-block">
         <span class="practice-select-label">${t.practiceCardCountLabel}</span>
         <select class="practice-select" @change=${host.updatePracticeCardCount}>
@@ -161,7 +147,7 @@ export function renderEnemyInfoOverlay(host: MemoryBattleRenderHost) {
           : null}
         <p class="enemy-name">${enemyName}</p>
         <div class="enemy-profile-block"><p class="enemy-profile">${enemyProfile}</p></div>
-        <p>${formatTemplate(t.enemyReward, { coin: enemy.reward_coin })}</p>
+        <p>${formatTemplate(t.enemyReward, { mult: host.betMultiplierLabel() })}</p>
       </section>
     </div>
   `
@@ -187,10 +173,15 @@ function renderEnemyIntro(host: MemoryBattleRenderHost) {
       <div class="enemy-profile-block">
         <p class="enemy-profile">${enemyProfile}</p>
       </div>
-      <p>${formatTemplate(t.enemyReward, { coin: enemy.reward_coin })}</p>
+      <div class="enemy-reward-line">
+        <span class="enemy-reward-value">${formatTemplate(t.enemyReward, { mult: host.betMultiplierLabel() })}</span>
+        <button class="reward-help-btn" @click=${() => host.openRewardHelp()} aria-label="reward help">
+          ${t.rewardHelpLabel} ⓘ
+        </button>
+      </div>
       <div class="stack-actions">
-        <button class="primary-btn" @click=${host.openDrawBattle}>${t.startBattle}</button>
-        <button class="secondary-btn" @click=${host.returnToStageSelect}>${t.returnToStageSelect}</button>
+        <button class="primary-btn" @click=${() => host.openBetDialog()}>${t.startBattle}</button>
+        <button class="secondary-btn" @click=${() => host.returnToStageSelect()}>${t.returnToStageSelect}</button>
       </div>
     </section>
   `
@@ -295,6 +286,11 @@ function renderBattle(host: MemoryBattleRenderHost) {
                 <span class="turn-arrow ${isPlayerTurn ? 'is-player-turn' : isCpuTurn ? 'is-cpu-turn' : ''}">${host.turnArrowSymbol()}</span>
                 <span class="score-pill ${isCpuTurn ? 'is-active' : ''}">${formatTemplate(t.cpuScore, { score: host.cpuPairs })}</span>
               </div>`}
+          ${isPracticeMode || !host.currentEnemyImagePath()
+            ? null
+            : html`<button class="battle-enemy-portrait ${isCpuTurn ? 'is-active' : ''}" @click=${() => host.openEnemyInfo()} title=${host.currentEnemyName()}>
+                <img src=${host.currentEnemyImagePath()} alt=${host.currentEnemyName()} />
+              </button>`}
         </div>
       </div>
       <div class="card-grid-area">

@@ -7,20 +7,25 @@ import { hlGet } from './high-low-config'
 import { buildHighLowAssetUrl, buildHighLowCommonAssetUrl } from './high-low-assets'
 import { loadBgmEnabledSetting, saveBgmEnabledSetting } from '../../shared/infra/bgm-setting'
 import { ensurePlayableSharedCoin, saveSharedCoin } from '../../shared/infra/shared-coin-store'
+import { clearPendingStake, savePendingStake, takePendingStake } from '../../shared/infra/pending-stake-store'
+import { recoverSharedCoin, scheduleCoinRecoveryDialogIfZero } from '../../shared/ui/styles/shared'
+import { getAndroidBillingBridge } from '../../shared/infra/android-billing-bridge'
 import { isAndroidApp, countGameForAd, WEB_AD_COUNT_KEY, notifyNativeGameEnd } from '../../shared/infra/web-ad-mock'
 import '../../shared/ui/panels/ad-mock-dialog'
+import '../../shared/ui/panels/bet-selector-panel'
 import {
-  CARDS_PER_PLAYER,
   CPU_THINK_MS,
   CARD_OPEN_DELAY_MS,
   OPEN_HOLD_MS,
+  HL_MODE_CARDS,
+  type HLMode,
   createInitialState,
   cpuChooseDeclaration,
   judge
 } from './high-low-logic'
 import type { Card, Declaration, GameState, Player } from './high-low-types'
 import { sharedGameHostStyles, sharedGameStageStyles } from '../../shared/ui/styles/shared-game-layout-styles'
-import { sharedBetStatusStyles, sharedOverlayStyles } from '../../shared/ui/styles/shared-game-ui-styles'
+import { sharedBetStatusStyles, sharedCoinRecoveryStyles, sharedOverlayStyles } from '../../shared/ui/styles/shared-game-ui-styles'
 import { applyStageScale } from '../../shared/ui/styles/stage-layout'
 import { utilities } from '../../shared/ui/styles/utilities'
 import { coinIcon } from '../../shared/ui/icons/coin-icon'
@@ -37,6 +42,14 @@ import { LANGUAGE_KEY as LANG_KEY, SOUND_ENABLED_KEY as SOUND_KEY } from '../../
 const cardUrl = (c: Card) => buildHighLowCommonAssetUrl(`cards/${c.suit}_${c.rank}.png`)
 const backUrl = () => buildHighLowCommonAssetUrl('cards/back_card.png')
 const bgUrl = () => buildHighLowCommonAssetUrl('images/background.webp')
+
+// BET 機能（POKER/CASINO WAR と共通の共有部品を利用）。文言は shared-chrome-text（this.chrome）から取得。
+const HL_GAME_ID = 'high-low'
+const HL_MIN_BET = 1 // POKER と同一の最小BET
+// 最終勝敗の倍率: 勝ち×2 / 引き分け×1(返還) / 負け×0(没収)。
+const HL_WIN_MULTIPLIER = 2
+const HL_DRAW_MULTIPLIER = 1
+const HL_LOSE_MULTIPLIER = 0
 
 // 広告の出し方（基点はどちらも「Next Turn PLAYER」タップ時）:
 //   ・WEB ブラウザのみ … 全カードゲーム共通カウンタ(WEB_AD_COUNT_KEY)に加算し、7 ごとにモック表示。ネット確認なし。
@@ -59,7 +72,17 @@ export class HighLowGameTable extends LitElement {
   @state() private isOfflineAdWarningOpen = false
   @state() private soundHelpOpen = false   // 設定内「?」サウンドヘルプ
   private adMockCount = 0
-  private adPendingDeal = false            // 広告モックを閉じたら次ラウンドを配る
+  // ── モード選択（メニュー→スタート→クイックスタート→ここ→BET）───────
+  @state() private modeSelectOpen = false  // モード選択モーダル
+  @state() private mode: HLMode = 'full'   // full=52(各26) / half=26(各13) / quarter=12(各6)
+  // ── BET 状態 ───────────────────────────────────────────
+  @state() private betDialogOpen = false   // SELECT BET モーダル
+  @state() private currentBet = HL_MIN_BET // 今回ゲームの BET 額
+  @state() private isCoinRecoveryDialogOpen = false
+  private pendingStake = 0                  // 精算前にゲーム中保持している BET（途中終了で返還）
+  private betSettled = false                // 最終勝敗の精算済みフラグ（二重精算防止）
+  private lastPayout = 0                    // 直近の精算で得た COIN（結果表示用）
+  private coinRecoveryTimerId: number | null = null
 
   // ゲーム状態（深いオブジェクトなので変更後は requestUpdate で再描画）
   private G: GameState = createInitialState()
@@ -70,6 +93,7 @@ export class HighLowGameTable extends LitElement {
 
   private m(k: string, fb = '') { return hlGet(this.config, this.language, 'menu', k, fb) }
   private o(k: string, fb = '') { return hlGet(this.config, this.language, 'overview_info', k, fb) }
+  private g(k: string, fb = '') { return hlGet(this.config, this.language, 'game', k, fb) }
 
   connectedCallback(): void {
     super.connectedCallback()
@@ -85,6 +109,11 @@ export class HighLowGameTable extends LitElement {
   disconnectedCallback(): void {
     window.removeEventListener('resize', this.onResize)
     this.clearTimers()
+    this.clearCoinRecoveryTimer()
+    // 最終勝敗が確定する前に盤面が外れた（ホーム/別画面移動）場合は BET を返還。
+    // 精算済み(betSettled)なら pendingStake=0 のため返還しない。リロード/閉じる時は
+    // localStorage に残った pendingStake を次回マウントの restore で一度だけ返還する。
+    this.refundPendingStakeIfNeeded()
     const w = window as Window & { __onOfflineAdBlocked?: () => void }
     if (w.__onOfflineAdBlocked === this.onOfflineAdBlocked) delete w.__onOfflineAdBlocked
     super.disconnectedCallback()
@@ -95,7 +124,18 @@ export class HighLowGameTable extends LitElement {
 
   firstUpdated(): void {
     this.onResize()
-    this.startGame() // メニューの START で本ゲームに入った直後から開始
+    this.coin = ensurePlayableSharedCoin()
+    // リロード/異常終了で残った BET を一度だけ返還（途中終了時返還の復帰側）。
+    this.restoreCoinFromPendingStakeIfNeeded()
+    // メニューの START 直後：（Web広告対象なら広告→）SELECT BET → 確定でゲーム開始。
+    this.beginStartFlow()
+  }
+
+  private restoreCoinFromPendingStakeIfNeeded(): void {
+    const pending = takePendingStake(HL_GAME_ID)
+    if (pending <= 0) return
+    this.pendingStake = 0
+    this.coin = saveSharedCoin(this.coin + pending)
   }
 
   private readonly onResize = () => applyStageScale(this)
@@ -113,8 +153,77 @@ export class HighLowGameTable extends LitElement {
   private defendPlayer(): Player { return Object.values(this.G.players).find((p) => p.role === 'defend')! }
   private attackPlayer(): Player { return Object.values(this.G.players).find((p) => p.role === 'attack')! }
 
+  // ── 開始フロー（START/クイックスタート → BET → 開始）─────────
+  // START 直後は SELECT BET のみ。広告は出さない（開始前に広告が割り込まないようにする）。
+  private beginStartFlow(): void {
+    // 広告はゲーム開始前には出さない（START 直後に広告が割り込むのを回避）。
+    // 広告/native 通知は POKER と同じく「1ゲーム終了後」に行う（endGame → showAdMockIfNeeded）。
+    this.coin = ensurePlayableSharedCoin()
+    // メニュー→スタート→クイックスタート の後、まずモード選択。NEXT で SELECT BET へ。
+    this.modeSelectOpen = true
+  }
+
+  // 現在モードの1人あたり配布枚数（=総ラウンド数）。Round 表示・配札に使う唯一の正。
+  private cardsPerPlayer(): number { return HL_MODE_CARDS[this.mode] }
+
+  // モード選択（ラジオ）。
+  private setMode(mode: HLMode): void { if (this.mode !== mode) { this.sound(); this.mode = mode } }
+  // NEXT: モード確定 → SELECT BET へ。
+  private confirmMode(): void { this.sound(); this.modeSelectOpen = false; this.openBetDialog() }
+  // モード選択をキャンセル＝メニューへ戻す（COIN は差し引かれていない）。
+  private cancelMode(): void { this.sound(); this.modeSelectOpen = false; this.emitHome() }
+
+  private openBetDialog(): void {
+    this.coin = ensurePlayableSharedCoin()
+    if (this.currentBet < HL_MIN_BET) this.currentBet = HL_MIN_BET
+    if (this.currentBet > this.coin) this.currentBet = this.coin
+    this.betDialogOpen = true
+  }
+
+  private decreaseBet(): void {
+    if (this.currentBet > HL_MIN_BET) this.currentBet = Math.max(HL_MIN_BET, this.currentBet - 1)
+  }
+  private increaseBet(): void {
+    if (this.currentBet < this.coin) this.currentBet = Math.min(this.coin, this.currentBet + 1)
+  }
+  private onBetValueChange(e: CustomEvent<{ value: number }>): void {
+    this.currentBet = Math.max(HL_MIN_BET, Math.min(this.coin, Math.floor(e.detail.value)))
+  }
+
+  // BET 確定: COIN を差し引き、pendingStake を保存してゲーム開始。
+  private confirmBet(): void {
+    if (this.coin < HL_MIN_BET || this.currentBet < HL_MIN_BET || this.currentBet > this.coin) return
+    this.sound()
+    this.coin = saveSharedCoin(this.coin - this.currentBet)
+    this.pendingStake = this.currentBet
+    savePendingStake(HL_GAME_ID, this.currentBet)
+    this.betSettled = false
+    this.lastPayout = 0
+    this.betDialogOpen = false
+    this.startGame()
+  }
+
+  // BET キャンセル: COIN を差し引かずメニューへ戻す（ゲームを開始しない）。
+  private cancelBet(): void {
+    this.sound()
+    this.betDialogOpen = false
+    this.emitHome()
+  }
+
+  // BET モーダルのツール（POKER と同一）。パネル/確認を開く間は一旦閉じ、閉じたら開始前なら再表示。
+  private readonly onBetHome = (): void => { this.sound(); this.betDialogOpen = false; this.confirmHome = true }
+  private readonly onBetSettings = (): void => { this.sound(); this.betDialogOpen = false; this.activePanel = 'settings' }
+  private readonly onBetGuide = (): void => { this.sound(); this.betDialogOpen = false; this.activePanel = 'guide' }
+  // ゲーム開始前（preparation）で他の上面が閉じたら SELECT BET を再表示する。
+  private reopenBetIfPending(): void {
+    if (this.G.phase === 'preparation' && !this.activePanel && !this.confirmHome && !this.adMockOpen && !this.isCoinRecoveryDialogOpen) {
+      this.betDialogOpen = true
+    }
+  }
+
   // ── ゲームフロー（app.js 準拠）──────────────────────────
-  private startGame() { this.coin = ensurePlayableSharedCoin(); this.G = createInitialState(); this.dealTurn() }
+  // 選択モードの枚数で配札（full=各26 / half=各13 / quarter=各6）。
+  private startGame() { this.G = createInitialState(this.cardsPerPlayer()); this.dealTurn() }
 
   private dealTurn() {
     const def = this.defendPlayer(), att = this.attackPlayer()
@@ -159,13 +268,11 @@ export class HighLowGameTable extends LitElement {
   }
 
   private resolveTurn() {
-    // コイン変動は PLAYER が Attack の番のみ。CPU が Attack の番（CPU BINGO 等）は一切変動させない。
-    const playerIsAttacker = this.attackPlayer().id === 'p1'
-    let delta = 0
-    if (this.G.result === 'win') { if (playerIsAttacker) delta = 10; this.playEffect('bingo') }   // 当たり: PLAYER攻撃時のみ +10
-    else if (this.G.result === 'tie') { delta = 0 }                                                // 引き分け(同値): 変動なし・無音
-    else { if (playerIsAttacker) delta = -10; this.playEffect('miss') }                            // ミス: PLAYER攻撃時のみ -10
-    this.coin = saveSharedCoin(this.coin + delta)
+    // BET 統一仕様: ターン毎の COIN 変動は行わない（精算はゲーム全体の最終勝敗確定時のみ）。
+    // 途中の TIE も精算しない。ここでは効果音と札の取得処理だけ行う。
+    if (this.G.result === 'win') this.playEffect('bingo')        // 当たり
+    else if (this.G.result === 'tie') { /* 引き分け(同値): 無音・変動なし */ }
+    else this.playEffect('miss')                                 // ミス
     this.applyTurnResult()
     this.G.phase = 'result'
     this.G.busy = false
@@ -189,42 +296,79 @@ export class HighLowGameTable extends LitElement {
     this.G.declaration = this.G.result = null
     const { p1, p2 } = this.G.players
     if (p1.deck.length === 0 && p2.deck.length === 0) { this.endGame(); return }
-    // 広告カウントは「PLAYER(p1)が攻撃する番に入る時(=Next Turn PLAYER)」だけ行う。
-    // CPU が攻撃する番(CPU BINGO 等)では一切加算しない。両ターンで加算すると、
-    // CPU の番のタイミングで広告(モック/実広告)が割り込む不具合になるため。
-    const playerWillAttack = p1.role === 'attack'
-    if (!playerWillAttack) {
-      this.dealTurn()
-      return
-    }
-    if (isAndroidApp()) {
-      // Android: PLAYER 攻撃ターン(=1カウント単位)を native へ通知するだけ。
-      // 7回カウント/課金/ネット/実広告表示は全て native（Web コピーで上書きされない）。
-      notifyNativeGameEnd()
-      this.dealTurn()
-    } else {
-      // WEB ブラウザのみ: 共通カウンタ(card_games_web_ad_count)を +1 し、7 ごとにモック表示。ネット確認なし。
-      const { count, show } = countGameForAd(WEB_AD_COUNT_KEY)
-      if (show) {
-        this.adMockCount = count
-        this.adPendingDeal = true
-        this.adMockOpen = true
-      } else {
-        this.dealTurn()
-      }
-    }
+    // 広告は 1 ゲーム = 1 回（開始時 beginStartFlow で処理）に統一したため、ターン途中では出さない。
+    this.dealTurn()
   }
 
   private endGame() {
     this.G.phase = 'gameover'
-    // 最終的に PLAYER 勝利なら勝利音 + WIN BONUS +100（1ゲーム勝利時のコイン加算）
-    if (this.G.players.p1.acquired.length > this.G.players.p2.acquired.length) {
-      this.playEffect('win')
-      this.coin = saveSharedCoin(this.coin + 100)
-    }
+    this.settleBet()
+    this.showAdMockIfNeeded() // 広告は1ゲーム終了後に表示（開始前には出さない）
     this.requestUpdate()
   }
-  private restartGame() { this.sound(); this.clearTimers(); this.startGame() }
+
+  // 1ゲーム終了時の広告処理（CASINO WAR/POKER と同方式）。開始前には呼ばない。
+  private showAdMockIfNeeded(): void {
+    if (isAndroidApp()) {
+      // Android: 1ゲーム終了を native へ通知（7回ごとの実広告/課金/ネット確認は native 側）。
+      notifyNativeGameEnd()
+      return
+    }
+    // WEB ブラウザのみ: 共通カウンタを +1 し、7 ごとに広告モックを表示。ネット確認なし。
+    const { count, show } = countGameForAd(WEB_AD_COUNT_KEY)
+    if (show) {
+      this.adMockCount = count
+      this.adMockOpen = true
+    }
+  }
+
+  // 最終勝敗の精算（勝ち×2 / 引き分け×1=返還 / 負け×0=没収）。二重精算しない。
+  private settleBet(): void {
+    if (this.betSettled) return
+    this.betSettled = true
+    const p1 = this.G.players.p1, p2 = this.G.players.p2
+    let mult = HL_DRAW_MULTIPLIER
+    if (p1.acquired.length > p2.acquired.length) { mult = HL_WIN_MULTIPLIER; this.playEffect('win') }
+    else if (p1.acquired.length < p2.acquired.length) { mult = HL_LOSE_MULTIPLIER }
+    this.lastPayout = Math.floor(this.currentBet * mult)
+    this.coin = saveSharedCoin(this.coin + this.lastPayout)
+    this.pendingStake = 0
+    clearPendingStake(HL_GAME_ID)
+    this.scheduleCoinRecoveryDialogIfZero()
+  }
+
+  // 途中終了時の BET 返還（pendingStake>0 のときのみ。一度だけ）。
+  private refundPendingStakeIfNeeded(): void {
+    if (this.pendingStake <= 0) { clearPendingStake(HL_GAME_ID); return }
+    this.coin = saveSharedCoin(this.coin + this.pendingStake)
+    this.pendingStake = 0
+    clearPendingStake(HL_GAME_ID)
+  }
+
+  private restartGame() { this.sound(); this.clearTimers(); this.beginStartFlow() }
+
+  // ── COIN 補充（CASINO WAR と同方式）─────────────────────
+  private confirmCoinRecovery(): void {
+    this.sound()
+    this.clearCoinRecoveryTimer()
+    this.coin = recoverSharedCoin()
+    this.isCoinRecoveryDialogOpen = false
+    window.setTimeout(() => {
+      const bridge = getAndroidBillingBridge()
+      bridge?.showRecoveryInterstitialAd?.() ?? bridge?.showInterstitialAd?.()
+    }, 0)
+  }
+  private clearCoinRecoveryTimer(): void {
+    if (this.coinRecoveryTimerId !== null) { clearTimeout(this.coinRecoveryTimerId); this.coinRecoveryTimerId = null }
+  }
+  private scheduleCoinRecoveryDialogIfZero(): void {
+    this.clearCoinRecoveryTimer()
+    this.coinRecoveryTimerId = scheduleCoinRecoveryDialogIfZero({
+      coin: this.coin,
+      setOpen: (open) => { this.isCoinRecoveryDialogOpen = open },
+      schedule: (cb, delayMs) => window.setTimeout(() => { this.coinRecoveryTimerId = null; cb() }, delayMs)
+    })
+  }
 
   private setEffect(v: boolean) { this.effectEnabled = v; localStorage.setItem(SOUND_KEY, String(v)); if (v) this.sound() }
   private setBgm(v: boolean) { this.bgmEnabled = v; saveBgmEnabledSetting(v) }
@@ -239,6 +383,9 @@ export class HighLowGameTable extends LitElement {
   //   常に true を返す＝ゲーム中は決してアプリを閉じない（落ちない）。
   // standalone 殻(high-low-standalone-app)が screen==='game' のときに呼ぶ。
   handleSystemBack(): boolean {
+    if (this.isCoinRecoveryDialogOpen) { return true }
+    if (this.modeSelectOpen) { this.cancelMode(); return true }
+    if (this.betDialogOpen) { this.cancelBet(); return true }
     if (this.adMockOpen) { this.adMockOpen = false; return true }
     if (this.isOfflineAdWarningOpen) { this.isOfflineAdWarningOpen = false; return true }
     if (this.confirmHome) { this.sound(); this.confirmHome = false; return true }
@@ -371,8 +518,15 @@ export class HighLowGameTable extends LitElement {
     const isP1 = p1.acquired.length > p2.acquired.length
     const isP2 = p2.acquired.length > p1.acquired.length
     const winner = isP1 ? 'PLAYER Wins!' : isP2 ? 'CPU Wins!' : 'Draw!'
+    // 勝ち=BET×2 / 引き分け=BET返還 / 負け=0。精算済みの獲得 COIN を表示。
+    const payoutLabel = isP1
+      ? `+${this.lastPayout} COIN (BET ×${HL_WIN_MULTIPLIER})`
+      : isP2
+        ? `-${this.currentBet} COIN`
+        : `±0 COIN (BET refunded)`
     return html`<div class="gameover-screen">
       <div class="winner-txt">${winner}</div>
+      <div class="final-payout">${payoutLabel}</div>
       <div class="final-scores">
         <div class="final-row ${isP1 ? 'winner-row' : ''}">
           <span class="ptag p1">${p1.name}</span><span class="final-count">${p1.acquired.length} cards</span>
@@ -381,7 +535,7 @@ export class HighLowGameTable extends LitElement {
           <span class="ptag p2">${p2.name}</span><span class="final-count">${p2.acquired.length} cards</span>
         </div>
       </div>
-      <button class="btn btn-start full-w" @click=${() => this.restartGame()}>Play Again</button>
+      <button class="btn btn-start full-w" @click=${() => this.restartGame()}>${this.chrome.playAgain}</button>
       <button class="btn btn-ghost full-w" @click=${() => { this.sound(); this.confirmHome = true }}>${this.chrome.home}</button>
     </div>`
   }
@@ -395,7 +549,7 @@ export class HighLowGameTable extends LitElement {
           bgmEnabled: this.bgmEnabled,
           soundHelpOpen: this.soundHelpOpen,
           showClearCache: false,
-          onClose: () => { this.sound(); this.activePanel = null },
+          onClose: () => { this.sound(); this.activePanel = null; this.reopenBetIfPending() },
           onEffectChange: (v) => this.setEffect(v),
           onBgmChange: (v) => this.setBgm(v),
           onLanguageChange: (l) => this.setLanguage(l),
@@ -406,15 +560,46 @@ export class HighLowGameTable extends LitElement {
     </div>`
   }
 
+  private guideLines(): string[] {
+    const guide = this.o('guide_content')
+    if (!guide) throw new Error('guide_content がありません。build_content.py で生成してください（直書きフォールバック禁止）。')
+    return guide.split('\n')
+  }
+
   private renderGuide() {
     return html`<div class="overlay">
       <section class="modal">
         <guide-overview-panel
           .title=${this.chrome.guideOverview}
-          .lines=${(this.o('overview_intro', '')).split('\n')}
+          .lines=${this.guideLines()}
           .okLabel=${this.m('back', 'Back')}
-          @guide-close=${() => { this.sound(); this.activePanel = null }}
+          @guide-close=${() => { this.sound(); this.activePanel = null; this.reopenBetIfPending() }}
         ></guide-overview-panel>
+      </section>
+    </div>`
+  }
+
+  // モード選択モーダル（クラシック・ラジオ）。メニュー→スタート→クイックスタート→ここ→BET。
+  // 文言は config(game.mode_*) 由来（英語フォールバック）。枚数/ラウンドは HL_MODE_CARDS に連動。
+  private renderModeSelect() {
+    const opt = (mode: HLMode, key: string) => {
+      const on = this.mode === mode
+      return html`<button type="button" class="mode-opt ${on ? 'on' : ''}"
+        role="radio" aria-checked=${on ? 'true' : 'false'} @click=${() => this.setMode(mode)}>
+        <span class="mode-radio">${on ? '●' : '○'}</span>
+        <span class="mode-label">${this.g(key)}</span>
+      </button>`
+    }
+    return html`<div class="overlay">
+      <section class="modal mode-modal">
+        <h3 class="mode-title">${this.g('mode_title', 'Select Mode')}</h3>
+        <div class="mode-list" role="radiogroup">
+          ${opt('full', 'mode_full')}
+          ${opt('half', 'mode_half')}
+          ${opt('quarter', 'mode_quarter')}
+        </div>
+        <p class="mode-desc">${this.g('mode_desc')}</p>
+        <button class="btn btn-start full-w mode-next" @click=${() => this.confirmMode()}>${this.g('mode_next', 'NEXT')}</button>
       </section>
     </div>`
   }
@@ -435,8 +620,8 @@ export class HighLowGameTable extends LitElement {
                 @header-settings=${() => { this.sound(); this.activePanel = 'settings' }}
                 @header-guide=${() => { this.sound(); this.activePanel = 'guide' }}
               ></game-top-header>
-              <header class="bet-status">${coinIcon()} COIN ${this.coin}</header>
-              <div class="round-badge ${isPlaying ? '' : 'invisible'}">Round ${this.G.round} / ${CARDS_PER_PLAYER}</div>
+              <header class="bet-status">${coinIcon()} COIN ${this.coin} / BET ${this.currentBet}</header>
+              <div class="round-badge ${isPlaying ? '' : 'invisible'}">Round ${this.G.round} / ${this.cardsPerPlayer()}</div>
             </section>
 
             <section class="region-content">
@@ -467,7 +652,7 @@ export class HighLowGameTable extends LitElement {
                   .okLabel=${this.chrome.ok}
                   .cancelLabel=${this.chrome.cancel}
                   @confirm-accept=${() => this.emitHome()}
-                  @confirm-cancel=${() => { this.sound(); this.confirmHome = false }}
+                  @confirm-cancel=${() => { this.sound(); this.confirmHome = false; this.reopenBetIfPending() }}
                 ></confirm-dialog-panel>
               </section>
             </div>` : null}
@@ -493,9 +678,46 @@ export class HighLowGameTable extends LitElement {
               @ad-mock-close=${() => {
                 this.sound()
                 this.adMockOpen = false
-                if (this.adPendingDeal) { this.adPendingDeal = false; this.dealTurn() }
               }}
             ></ad-mock-dialog>` : null}
+
+          <!-- モード選択モーダル（BET の前）。Full(52)/Half(26)/1/4(12) をラジオで選び NEXT。 -->
+          ${this.modeSelectOpen ? this.renderModeSelect() : null}
+
+          <!-- SELECT BET モーダル（POKER と同一の見た目／設定：ツール行あり・キャンセルボタンなし・START）。 -->
+          ${this.betDialogOpen ? html`
+            <section class="overlay bet-overlay">
+              <bet-selector-panel
+                title="Select BET"
+                available-label="COIN:"
+                .availableCoin=${this.coin}
+                .bet=${this.currentBet}
+                start-label="START"
+                .instructionText=${this.chrome.betInstruction}
+                .disableDecrease=${this.currentBet <= HL_MIN_BET}
+                .disableIncrease=${this.currentBet >= this.coin}
+                .disableStart=${this.coin < HL_MIN_BET || this.currentBet < HL_MIN_BET || this.currentBet > this.coin}
+                .showTools=${true}
+                @bet-home=${this.onBetHome}
+                @bet-settings=${this.onBetSettings}
+                @bet-guide=${this.onBetGuide}
+                @bet-decrease=${this.decreaseBet}
+                @bet-increase=${this.increaseBet}
+                @bet-value-change=${this.onBetValueChange}
+                @bet-start=${this.confirmBet}
+              ></bet-selector-panel>
+            </section>` : null}
+
+          <!-- COIN が 0 になったときの補充ダイアログ（CASINO WAR と同方式）。 -->
+          ${this.isCoinRecoveryDialogOpen ? html`
+            <section class="overlay">
+              <div class="modal coin-recovery-modal">
+                <h3>${this.chrome.coinRecoveryTitle}</h3>
+                <p>${this.chrome.coinRecoveryLine1}</p>
+                <p>${this.chrome.coinRecoveryLine2}</p>
+                <button class="recovery-ok-btn" @click=${this.confirmCoinRecovery}>${this.chrome.ok}</button>
+              </div>
+            </section>` : null}
 
         </div>
 
@@ -514,6 +736,7 @@ export class HighLowGameTable extends LitElement {
     sharedGameStageStyles,
     sharedBetStatusStyles,
     sharedOverlayStyles,
+    sharedCoinRecoveryStyles,
     utilities,
     css`
     /* 英語UI（説明以外）は Cinzel。日本語/中国語グリフは明朝にフォールバック。 */
@@ -632,6 +855,7 @@ export class HighLowGameTable extends LitElement {
     .gameover-screen { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:16px; }
     .gameover-title { font-size:28px; font-weight:800; color:#ffd730; }
     .winner-txt { font-size:24px; font-weight:800; color:#c8ff8a; text-align:center; }
+    .final-payout { font-size:20px; font-weight:800; color:#ffd730; text-align:center; }
     .final-scores { display:flex; flex-direction:column; gap:8px; width:100%; max-width:320px; }
     .final-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 14px; border-radius:12px;
       background:rgba(10,23,25,.6); border:1px solid rgba(255,255,255,.12); }
@@ -643,5 +867,27 @@ export class HighLowGameTable extends LitElement {
 
     /* settings/guide/confirm のモーダル枠は sharedOverlayStyles(.overlay/.modal) に集約。
        中身(settings-panel 等)は各自で色/レイアウトを持つので table 側の上書きは不要。 */
+
+    /* ── モード選択モーダル（クラシック・ラジオ）────────────────── */
+    .mode-modal { display:flex; flex-direction:column; gap:16px; width:min(92%,420px);
+      padding:22px 20px; box-sizing:border-box; }
+    .mode-title { margin:0; text-align:center; font-size:26px; font-weight:900; color:#ffd730;
+      letter-spacing:.04em; text-shadow:0 2px 6px rgba(0,0,0,.7); }
+    .mode-list { display:flex; flex-direction:column; gap:12px; }
+    /* 各選択肢＝金枠の横長クラシックボタン。選択中(on)は金背景＋発光。 */
+    .mode-opt { display:flex; align-items:center; gap:14px; width:100%; text-align:left;
+      padding:14px 18px; border-radius:14px; border:2px solid #b9933c; color:#f2f6f7;
+      background:linear-gradient(180deg,rgba(40,30,14,.6),rgba(20,14,6,.6));
+      font-family:inherit; font-size:19px; font-weight:700; cursor:pointer;
+      box-shadow:0 2px 0 rgba(0,0,0,.35); }
+    .mode-opt:active { filter:brightness(.9); }
+    .mode-opt.on { border-color:#ffd730; background:linear-gradient(180deg,rgba(255,215,48,.18),rgba(160,106,52,.22));
+      box-shadow:0 0 0 1px #ffd730, 0 0 16px rgba(255,215,48,.45); }
+    .mode-radio { flex:0 0 auto; font-size:22px; line-height:1; color:#ffd730;
+      text-shadow:0 0 8px rgba(255,215,48,.7); }
+    .mode-label { flex:1 1 auto; }
+    .mode-desc { margin:0; text-align:center; font-size:14px; line-height:1.5;
+      color:rgba(242,246,247,.78); }
+    .mode-next { margin-top:2px; }
   `]
 }

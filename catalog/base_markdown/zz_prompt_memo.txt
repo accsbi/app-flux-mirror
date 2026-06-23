@@ -1,0 +1,48 @@
+Since the command may be executed from a different location, always change to the project directory first.
+
+```bash
+cd ~/wsl_pj/playing_cards/catalog/base_markdown
+```
+
+Target file: `[TARGET_FILE]`
+
+Use the Japanese descriptions as the source of truth, then review and correct the English and Simplified Chinese localization sections.
+
+## Requirements
+
+* Edit the target file specified above.
+* Ensure that the English and Simplified Chinese content accurately reflects the meaning of the Japanese content.
+* Do not make unnecessary changes to the Japanese content.
+* Use half-width parentheses `()` in all languages, including Japanese.
+* Replace all full-width parentheses `（）` with half-width parentheses `()`.
+* Apply the changes directly to the existing file.
+* Preserve the existing Markdown structure and formatting. However, if the structure is clearly incorrect, correct it to valid Markdown and format it appropriately.
+* Do not create a new file unless explicitly instructed to do so.
+
+
+‐‐-
+
+実行場所が異なる可能性があるため、最初に必ずプロジェクトディレクトリへ移動してください。
+
+```bash
+cd ~/wsl_pj/playing_cards/catalog/base_markdown
+```
+
+
+
+日本語の説明を正しい内容として基準にし、英語および簡体字中国語の多言語化部分を確認・修正してください。
+old_backupに格納してからはじめてください。
+要件:対象ファイルはマークダウンすべて
+
+* 上記で指定した対象ファイルを編集してください。
+* 英語および簡体字中国語の内容を、日本語の意味に正確に合わせてください。
+* 日本語部分は必要のない変更を行わないでください。
+* 日本語を含むすべての言語で、半角括弧 `()` を使用してください。
+* 全角括弧 `（）` は、すべて半角括弧 `()` に置き換えてください。
+* 変更は既存ファイルへ直接反映してください。
+* 既存のMarkdown構造と書式を維持してください。ただし、明らかにおかしい構造の場合はMarkdown構造にして、さらに整形をしてください。
+* 指示がない場合は、新しいファイルは作成しないでください。
+
+終わったら 
+cd ~/wsl_pj/playing_cards/scripts
+build_content.py を実行してください

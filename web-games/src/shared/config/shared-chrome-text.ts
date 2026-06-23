@@ -44,6 +44,8 @@ export type SharedChromeText = {
   ok: string
   /** 確認ダイアログのキャンセルボタン */
   cancel: string
+  /** ゲーム終了画面の「もう一度遊ぶ」ボタン。全ゲーム共通（訳語のブレ防止）。 */
+  playAgain: string
   /** 初回起動時の設定画面タイトル（言語選択を促す） */
   initialSetupTitle: string
   /** 初回設定 完了通知のタイトル */
@@ -66,6 +68,14 @@ export type SharedChromeText = {
   offlineAdTitle: string
   /** 広告表示時オフライン警告の本文（スタートへ戻る旨） */
   offlineAdMessage: string
+  /** SELECT BET モーダルの説明文（テンキー入力の案内）。全ゲーム共通。 */
+  betInstruction: string
+  /** COIN 補充ダイアログのタイトル。全ゲーム共通。 */
+  coinRecoveryTitle: string
+  /** COIN 補充ダイアログの本文1行目。 */
+  coinRecoveryLine1: string
+  /** COIN 補充ダイアログの本文2行目。 */
+  coinRecoveryLine2: string
 }
 
 const SHARED_CHROME_TEXT: Record<AppLanguage, SharedChromeText> = {
@@ -86,6 +96,7 @@ const SHARED_CHROME_TEXT: Record<AppLanguage, SharedChromeText> = {
     leaveMessage: 'メニューに戻りますか？',
     ok: 'OK',
     cancel: 'キャンセル',
+    playAgain: 'もう一度遊ぶ',
     initialSetupTitle: '初期設定',
     initialSetupDoneTitle: '設定完了',
     initialSetupDoneMessage: '言語や音はいつでも設定から変更できます。遊び方はメニューのガイド / 概要をご覧ください。',
@@ -96,7 +107,11 @@ const SHARED_CHROME_TEXT: Record<AppLanguage, SharedChromeText> = {
     soundHelpTitle: 'サウンドについて',
     soundHelpMessage: '音が出ない場合は、端末がサイレントモードまたはミュートになっていないか確認してください。',
     offlineAdTitle: 'ネットワーク接続が必要です',
-    offlineAdMessage: '本アプリは、開発・運用を継続するため、広告表示へのご理解をお願いいたします。アプリ内課金により、広告を非表示、及び、オフラインプレイ(機内モード、電波がない場所等)が可能です。'
+    offlineAdMessage: '本アプリは、開発・運用を継続するため、広告表示へのご理解をお願いいたします。アプリ内課金により、広告を非表示、及び、オフラインプレイ(機内モード、電波がない場所等)が可能です。',
+    betInstruction: '※数値をタップで、テンキー入力できます',
+    coinRecoveryTitle: 'コイン補充',
+    coinRecoveryLine1: 'COINが0になりました。',
+    coinRecoveryLine2: 'OKで100 COINを補充します。'
   },
   zh: {
     home: '首页',
@@ -115,6 +130,7 @@ const SHARED_CHROME_TEXT: Record<AppLanguage, SharedChromeText> = {
     leaveMessage: '要返回菜单吗？',
     ok: '确定',
     cancel: '取消',
+    playAgain: '再玩一次',
     initialSetupTitle: '初始设置',
     initialSetupDoneTitle: '设置完成',
     initialSetupDoneMessage: '语言和声音可随时在设置中更改。玩法请从菜单的指南 / 概要查看。',
@@ -125,7 +141,11 @@ const SHARED_CHROME_TEXT: Record<AppLanguage, SharedChromeText> = {
     soundHelpTitle: '关于声音',
     soundHelpMessage: '如果没有声音，请检查设备是否处于静音模式或已静音。',
     offlineAdTitle: '需要网络连接',
-    offlineAdMessage: '为持续开发与运营本应用，敬请理解广告展示。通过应用内购买，可隐藏广告，并支持离线游玩（飞行模式、无信号区域等）。'
+    offlineAdMessage: '为持续开发与运营本应用，敬请理解广告展示。通过应用内购买，可隐藏广告，并支持离线游玩（飞行模式、无信号区域等）。',
+    betInstruction: '※点击数字可用数字键盘输入。',
+    coinRecoveryTitle: '金币补充',
+    coinRecoveryLine1: '金币已用尽。',
+    coinRecoveryLine2: '点击确定补充100金币。'
   },
   en: {
     home: 'Home',
@@ -144,6 +164,7 @@ const SHARED_CHROME_TEXT: Record<AppLanguage, SharedChromeText> = {
     leaveMessage: 'Return to menu?',
     ok: 'OK',
     cancel: 'Cancel',
+    playAgain: 'Play Again',
     initialSetupTitle: 'Initial Settings',
     initialSetupDoneTitle: 'Setup Complete',
     initialSetupDoneMessage: 'You can change the language and sound anytime from Settings. Open Guide / Overview from the menu for how to play.',
@@ -154,7 +175,11 @@ const SHARED_CHROME_TEXT: Record<AppLanguage, SharedChromeText> = {
     soundHelpTitle: 'Sound',
     soundHelpMessage: 'If sound does not play, please check whether your device is in silent mode or muted.',
     offlineAdTitle: 'Network connection required',
-    offlineAdMessage: 'To continue development and operation, we ask for your understanding regarding ad display. In-app purchases let you hide ads and enable offline play (airplane mode, areas with no signal, etc.).'
+    offlineAdMessage: 'To continue development and operation, we ask for your understanding regarding ad display. In-app purchases let you hide ads and enable offline play (airplane mode, areas with no signal, etc.).',
+    betInstruction: '*Tap a number to enter with the keypad.',
+    coinRecoveryTitle: 'COIN Recovery',
+    coinRecoveryLine1: 'COIN reached 0.',
+    coinRecoveryLine2: 'Press OK to refill 100 COIN.'
   }
 }
 

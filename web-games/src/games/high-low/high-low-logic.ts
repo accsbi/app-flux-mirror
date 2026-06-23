@@ -2,10 +2,17 @@
 // 参照元: wsl_pj/test_high_low/src/app/app.js, configs/app.config.js
 import type { Card, Declaration, GameState, Rank, Result, Suit } from './high-low-types'
 
-// 各プレイヤーの配布枚数 = 26（フル: 合計52枚 / Joker無し）。
+// 各プレイヤーの配布枚数 = 26（フル: 合計52枚 / Joker無し）= デフォルト。
 // 1ラウンドで両者の山から1枚ずつ引くため総ラウンド数＝この値。
-// ゲーム画面の「Round N / 26」表示はこの定数と連動する（ハードコードしない）。
+// ゲーム画面の「Round N / 26」表示はこの値と連動する（ハードコードしない）。
 export const CARDS_PER_PLAYER = 26
+
+// モード別の1人あたり配布枚数（合計=×2）。
+//   full   = 52枚 / 各26 / 26ラウンド（既定）
+//   half   = 26枚 / 各13 / 13ラウンド
+//   quarter= 12枚 / 各6  / 6ラウンド（練習用）
+export type HLMode = 'full' | 'half' | 'quarter'
+export const HL_MODE_CARDS: Record<HLMode, number> = { full: 26, half: 13, quarter: 6 }
 
 // ── 結果演出のタイミング（ミリ秒）──────────────────────────────
 // テンポ調整はここだけ触れば全体に効く。値を大きくするほどゆっくり＝カードや結果が長く表示される。
@@ -35,9 +42,9 @@ export function shuffle<T>(a: T[]): T[] {
   return b
 }
 
-export function createInitialState(): GameState {
+export function createInitialState(cardsPerPlayer: number = CARDS_PER_PLAYER): GameState {
   const deck = shuffle(createDeck())
-  const n = CARDS_PER_PLAYER
+  const n = Math.max(1, Math.min(CARDS_PER_PLAYER, Math.floor(cardsPerPlayer)))
   return {
     phase: 'preparation',
     players: {

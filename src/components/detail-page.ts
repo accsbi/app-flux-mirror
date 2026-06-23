@@ -9,6 +9,7 @@ import {
   type Lang,
 } from '../data/games-catalog'
 import { getTranslation, SITE_TITLE } from '../i18n/translations'
+import { renderMarkdown } from '../lib/markdown'
 import './site-header'
 import './breadcrumb'
 import { utilities } from '../styles/utilities'
@@ -201,6 +202,82 @@ export class CcgDetailPage extends LitElement {
       line-height: 1.7;
       color: var(--text);
     }
+    /* ── markdown 本文（.md を分解せずそのまま描画） ── */
+    .md-body {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: var(--text);
+    }
+    .md-body .md-p {
+      margin: 0 0 8px;
+    }
+    .md-body .md-h {
+      font-weight: 700;
+      color: var(--green);
+      margin: 14px 0 4px;
+    }
+    .md-body .md-li {
+      display: grid;
+      grid-template-columns: 1.3em 1fr;
+      column-gap: 4px;
+      align-items: start;
+      margin: 0 0 4px;
+    }
+    .md-body .md-mark {
+      color: var(--green);
+    }
+    .md-body .md-num {
+      font-variant-numeric: tabular-nums;
+    }
+    .md-body .md-hr {
+      border: 0;
+      height: 1px;
+      margin: 12px 0;
+      background: color-mix(in srgb, var(--text) 18%, transparent);
+    }
+    .md-body .md-link {
+      color: var(--green);
+      text-decoration: underline;
+      word-break: break-all;
+    }
+    /* ダウンロード（末尾）: クラシックなクリーム額縁カード。SVG バッジは大きめ。 */
+    .download-section {
+      margin-top: 28px;
+      padding: 28px 24px;
+      border: 1px solid var(--gold-deep);
+      border-radius: var(--radius-card);
+      background: var(--ceramic);
+      box-shadow: var(--shadow-card);
+      text-align: center;
+    }
+    .download-section h2 {
+      margin: 0 0 18px;
+      font-family: var(--font-display);
+      color: var(--green);
+      letter-spacing: var(--tracking);
+    }
+    .store-links-lg {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .store-link-lg {
+      display: inline-flex;
+      align-items: center;
+      height: 60px;
+      transition: transform 0.1s ease;
+    }
+    .store-link-lg:active {
+      transform: scale(var(--button-active-scale));
+    }
+    .store-icon-lg {
+      display: block;
+      height: 100%;
+      width: auto;
+      object-fit: contain;
+    }
     .not-found {
       padding: 80px 0;
       text-align: center;
@@ -264,8 +341,10 @@ export class CcgDetailPage extends LitElement {
       `
     }
     const g = this.entry
-    const lead = g.sections[0]?.body ?? g.description
-    const bodySections = g.sections.filter((s) => s.targets.includes('web'))
+    const lead = g.description
+    // 詳細ページに出すのは「サイト向け」セクション。site_description_md（タグ無し＝移行済み）
+    // site_description_md はタグ無し（移行済み）。targets が無い節も受理する。
+    const bodySections = g.sections.filter((s) => s.targets.includes('site_description') || s.targets.includes('web') || s.targets.length === 0)
 
     return html`
       <ccg-site-header
@@ -343,8 +422,40 @@ export class CcgDetailPage extends LitElement {
           ? html`<section class="desc-section">
               ${bodySections.map(
                 (s) => html`<h3>${s.heading}</h3>
-                  <p>${s.body}</p>`,
+                  <div class="md-body">${renderMarkdown(s.body)}</div>`,
               )}
+            </section>`
+          : nothing}
+
+        ${(g.storeState === 'button' && g.googlePlayUrl) || (g.youtubePublished && g.youtubeUrl)
+          ? html`<section class="download-section">
+              <h2>${t.detail.downloadTitle}</h2>
+              <div class="store-links-lg">
+                ${g.storeState === 'button' && g.googlePlayUrl
+                  ? html`<a
+                      class="store-link-lg"
+                      href=${g.googlePlayUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Google Play"
+                    >
+                      <img class="store-icon-lg" src="/site-assets/images/google-play.svg" alt="Google Play" loading="lazy" />
+                    </a>`
+                  : g.storeState === 'comingsoon'
+                    ? html`<span class="pill pill-comingsoon">${t.catalog.comingSoon}</span>`
+                    : nothing}
+                ${g.youtubePublished && g.youtubeUrl
+                  ? html`<a
+                      class="store-link-lg"
+                      href=${g.youtubeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="YouTube"
+                    >
+                      <img class="store-icon-lg" src="/site-assets/images/youtube.svg" alt="YouTube" loading="lazy" />
+                    </a>`
+                  : nothing}
+              </div>
             </section>`
           : nothing}
       </div>

@@ -1,9 +1,0 @@
-# 06-gameover-en  （終了画面: 4席の順位を大きく前面表示・モーダル可読 / lang=en）★修正
-- 関連テストID: PH04, RES02, SEAT01/02, Z05, LAY
-- 不具合: (image#25/#26) 順位がアイコン背面に隠れる/文字が豆粒。(image#27) 捨て札が
-  ダイアログ背後に重なり文字が読みにくい。
-- 修正: 順位をアバターの一部として前面に特大表示(seat-rank 38/50px・縁取り)。4席とも識別。
-  捨て札はモーダル/ダイアログ表示中は薄く(is-faint)＝文字が読める。overlay/modal は see-through 統一。
-- 期待: CPU2/CPU3/CPU1/YOU の順位(1ST〜4TH)が大きく前面表示。'Game over. Retry?'/Quit/OK が可読。
-- 実際: 06-gameover-en.png 参照（4席＋大順位、捨て札は薄く、ダイアログ文字くっきり）
-- 判定: PASS（一次）。seat-rank=4。最終チェックは人間。

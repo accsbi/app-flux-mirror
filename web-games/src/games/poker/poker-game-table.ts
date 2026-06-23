@@ -362,14 +362,6 @@ export class PokerGameTable extends LitElement {
     }, 0)
   }
 
-  private pokerGuideFallbackLines(): string[] {
-    return [
-      'Simple Poker Guide',
-      'Press START to deal five cards, then mark DRAW cards to exchange.',
-      'Press SUBMIT to score your hand. COIN changes by payout multiplier.'
-    ]
-  }
-
   private increaseBet(event?: CustomEvent<{ isRepeating?: boolean }>): void {
     const maxAllowedBet = this.coin
     if (maxAllowedBet < MIN_BET_TO_START) {
@@ -554,16 +546,11 @@ export class PokerGameTable extends LitElement {
     const ads = block?.ads
     const chrome = getSharedChromeText(this.selectedLanguage)
 
-    const customGuideContent = getLocalizedString(overview, 'poker_guide_content')
-    const guideLines = customGuideContent.length > 0
-      ? splitTextLines(customGuideContent).filter((line) => line.length > 0)
-      : [
-        getLocalizedString(overview, 'poker_guide_intro'),
-        getLocalizedString(overview, 'poker_guide_rules'),
-        getLocalizedString(overview, 'poker_guide_payout')
-      ]
-        .flatMap((section) => splitTextLines(section))
-        .filter((line) => line.length > 0)
+    const customGuideContent = getLocalizedString(overview, 'guide_content')
+    if (overview && !customGuideContent) {
+      throw new Error('guide_content がありません。build_content.py で生成してください（直書きフォールバック禁止）。')
+    }
+    const guideLines = splitTextLines(customGuideContent).filter((line) => line.length > 0)
 
     return {
       home: chrome.home,
@@ -577,7 +564,7 @@ export class PokerGameTable extends LitElement {
       clearStatsLabel: getLocalizedString(settings, 'reset_points') || 'Reset Points',
       clearCacheLabel: getLocalizedString(settings, 'clear_cache') || 'Clear Cache',
       guideTitle: chrome.guideOverview,
-      guideLines: guideLines.length > 0 ? guideLines : this.pokerGuideFallbackLines(),
+      guideLines: guideLines,
       removeAdsTitle: getLocalizedString(menu, 'remove_ads') || 'Remove Ads',
       removeAdsLines: [
         getLocalizedString(ads, 'web_store_message') ||

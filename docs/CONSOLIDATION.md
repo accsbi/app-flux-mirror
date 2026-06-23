@@ -29,8 +29,8 @@
 
 | 項目 | 正しい共通方式 | 基準実装 |
 |---|---|---|
-| ゲーム内ガイド | config `overview_info.<slug>_guide_content` を `getLocalizedString()` + `splitTextLines()` で読み、`<guide-overview-panel .lines=…>` に渡す。**メニューのガイドと同一ソース**。ハードコード禁止。 | blackjack / poker / casino-war / memory |
-| ガイド文言の出所 | BASE markdown `### [ … ] {GUIDE}` セクション → `scripts/build_content.py` → config `*_guide_content`。本文見出しは `■`（`#`/`##`/`###` は parser と衝突するため不可）。 | `scripts/build_content.py` |
+| ゲーム内ガイド | config `overview_info.<slug>_guide_content` を `getLocalizedString()` + `splitTextLines()` で読み、`<guide-overview-panel .lines=…>` に渡す。**メニューのガイドと同一ソース**。ハードコード禁止。 | 全ゲーム（memory=`memory_battle_guide_content` / high-low=`high_low_guide_content`） |
+| ゲーム内ガイド・概要の出所 | BASE markdown の **APP 専用**セクション `### [ Guide ] {APP}`（ja `ガイド` / zh `指南`）と `### [ App Intro ] {APP}`（ja `アプリ概要` / zh `应用概要`）→ `scripts/build_content.py` → config `overview_info.<slug>_guide_content` と `overview_info.overview_intro`（**原文そのまま** raw_body で出力）。これらは APP 専用なので店頭説明(.md)/Google Store(.txt) には出ない。本文見出しは `■` 推奨だが、`#`/`##` も可（parser は本文中の `#`/`##` を温存。section 区切りの `### ` のみ不可）。 | `scripts/build_content.py` |
 | ランタイム文言（「親を決めます」「CPUの番」等） | config の `game.*` / `<game>.*` ブロックから `getLocalizedString()`。**ゲームファイル内に多言語テーブル（`Record<AppLanguage>` / `{ja,en,zh}`）を持たない**。 | blackjack / poker / casino-war = ハードコード0件 |
 | 結果バナー (win/lose/tie/push/21/no_more_bets/match…) | `common/messages/*.png` を `buildGameAssetUrl('messages/<name>.png')` で読む。 | blackjack / casino-war / memory |
 | アセットURL | `buildGameAssetUrl()` 一本（`shared/infra/game-asset-url.ts`）。`messages/`/`cards/`/`effects/` 等の無印は `common/` 解決。 | 全ゲーム |
@@ -53,7 +53,7 @@
 
 **high-low** — ゲーム内文言の大半が直書き英語（config 参照わずか4箇所）。実質ローカライズされていない。
 - `HIGH`/`LOW` ボタン、`PLAYER Wins!`/`CPU Wins!`/`Draw!`（winner）、`BINGO`/`MISS`/`TIE`（結果バナー）、宣言・`action-msg` 等。
-- ガイドは config だが `overview_intro` 流用（専用 `high_low_guide_content` でない）。
+- ガイドは **修正済**：専用 `high_low_guide_content`（BASE MD `### [ Guide ] {APP}` 由来）を新設し、game-table / standalone とも `overview_intro` 流用をやめてこのキーを読む（未設定時のみ `overview_intro` フォールバック）。
 
 **old-maid** — `const T`（ja/en/zh）に 11 文言を自前テーブル化（他ゲームは config）。
 - `parent / parentIs / removePairs / drawFrom / cpuTurn / cpuPause / shuffle / ok / again / menu / you`。

@@ -24,6 +24,8 @@ export class StandaloneGameMenu extends LitElement {
   @property({ type: String, attribute: 'store-notice' }) storeNotice = ''
   @property({ type: String, attribute: 'store-title' }) storeTitle = ''
   @property({ type: String, attribute: 'store-url' }) storeUrl = ''
+  // ストア表示状態 'button'|'comingsoon'|'hidden'（config.app_info.store_state=CSV由来）。
+  @property({ type: String, attribute: 'store-state' }) storeState = 'button'
   @property({ type: String, attribute: 'store-badge-src' }) storeBadgeSrc = ''
   @property({ type: String, attribute: 'store-badge-alt' }) storeBadgeAlt = 'Google Play'
   @property({ type: String, attribute: 'youtube-url' }) youtubeUrl = ''
@@ -75,7 +77,9 @@ export class StandaloneGameMenu extends LitElement {
       : null
     const hasStoreLink = this.storeUrl.trim().length > 0 && this.storeBadgeSrc.trim().length > 0
     const hasYoutubeLink = this.youtubeUrl.trim().length > 0 && this.youtubeBadgeSrc.trim().length > 0
-    const hasPromotionSection = hasStoreLink || hasYoutubeLink
+    // comingsoon: ストアURL未公開でも「comingsoon」を出す（文言は localize しない literal）。サイトと同方針。
+    const isComingSoon = this.storeState === 'comingsoon' && !hasStoreLink
+    const hasPromotionSection = hasStoreLink || hasYoutubeLink || isComingSoon
     const hasVersion = this.version.trim().length > 0
     const stageStyle = `background-image: url('${this.backgroundImageSrc}')`
 
@@ -126,7 +130,7 @@ export class StandaloneGameMenu extends LitElement {
               ${hasPromotionSection
         ? html`
                     <section class="store-section">
-                      ${this.storeNotice
+                      ${(hasStoreLink && this.storeNotice)
             ? html`<p class="store-notice">${this.storeNotice}</p>`
             : null}
                       ${this.storeTitle
@@ -139,6 +143,9 @@ export class StandaloneGameMenu extends LitElement {
                                 <img class="store-badge store-badge-google" src=${this.storeBadgeSrc} alt=${this.storeBadgeAlt} />
                               </a>
                             `
+            : null}
+                        ${isComingSoon
+            ? html`<span class="store-comingsoon">comingsoon</span>`
             : null}
                         ${hasYoutubeLink
             ? html`
@@ -223,6 +230,12 @@ export class StandaloneGameMenu extends LitElement {
       }
       .menu-title-row h1 {
         width: 100%;
+        /* 長いタイトル（poker "Classic Simple Poker (Five-card draw)"）が
+           menu-base の white-space:nowrap で右に見切れる不具合の修正。
+           折返しを許可して全文を表示する（コインは別行なので押し出さない）。 */
+        white-space: normal;
+        line-height: 1.15;
+        overflow-wrap: anywhere;
       }
 
       .menu-coin {
@@ -350,6 +363,25 @@ export class StandaloneGameMenu extends LitElement {
         margin: 0;
         text-align: center;
         text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+      }
+
+      /* comingsoon: Google Play バッジの代わりに出す「comingsoon」ピル（サイトの .coming-soon と同趣旨）。
+         文言は localize しない literal。 */
+      .store-comingsoon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 40px;
+        padding: 0 18px;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        color: #cfd8da;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        white-space: nowrap;
       }
 
       .store-notice { font-size: 18px; line-height: 1.35; }

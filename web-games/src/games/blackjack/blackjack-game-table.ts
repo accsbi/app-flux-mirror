@@ -243,12 +243,9 @@ export class BlackjackGameTable extends LitElement {
     return buildGameAssetUrl(relativePath)
   }
 
-  // 結果バナー: win/lose/tie/push は全カードゲーム共通(common/messages)。
-  // blackjack(=「BLACKJACK!!」バナー)だけ blackjack 単独アセット(blackjack/)から読む。
+  // 結果バナー: win/lose/tie/push/blackjack(=「21」)はすべて全カードゲーム共通(common/messages)。
   private resultImageUrl(name: string): string {
-    return name === 'blackjack'
-      ? this.assetUrl('blackjack/blackjack.png')
-      : this.assetUrl(`messages/${name}.png`)
+    return this.assetUrl(`messages/${name}.png`)
   }
 
   private openRemoveAdsStore(): void {
@@ -921,39 +918,11 @@ export class BlackjackGameTable extends LitElement {
     const game = block?.game
     const chrome = getSharedChromeText(this.selectedLanguage)
 
-    const customGuideContent = getLocalizedString(overview, 'blackjack_guide_content')
-    const guideLines = customGuideContent.length > 0
-      ? splitTextLines(customGuideContent).filter((line) => line.length > 0)
-      : (() => {
-        const payoutGuideLines = [
-          getLocalizedString(overview, 'blackjack_payout_summary_title'),
-          getLocalizedString(overview, 'blackjack_payout_summary_content')
-        ]
-          .flatMap((section) => splitTextLines(section))
-          .filter((line) => line.length > 0)
-
-        return [
-          getLocalizedString(overview, 'overview_intro'),
-          [getLocalizedString(overview, 'features_title'), getLocalizedString(overview, 'features_content')].filter(Boolean).join('\n'),
-          [getLocalizedString(overview, 'procedure_title'), getLocalizedString(overview, 'procedure_content')].filter(Boolean).join('\n'),
-          [getLocalizedString(overview, 'description_title_1'), getLocalizedString(overview, 'description_content_1')].filter(Boolean).join('\n'),
-          [getLocalizedString(overview, 'description_title_2'), getLocalizedString(overview, 'description_content_2')].filter(Boolean).join('\n'),
-          [getLocalizedString(overview, 'description_title_3'), getLocalizedString(overview, 'description_content_3')].filter(Boolean).join('\n'),
-          ...(payoutGuideLines.length > 0
-            ? payoutGuideLines
-            : [
-              'Payout Summary',
-              '- Win: 2x payout (BET included)',
-              '- Blackjack: pays 3:2 (+1.5x net, 2.5x total return including BET)',
-              '- Push: 1x payout (BET returned)',
-              '- Lose/Bust: 0x payout'
-            ]),
-          [getLocalizedString(overview, 'supported_languages_title'), getLocalizedString(overview, 'supported_languages_content')].filter(Boolean).join('\n'),
-          [getLocalizedString(overview, 'notes_title'), getLocalizedString(overview, 'notes_content')].filter(Boolean).join('\n')
-        ]
-          .flatMap((section) => splitTextLines(section))
-          .filter((line) => line.length > 0)
-      })()
+    const customGuideContent = getLocalizedString(overview, 'guide_content')
+    if (overview && !customGuideContent) {
+      throw new Error('guide_content がありません。build_content.py で生成してください（直書きフォールバック禁止）。')
+    }
+    const guideLines = splitTextLines(customGuideContent).filter((line) => line.length > 0)
 
     return {
       home: chrome.home,

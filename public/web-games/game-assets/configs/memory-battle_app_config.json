@@ -3,13 +3,15 @@
   "app_info": {
     "version": "1.0.0",
     "news_url_template": "https://app-flux.com/{lang}/games-apps/memorymonsters/",
-    "play_store_url": "https://play.google.com/store/apps/details?id=com.games.memorymonsters"
+    "play_store_url": "https://play.google.com/store/apps/details?id=com.games.memorymonsters",
+    "youtube_url": "https://www.youtube.com/watch?v=4Qjgvynijgs",
+    "store_state": "button"
   },
   "assets": {
     "background": "common/images/background.webp",
     "card_base_path": "common/cards",
     "back_card": "common/cards/back_card.png",
-    "locked_stage_thumb": "memory-battle/character/enemy/unlocked.webp",
+    "locked_stage_thumb": "memory-battle/character/unlocked.webp",
     "bgm": "memory-battle/effects/main_bgm.ogg",
     "card_open_sound": "memory-battle/effects/card_open.mp3",
     "match_sound": "memory-battle/effects/match.mp3",
@@ -17,18 +19,17 @@
     "win_sound": "memory-battle/effects/win.mp3",
     "lose_sound": "memory-battle/effects/lose.mp3",
     "draw_sound": "memory-battle/effects/draw.mp3",
-    "match_banner": "memory-battle/messages/match.png",
-    "win_banner": "memory-battle/messages/win.png",
-    "lose_banner": "memory-battle/messages/lose.png",
-    "start_banner": "memory-battle/messages/start.png",
-    "wait_banner": "memory-battle/messages/wait.png"
+    "match_banner": "common/messages/match.png",
+    "win_banner": "common/messages/win.png",
+    "lose_banner": "common/messages/lose.png",
+    "start_banner": "common/messages/start.png",
+    "wait_banner": "common/messages/wait.png"
   },
   "enemies": [
     {
       "stage": 1,
-      "reward_coin": 20,
       "pair_capture_chance_percent": 10,
-      "image": "memory-battle/character/enemy/stage_1.webp",
+      "image": "memory-battle/character/stage_1.webp",
       "languages": {
         "ja": {
           "name": "村人",
@@ -42,17 +43,17 @@
           "name": "村民",
           "profile": "没有战斗经验的普通村民。你的第一个练习对手。"
         }
-      }
+      },
+      "betMultiplier": 1.2
     },
     {
       "stage": 2,
-      "reward_coin": 30,
       "pair_capture_chance_percent": 20,
-      "image": "memory-battle/character/enemy/stage_2.webp",
+      "image": "memory-battle/character/stage_2.webp",
       "languages": {
         "ja": {
-          "name": "酒場の酔っ払い",
-          "profile": "動きは荒いが予測しにくい相手"
+          "name": "若い女性",
+          "profile": "粗野で予測不可能な動きをする相手。"
         },
         "en": {
           "name": "Tavern Drunk",
@@ -62,13 +63,13 @@
           "name": "酒馆醉汉",
           "profile": "动作粗野、难以预测的对手。"
         }
-      }
+      },
+      "betMultiplier": 1.4
     },
     {
       "stage": 3,
-      "reward_coin": 40,
       "pair_capture_chance_percent": 30,
-      "image": "memory-battle/character/enemy/stage_3.webp",
+      "image": "memory-battle/character/stage_3.webp",
       "languages": {
         "ja": {
           "name": "盗賊",
@@ -82,13 +83,13 @@
           "name": "盗贼",
           "profile": "行动敏捷、擅长使用狡猾手段战斗的盗贼。"
         }
-      }
+      },
+      "betMultiplier": 1.6
     },
     {
       "stage": 4,
-      "reward_coin": 50,
       "pair_capture_chance_percent": 40,
-      "image": "memory-battle/character/enemy/stage_4.webp",
+      "image": "memory-battle/character/stage_4.webp",
       "languages": {
         "ja": {
           "name": "城門の衛兵",
@@ -102,93 +103,13 @@
           "name": "城门卫兵",
           "profile": "负责守卫城门、训练有素的士兵。"
         }
-      }
+      },
+      "betMultiplier": 1.8
     },
     {
       "stage": 5,
-      "reward_coin": 70,
       "pair_capture_chance_percent": 50,
-      "image": "memory-battle/character/enemy/stage_5.webp",
-      "languages": {
-        "ja": {
-          "name": "傭兵",
-          "profile": "実戦経験が豊富な金で雇われた戦士"
-        },
-        "en": {
-          "name": "Mercenary",
-          "profile": "A hired warrior with extensive experience in real combat."
-        },
-        "zh": {
-          "name": "雇佣兵",
-          "profile": "受雇作战、拥有丰富实战经验的战士。"
-        }
-      }
-    },
-    {
-      "stage": 6,
-      "reward_coin": 90,
-      "pair_capture_chance_percent": 60,
-      "image": "memory-battle/character/enemy/stage_6.webp",
-      "languages": {
-        "ja": {
-          "name": "騎士",
-          "profile": "鎧と剣を装備した正式な騎士"
-        },
-        "en": {
-          "name": "Royal Knight",
-          "profile": "A formally appointed knight equipped with armor and a sword."
-        },
-        "zh": {
-          "name": "皇家骑士",
-          "profile": "身穿铠甲、手持利剑的正式骑士。"
-        }
-      }
-    },
-    {
-      "stage": 7,
-      "reward_coin": 120,
-      "pair_capture_chance_percent": 70,
-      "image": "memory-battle/character/enemy/stage_7.webp",
-      "languages": {
-        "ja": {
-          "name": "騎士団長",
-          "profile": "騎士団を率いる熟練の指揮官"
-        },
-        "en": {
-          "name": "Knight Commander",
-          "profile": "A highly skilled commander who leads the kingdom's knights."
-        },
-        "zh": {
-          "name": "骑士团长",
-          "profile": "率领骑士团、经验丰富的指挥官。"
-        }
-      }
-    },
-    {
-      "stage": 8,
-      "reward_coin": 150,
-      "pair_capture_chance_percent": 80,
-      "image": "memory-battle/character/enemy/stage_8.webp",
-      "languages": {
-        "ja": {
-          "name": "公爵",
-          "profile": "王国の大領地を治める有力貴族"
-        },
-        "en": {
-          "name": "Duke",
-          "profile": "A powerful noble who governs a vast territory within the kingdom."
-        },
-        "zh": {
-          "name": "公爵",
-          "profile": "统治王国大片领地的强大贵族。"
-        }
-      }
-    },
-    {
-      "stage": 9,
-      "reward_coin": 200,
-      "pair_capture_chance_percent": 90,
-      "image": "memory-battle/character/enemy/stage_9.webp",
+      "image": "memory-battle/character/stage_5.webp",
       "languages": {
         "ja": {
           "name": "宮廷魔術師",
@@ -202,13 +123,93 @@
           "name": "宫廷魔法师",
           "profile": "侍奉王宫、精通谋略与魔法的高手。"
         }
-      }
+      },
+      "betMultiplier": 2.0
+    },
+    {
+      "stage": 6,
+      "pair_capture_chance_percent": 60,
+      "image": "memory-battle/character/stage_6.webp",
+      "languages": {
+        "ja": {
+          "name": "騎士",
+          "profile": "鎧と剣を装備した正式な騎士"
+        },
+        "en": {
+          "name": "Royal Knight",
+          "profile": "A formally appointed knight equipped with armor and a sword."
+        },
+        "zh": {
+          "name": "皇家骑士",
+          "profile": "身穿铠甲、手持利剑的正式骑士。"
+        }
+      },
+      "betMultiplier": 2.2
+    },
+    {
+      "stage": 7,
+      "pair_capture_chance_percent": 70,
+      "image": "memory-battle/character/stage_7.webp",
+      "languages": {
+        "ja": {
+          "name": "騎士団長",
+          "profile": "騎士団を率いる熟練の指揮官"
+        },
+        "en": {
+          "name": "Knight Commander",
+          "profile": "A highly skilled commander who leads the kingdom's knights."
+        },
+        "zh": {
+          "name": "骑士团长",
+          "profile": "率领骑士团、经验丰富的指挥官。"
+        }
+      },
+      "betMultiplier": 2.4
+    },
+    {
+      "stage": 8,
+      "pair_capture_chance_percent": 80,
+      "image": "memory-battle/character/stage_8.webp",
+      "languages": {
+        "ja": {
+          "name": "公爵",
+          "profile": "王国の大領地を治める有力貴族"
+        },
+        "en": {
+          "name": "Duke",
+          "profile": "A powerful noble who governs a vast territory within the kingdom."
+        },
+        "zh": {
+          "name": "公爵",
+          "profile": "统治王国大片领地的强大贵族。"
+        }
+      },
+      "betMultiplier": 2.6
+    },
+    {
+      "stage": 9,
+      "pair_capture_chance_percent": 90,
+      "image": "memory-battle/character/stage_9.webp",
+      "languages": {
+        "ja": {
+          "name": "宮廷魔術師",
+          "profile": "王宮に仕える知略と魔法の使い手"
+        },
+        "en": {
+          "name": "Court Sorcerer",
+          "profile": "A master of strategy and magic who serves in the royal court."
+        },
+        "zh": {
+          "name": "宫廷魔法师",
+          "profile": "侍奉王宫、精通谋略与魔法的高手。"
+        }
+      },
+      "betMultiplier": 2.8
     },
     {
       "stage": 10,
-      "reward_coin": 300,
       "pair_capture_chance_percent": 100,
-      "image": "memory-battle/character/enemy/stage_10.webp",
+      "image": "memory-battle/character/stage_10.webp",
       "languages": {
         "ja": {
           "name": "暗黒王",
@@ -222,7 +223,8 @@
           "name": "黑暗之王",
           "profile": "统治整个王国的最终首领级君主。绝不会放过任何一次失误。"
         }
-      }
+      },
+      "betMultiplier": 3.0
     }
   ],
   "languages": {
@@ -243,13 +245,17 @@
         "sound_help_button_label": "?",
         "clear_cache": "Clear Cache",
         "clear_cache_confirm_title": "Clear Cache",
-        "clear_cache_confirm_message": "Clear cache now? Coins and stage progress will be kept."
+        "clear_cache_confirm_message": "Clear cache now? Coins and stage progress will be kept.",
+        "help_icon_label": "?",
+        "sound_help_ok": "OK"
       },
       "common": {
         "ok": "OK",
         "cancel": "Cancel",
         "confirm": "Confirm",
-        "back": "Back"
+        "back": "Back",
+        "yes": "Yes",
+        "no": "No"
       },
       "ads": {
         "remove_ads_benefit_1_title": "About Removing Ads",
@@ -259,7 +265,10 @@
         "purchase_button": "Purchase",
         "already_purchased": "Already Purchased",
         "web_store_message": "Remove Ads is available only in the Android app.\nPlease download the app from Google Play and enjoy the app there.",
-        "web_store_button": "Open in Google Play"
+        "web_store_button": "Open in Google Play",
+        "purchase_failed": "Purchase failed. Please try again.",
+        "purchase_error": "An error occurred during purchase. Please try again.",
+        "purchase_success_message": "Thank you for your purchase! Ads have been removed from the app."
       },
       "game": {
         "title": "Classic Simple Memory Battle",
@@ -270,6 +279,7 @@
         "practice_status_label": "Solo Practice Stage",
         "practice_setup_title": "Solo Practice",
         "practice_setup_message": "This is a solo practice stage you can play casually.\nChoose the number of cards and start the game.",
+        "practice_coin_note": "Note: Solo practice does not use COIN.",
         "practice_card_count_label": "Card Count",
         "practice_start_button": "Start Practice",
         "practice_clear_title": "Practice is over. Good job!",
@@ -290,8 +300,8 @@
         "stage_start_confirm_cancel": "Cancel",
         "enemy_status_format": "{name} (Stage {stage})",
         "enemy_intro_title": "Stage {stage}",
-        "enemy_reward": "Reward: {coin} coin",
-        "start_battle": "START BATTLE",
+        "enemy_reward": "Reward: ×{mult}",
+        "start_battle": "BET & START",
         "dealing_cards": "Dealing cards...",
         "draw_battle_title": "Decide who goes first",
         "draw_battle_message": "Choose either card.\n[A] is the strongest, and [2] is the weakest.",
@@ -344,11 +354,23 @@
         "early_battle_continue": "Continue",
         "early_battle_finish": "Stop",
         "early_battle_confirm_message": "This will not affect the result, but would you like to continue the game?",
-        "rules_text": "・Tap START, then pick a stage.\n・Draw a card to decide who goes first — the higher card chooses.\n・On your turn, flip two cards. A match keeps your turn going.\n・When all cards are gone, the side with more pairs wins."
+        "reward_help_label": "About rewards?",
+        "reward_help_title": "About rewards",
+        "reward_help_win": "Win: you gain BET × the stage multiplier in COIN.",
+        "reward_help_lose": "Lose: your BET is forfeited (0 COIN).",
+        "quick_start": "• Tap START, then pick a stage.\n• Draw a card to decide who goes first — the higher card chooses.\n• On your turn, flip two cards. A match keeps your turn going.\n• When all cards are gone, the side with more pairs wins.",
+        "bet_available_label": "COIN",
+        "feedback_button": "Feedback",
+        "feedback_title": "Feedback",
+        "feedback_placeholder": "Please enter your feedback",
+        "feedback_ok": "Send",
+        "feedback_cancel": "Cancel",
+        "feedback_validation_min": "Please enter at least 10 characters.",
+        "feedback_submit_failed": "Failed to send feedback. Please try again.",
+        "feedback_submit_success": "Thank you for your feedback."
       },
       "overview_info": {
-        "guide_content": "# Classic Simple Memory Battle Guide\n\n## Overview\n\n- Concentration is a simple memory game where you flip facedown playing cards and try to find pairs with the same rank.\n\n## Solo Practice\n- You can play alone by choosing 4, 8, 12, 16, or 20 cards.\n\n## Battle Against CPU\n\n- This is a turn-based concentration game. Each side takes turns flipping cards, and if a pair is found, that side gets another turn. When all cards are gone, the side with more pairs wins.\n- A cold game rule is used here. Once one side reaches 6 pairs first, the winner is decided. You may keep playing, but it does not affect the result.\n\n1. On the stage select screen, choose any unlocked stage. Stages you have already cleared can be played as many times as you like.\n\n2. Read the monster information, then choose Start Battle.\n\n3. Decide who goes first and second. The side with the higher card rank gets the choice.\n- [A] is the strongest card, and [2] is the weakest.\n\n4. Win the game to unlock the next stage.\n\n## Win / Lose\n- YOU WIN: YOU have more pairs than CPU.\n- YOU LOSE: YOU have fewer pairs than CPU.\n- DRAW: It is tied. Replay the same stage.\n\n## Rewards\n- Stage 1 : 20 coin\n- Stage 2 : 30 coin\n- Stage 3 : 40 coin\n- Stage 4 : 50 coin\n- Stage 5 : 70 coin\n- Stage 6 : 90 coin\n- Stage 7 : 120 coin\n- Stage 8 : 150 coin\n- Stage 9 : 200 coin\n- Stage 10 : 300 coin",
-        "overview_intro": "Classic Simple Memory Battle is an easy memory-matching card game you can play on your own.\n\nFlip cards two at a time and find matching pairs. Warm up in solo practice, or face CPU rivals turn by turn in battle mode.\n\nNo sign-up and no online play. Just a quick, relaxing card game with a classic, vintage design. Cards are dealt at random."
+        "guide_content": "[ App Description ]\nClassic Simple Memory Battle is an easy memory-matching card game you can play on your own.\n\nFlip cards two at a time and find matching pairs. Warm up in solo practice, or face CPU rivals turn by turn in battle mode.\n\nNo sign-up and no online play. Just a quick, relaxing card game with a classic, vintage design. Cards are dealt at random.\n\n[ How to Play ]\n#### Steps\n\n1. From the menu, tap START.\n2. Pick a stage on the stage-select screen (you can replay cleared stages anytime).\n3. Check the rival info, then tap Start Battle.\n4. Draw a card to decide who goes first — the higher card wins the choice.\n5. Take turns flipping two cards. Find a match to keep your turn.\n6. When all cards are gone, the side with more pairs wins. Win to unlock the next stage and earn COIN.\n\n* Solo practice mode lets you play alone with 4, 8, 12, 16, or 20 cards.\n* To quit, tap HOME at the top left.\n\n#### Stage Rewards\n\n* Stages 1–5: 20–70 COIN\n* Stages 6–10: 90–300 COIN\n\n[ In-App Purchases ]\n* Ads help us keep making and running the app. Thank you for understanding.\n* A one-time purchase removes ads and lets you play offline (airplane mode, no-signal areas, and so on).\n* Note: You still need the internet to update the app or open outside links.\n\n[ Notes ]\n* No real money, prizes, or crypto are used. This app is not for gambling.\n* If the app feels slow, open Settings in the menu and clear the cache.\n* If problems continue, delete the app's data in your device settings for a full reset.\n\n[ Supported Languages ]\n* English / Japanese / Chinese (Simplified)\n- Note: Some words shown during play may be in English.\n\n[ Contact / Bug Report ]\n* To report a bug, use FEEDBACK on the game screen.\n* If you need a reply, please use the [Contact form](https://app-flux.com/en/contact/).\n\n[ Privacy Policy (External Link) ]\n* [Privacy policy link](https://app-flux.com/en/games-apps/privacy-policy/)"
       }
     },
     "ja": {
@@ -368,13 +390,17 @@
         "sound_help_button_label": "?",
         "clear_cache": "キャッシュをクリア",
         "clear_cache_confirm_title": "キャッシュをクリア",
-        "clear_cache_confirm_message": "キャッシュをクリアしますか？ コインとステージ進行は保持されます。"
+        "clear_cache_confirm_message": "キャッシュをクリアしますか？ コインとステージ進行は保持されます。",
+        "help_icon_label": "?",
+        "sound_help_ok": "OK"
       },
       "common": {
         "ok": "OK",
         "cancel": "キャンセル",
         "confirm": "確認",
-        "back": "戻る"
+        "back": "戻る",
+        "yes": "はい",
+        "no": "いいえ"
       },
       "ads": {
         "remove_ads_benefit_1_title": "広告の削除について",
@@ -384,8 +410,8 @@
         "purchase_button": "購入する",
         "already_purchased": "購入済み",
         "purchase_failed": "購入に失敗しました。もう一度お試しください。",
-        "purchase_error": "購入処理でエラーが発生しました。もう一度お試しください。",
-        "purchase_success_message": "ご購入ありがとうございます。アプリ内の広告は削除されました。"
+        "purchase_error": "購入中にエラーが発生しました。もう一度お試しください。",
+        "purchase_success_message": "ご購入ありがとうございます！広告が非表示になりました。"
       },
       "game": {
         "title": "Classic Simple Memory Battle",
@@ -396,6 +422,7 @@
         "practice_status_label": "1人練習ステージ",
         "practice_setup_title": "1人用(練習用)",
         "practice_setup_message": "気軽に挑戦できる1人用の練習ステージです。\n枚数を選んでゲームを開始してください。",
+        "practice_coin_note": "注意：練習モードでは COIN を使いません。",
         "practice_card_count_label": "枚数",
         "practice_start_button": "練習スタート",
         "practice_clear_title": "練習は、終わりです。お疲れさまでした！",
@@ -416,8 +443,8 @@
         "stage_start_confirm_cancel": "キャンセル",
         "enemy_status_format": "{name} (ステージ {stage})",
         "enemy_intro_title": "ステージ {stage}",
-        "enemy_reward": "報酬: {coin} COIN",
-        "start_battle": "スタート バトル",
+        "enemy_reward": "報酬:×{mult}",
+        "start_battle": "BET & スタート",
         "dealing_cards": "カードを配っています...",
         "draw_battle_title": "先行・後攻を決めます",
         "draw_battle_message": "どちらかのカードを選択してください。[A]が一番強く、[2]が一番弱いです。",
@@ -470,11 +497,23 @@
         "early_battle_continue": "続ける",
         "early_battle_finish": "やめる",
         "early_battle_confirm_message": "勝敗に影響はありませんが、ゲームを続けますか？",
-        "rules_text": "・ステージまたは、1人用(練習用)を選択してください。\n・CPUはレベルが高くなるにつれて、めくったカードを覚える範囲が高くなり、強くなります。\n・CPUとの対戦は、先に半分以上取れば、コールドゲーム(時短)で勝利です。続けることも可能です。"
+        "reward_help_label": "報酬について？",
+        "reward_help_title": "報酬について",
+        "reward_help_win": "勝ち：BET額 × ステージ倍率の COIN を獲得します。",
+        "reward_help_lose": "負け：BET した COIN は没収されます（獲得0）。",
+        "quick_start": "• ステージまたは、1人用(練習用)を選択してください。\n• ステージが進むごとにCPUの記憶レベルが高く、強くなります。\n• CPU戦は、先に半分以上取れば、コールドゲーム(時短)で勝利です。続けることも可能です。\n• 詳しいルールはガイドから確認できます。",
+        "bet_available_label": "COIN",
+        "feedback_button": "フィードバック",
+        "feedback_title": "フィードバック",
+        "feedback_placeholder": "ご意見をご記入ください",
+        "feedback_ok": "送信",
+        "feedback_cancel": "キャンセル",
+        "feedback_validation_min": "10文字以上入力してください。",
+        "feedback_submit_failed": "送信に失敗しました。もう一度お試しください。",
+        "feedback_submit_success": "ご意見ありがとうございました。"
       },
       "overview_info": {
-        "guide_content": "# Classic Simple Memory Battle 遊び方\n\n## ゲーム概要\n\n- 神経衰弱（しんけいすいじゃく）は、裏返しのトランプを表向きに返して、同じ数字のペアを当てる、シンプルな記憶力のゲームです。\n\n## 1人用(練習用)\n- 4枚、8枚、12枚、16枚、20枚から枚数を選び、シングルで遊べます。\n## CPUと対戦\n\n- ターン制の神経衰弱です。交互に引き、ペアを当てた場合は、続けてもう一度引けます。すべてのカードがなくなり、獲得したペアが多いほうの勝です。\n※コールドゲーム(先に6ペア先取)を採用しています。ゲームを続けることもできますが、勝敗には影響しません。\n\n1. ステージ選択画面で、解放済みのステージを選びます。一度クリアしたステージは何度でも遊べます。\n\n2. モンスターの情報を読み、スタートバトルを選択してください。\n\n3. 先行・後攻を決めます。トランプの数値が大きいほうが選択権を得られます。\n※[A]が一番強く、[2]が一番弱いです。\n\n4. ゲームに勝利すると次のステージが解放されます。\n\n## 勝敗\n- あなたの勝ち: あなたのペア数が CPU より多い\n- あなたの負け: あなたのペア数が CPU より少ない\n- 引き分け: 同点。同じステージを再戦\n\n## 報酬\n- ステージ1 : 20 COIN\n- ステージ2 : 30 COIN\n- ステージ3 : 40 COIN\n- ステージ4 : 50 COIN\n- ステージ5 : 70 COIN\n- ステージ6 : 90 COIN\n- ステージ7 : 120 COIN\n- ステージ8 : 150 COIN\n- ステージ9 : 200 COIN\n- ステージ10 : 300 COIN",
-        "overview_intro": "Classic Simple Memory Battle は、1人で気軽に遊べる、やさしいカードあわせ（神経衰弱）です。\n\nカードを2枚ずつめくって、同じカードのペアを見つけます。1人用の練習でウォームアップしたり、バトルモードで CPU と順番に対戦したりできます。\n\n登録もオンライン対戦もありません。クラシックで落ち着いた見た目の、すきま時間にぴったりのトランプゲームです。カードはすべてランダムです。"
+        "guide_content": "[ アプリの概要 ]\nClassic Simple Memory Battle は、1人で気軽に遊べる、神経衰弱のトランプカードゲームです。\n\n1人用、個性的なキャラのCPU対戦できます。神経衰弱が初心者でも簡単に楽しめます。\n\n[ 遊び方 ]\n#### 1人用(練習用)\n* 4枚、8枚、12枚、16枚、20枚から枚数を選び、シングルで遊べます。\n\n#### CPU対戦\n\n* ターン制の通常の神経衰弱です。交互に引き、ペアを当てた場合は、続けてもう一度引けます。すべてのカードがなくなり、獲得したペアが多いほうの勝です。\n* 注 : コールドゲーム(先に6ペア先取)を採用しています。ゲームを続けることもできますが、勝敗には影響しません。\n\n* ステージクリアごとに次のステージが解放されます。一度クリアしたステージは何度でも遊べます。\n* 先行・後攻を決めます。トランプの数値が大きいほうが選択権を得られます。([A]が一番強く、[2]が一番弱いです。)\n\n#### 勝敗と報酬\n\n* 勝ち：あなたのペア数がCPUより多い場合。BET × ステージ倍率のCOINを獲得します（小数切り捨て）。\n* 引き分け：ペア数が同じ場合。配当はなく、BETしたCOINが戻ります。\n* 負け：あなたのペア数がCPUより少ない場合。BETしたCOINは没収されます。\n\n#### ステージ倍率\n\n* ステージ1：×1.2\n* ステージ2：×1.4\n* ステージ3：×1.6\n* ステージ4：×1.8\n* ステージ5：×2.0\n* ステージ6：×2.2\n* ステージ7：×2.4\n* ステージ8：×2.6\n* ステージ9：×2.8\n* ステージ10：×3.0\n\n[ 課金アイテム ]\n* 開発・運営を継続するため、広告表示についてご理解いただけますようお願い申し上げます。\n* 課金されますと、広告の非表示やオフラインプレイ(機内モード、電波の届かない場所など)が可能になります。\n* 注 : アプリの更新や外部リンクを開くときは、インターネットが必要です。\n\n[ 注意事項 ]\n* 現金・賞品・暗号資産などは使いません。ギャンブル目的のアプリではありません。\n* 動作が重いときは、メニューの設定からキャッシュクリアをお試しください。\n* 不具合やクラッシュが続く場合は、端末の設定からアプリのストレージデータを削除して、完全リセットを行ってください。\n\n[ お問い合わせ / 不具合報告 ]\n* 不具合の報告は、ゲーム画面の FEEDBACK からお願いします。\n* 返信が必要なときは、[Contact form](https://app-flux.com/ja/contact/) からお願いします。\n\n[ プライバシーポリシー (外部リンク) ]\n* [Privacy policy link](https://app-flux.com/ja/games-apps/privacy-policy/)"
       }
     },
     "zh": {
@@ -494,13 +533,17 @@
         "sound_help_button_label": "?",
         "clear_cache": "清除缓存",
         "clear_cache_confirm_title": "清除缓存",
-        "clear_cache_confirm_message": "要清除缓存吗？ 金币和关卡进度会保留。"
+        "clear_cache_confirm_message": "要清除缓存吗？ 金币和关卡进度会保留。",
+        "help_icon_label": "?",
+        "sound_help_ok": "OK"
       },
       "common": {
         "ok": "OK",
         "cancel": "取消",
         "confirm": "确认",
-        "back": "返回"
+        "back": "返回",
+        "yes": "是",
+        "no": "否"
       },
       "ads": {
         "remove_ads_benefit_1_title": "关于去除广告",
@@ -510,8 +553,8 @@
         "purchase_button": "购买",
         "already_purchased": "已购买",
         "purchase_failed": "购买失败，请重试。",
-        "purchase_error": "购买时发生错误，请重试。",
-        "purchase_success_message": "感谢您的购买。应用内广告已被移除。"
+        "purchase_error": "购买过程中发生错误，请重试。",
+        "purchase_success_message": "感谢您的购买！广告已从应用中移除。"
       },
       "game": {
         "title": "Classic Simple Memory Battle",
@@ -522,6 +565,7 @@
         "practice_status_label": "单人练习关卡",
         "practice_setup_title": "单人练习",
         "practice_setup_message": "这是可以轻松挑战的单人练习关卡。\n请选择卡牌张数后开始游戏。",
+        "practice_coin_note": "注意：单人练习不使用 COIN。",
         "practice_card_count_label": "张数",
         "practice_start_button": "开始练习",
         "practice_clear_title": "练习结束了，辛苦了！",
@@ -542,8 +586,8 @@
         "stage_start_confirm_cancel": "取消",
         "enemy_status_format": "{name} (关卡 {stage})",
         "enemy_intro_title": "关卡 {stage}",
-        "enemy_reward": "奖励: {coin} COIN",
-        "start_battle": "开始对战",
+        "enemy_reward": "奖励:×{mult}",
+        "start_battle": "下注 & 开始",
         "dealing_cards": "正在发牌...",
         "draw_battle_title": "决定先攻后攻",
         "draw_battle_message": "请选择其中一张卡牌。\n[A] 最强，[2] 最弱。",
@@ -596,11 +640,23 @@
         "early_battle_continue": "继续",
         "early_battle_finish": "停止",
         "early_battle_confirm_message": "这不会影响胜负结果，但还要继续游戏吗？",
-        "rules_text": "・点击 START，然后选择关卡。\n・抽牌决定先后手（点数大者可选择）。\n・轮到你时翻开两张牌，配对成功可继续。\n・所有牌消失后，配对更多的一方获胜。"
+        "reward_help_label": "关于奖励？",
+        "reward_help_title": "关于奖励",
+        "reward_help_win": "获胜：获得 BET × 关卡倍率 的金币。",
+        "reward_help_lose": "失败：押注的金币将被没收（获得0）。",
+        "quick_start": "• 点击 START，然后选择关卡。\n• 抽牌决定先后手（点数大者可选择）。\n• 轮到你时翻开两张牌，配对成功可继续。\n• 所有牌消失后，配对更多的一方获胜。",
+        "bet_available_label": "COIN",
+        "feedback_button": "反馈",
+        "feedback_title": "反馈",
+        "feedback_placeholder": "请输入您的反馈",
+        "feedback_ok": "发送",
+        "feedback_cancel": "取消",
+        "feedback_validation_min": "请至少输入10个字符。",
+        "feedback_submit_failed": "发送失败，请重试。",
+        "feedback_submit_success": "感谢您的反馈。"
       },
       "overview_info": {
-        "guide_content": "# Classic Simple Memory Battle 玩法说明\n\n## 游戏概要\n\n- 神经衰弱是一种简单的记忆游戏。你需要翻开背面的扑克牌，找出数字相同的一对。\n\n## 单人模式（练习用）\n- 可以从 4 张、8 张、12 张、16 张、20 张中选择张数，进行单人练习。\n\n## 与 CPU 对战\n\n- 这是回合制的神经衰弱。双方轮流翻牌，若配对成功，就能继续再翻一次。所有牌都被拿完后，获得配对更多的一方获胜。\n- 本游戏采用冷局规则（先拿到 6 对者直接判定胜利）。你也可以继续把游戏打完，但不会影响胜负结果。\n\n1. 在关卡选择画面中，选择已经解锁的关卡。已经通关过的关卡可以重复游玩。\n\n2. 阅读怪物信息后，选择“开始对战”。\n\n3. 决定先攻与后攻。点数较大的扑克牌获得选择权。\n- [A] 最强，[2] 最弱。\n\n4. 赢得对战后，下一关会被解锁。\n\n## 胜负\n- 你获胜：你的配对数比 CPU 多\n- 你失败：你的配对数比 CPU 少\n- 平局：双方同分，重新挑战同一关卡\n\n## 奖励\n- 关卡1 : 20 COIN\n- 关卡2 : 30 COIN\n- 关卡3 : 40 COIN\n- 关卡4 : 50 COIN\n- 关卡5 : 70 COIN\n- 关卡6 : 90 COIN\n- 关卡7 : 120 COIN\n- 关卡8 : 150 COIN\n- 关卡9 : 200 COIN\n- 关卡10 : 300 COIN",
-        "overview_intro": "Classic Simple Memory Battle 是一款可以独自轻松游玩、上手简单的翻牌配对（记忆）游戏。\n\n每次翻开两张牌，找出相同的一对。可在单人练习中热身，也可在对战模式中与 CPU 轮流对战。\n\n无需注册，也没有在线对战。这是一款外观经典、沉稳的纸牌游戏，很适合零碎时间游玩。所有牌均为随机。"
+        "guide_content": "[ 应用说明 ]\nClassic Simple Memory Battle 是一款可以独自轻松游玩、上手简单的翻牌配对（记忆）游戏。\n\n每次翻开两张牌，找出相同的一对。可在单人练习中热身，也可在对战模式中与 CPU 轮流对战。\n\n无需注册，也没有在线对战。这是一款外观经典、沉稳的纸牌游戏，很适合零碎时间游玩。所有牌均为随机。\n\n[ 玩法 ]\n#### 步骤\n\n1. 在菜单中点击 START。\n2. 在关卡选择画面选择关卡（已通关的关卡随时可再次挑战）。\n3. 查看对手信息后，点击「开始对战」。\n4. 抽牌决定先后手（点数大者获得选择权）。\n5. 轮流每次翻开两张牌，配对成功可继续行动。\n6. 所有牌消失后，配对更多的一方获胜。获胜后解锁下一关卡并获得 COIN。\n\n* 单人练习模式可从 4、8、12、16、20 张中选择，独自游玩。\n* 如需退出，请点击左上角 HOME。\n\n#### 关卡奖励\n\n* 关卡 1〜5：20〜70 COIN\n* 关卡 6〜10：90〜300 COIN\n\n[ 内购项目 ]\n* 广告能帮助我们持续制作和运营这款应用，感谢您的理解。\n* 一次购买即可去除广告，还能在离线时（飞行模式、无信号的地方等）游玩。\n* 注：更新应用或打开外部链接时，仍需要联网。\n\n[ 注意事项 ]\n* 不使用任何现金、奖品或加密资产。本应用并非用于赌博。\n* 如果运行变慢，请在菜单的设置中清除缓存。\n* 如果仍有问题，可在设备设置中删除该应用的数据，恢复到初始状态。\n\n[ 支持语言 ]\n* 英语 / 日语 / 中文（简体）\n- 注：游玩过程中的部分文字可能以英文显示。\n\n[ 联系我们 / 故障报告 ]\n* 报告故障，请使用游戏画面的 FEEDBACK。\n* 如需回复，请通过 [Contact form](https://app-flux.com/zh/contact/) 联系我们。\n\n[ 隐私政策（外部链接） ]\n* [Privacy policy link](https://app-flux.com/zh/games-apps/privacy-policy/)"
       }
     }
   }

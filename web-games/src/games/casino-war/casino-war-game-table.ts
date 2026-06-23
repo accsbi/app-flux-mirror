@@ -826,16 +826,11 @@ export class CasinoWarGameTable extends LitElement {
     const common = block?.common
     const game = block?.game
     const chrome = getSharedChromeText(this.selectedLanguage)
-    const customGuideContent = getLocalizedString(overview, 'casino_war_guide_content')
-    const guideLines = customGuideContent.length > 0
-      ? splitTextLines(customGuideContent).filter((line) => line.length > 0)
-      : [
-        getLocalizedString(overview, 'casino_war_guide_intro'),
-        getLocalizedString(overview, 'casino_war_guide_rules'),
-        getLocalizedString(overview, 'casino_war_guide_payout')
-      ]
-        .flatMap((section) => splitTextLines(section))
-        .filter((line) => line.length > 0)
+    const customGuideContent = getLocalizedString(overview, 'guide_content')
+    if (overview && !customGuideContent) {
+      throw new Error('guide_content がありません。build_content.py で生成してください（直書きフォールバック禁止）。')
+    }
+    const guideLines = splitTextLines(customGuideContent).filter((line) => line.length > 0)
     return {
       title: getLocalizedString(game, 'casino_war_title') || 'CASINO WAR',
       home: chrome.home,

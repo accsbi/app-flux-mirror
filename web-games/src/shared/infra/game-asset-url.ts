@@ -2,11 +2,11 @@
 // 配信先: public/web-games/game-assets/<...>
 //
 // 設計ルール（3in1 のような「まとめ置き」はしない）:
-//   - 全カードゲームで共通のもの（デッキ・背景・結果バナー win/lose/tie/push・共通の音）
+//   - 全カードゲームで共通のもの（デッキ・背景・結果バナー win/lose/tie/push/blackjack(21)/match…・共通の音）
 //       → 先頭フォルダ無しで渡す（例 'messages/win.png' 'effects/hit.mp3' 'cards/spades_A.png'）。
-//         これらは common/ 配下に解決される。
-//   - そのゲーム単独のもの（例 blackjack の BLACKJACK!! バナー）
-//       → 先頭にゲーム名フォルダを付けて渡す（例 'blackjack/blackjack.png'）。そのまま解決される。
+//         これらは common/ 配下に解決される。結果メッセージPNGは全ゲーム common/messages に集約。
+//   - そのゲーム単独のもの（例 memory-battle のキャラ画像）
+//       → 先頭にゲーム名フォルダを付けて渡す（例 'memory-battle/character/...'）。そのまま解決される。
 const TOP_FOLDER = /^(common|blackjack|poker|casino-war|high-low|memory-battle|old-maid|configs)\//
 
 function resolveRelativeAssetPath(relativePath: string): string {

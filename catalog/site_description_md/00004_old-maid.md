@@ -1,0 +1,143 @@
+## [ja]
+
+### [ アプリの概要 ]
+
+Classic Simple Old Maid は、YOU + CPUx3 で対戦する、シンプルなババ抜きゲームです。
+
+標準的なババ抜きのルールを採用しており、相手のカードを1枚引き、同じ数字のペアをそろえて捨てていきます。最初に手札がなくなったPlayerが勝ちとなり、最後までジョーカー（ババ）を持っていたPlayerが負けです。
+
+さらに、通常のババ抜きにゲーム内COINを使った、BET機能を追加しています。ゲーム開始前にCOINをBETし、順位に応じてCOINを獲得できます。シンプルなババ抜きに、順位と報酬を競う楽しさを加えたゲームです。クラシックなデザインを採用、大人向けのババ抜きをイメージして、開発をいたしました。
+
+### [ アプリの特徴 ]
+
+* 縦画面のプレイを想定しての設計、スマートフォン片手でも操作しやすいです。
+* 小さいスマホ画面でも見やすく、操作しやすいように調整しています。
+* Android 8 から対応、古いAndroidでも快適に遊べます。
+* 特別な演出やエフェクトを軽減、最適化し、軽量でなめらかに遊べるようにしています。
+
+### [ 遊び方 ]
+
+#### 手順
+
+1. BET を決めて [START] をタップします。4人にカードが配られます（52枚＋ジョーカー1枚）。
+2. 手札にある同じ数字のペアは、自動で中央に捨てられます。
+3. 自分の番に、となりのプレイヤーの手札から1枚引きます。
+4. 引いたカードでペアができたら、そのまま捨てられます。
+5. 手札がなくなると「あがり」。あがった順に 1位・2位・3位・4位 となります。
+6. 最後までジョーカー（ババ）を持っていた人が最下位です。
+
+#### BET倍率
+
+* 1位 ×2.0
+* 2位 ×1.5
+* 3位 ×0.5
+* 4位 ×0
+* ※場代はかかりません。
+* ※BET倍率は試験的な設定であり、今後のアップデートで変更される場合があります。
+
+### [ 課金アイテム ]
+
+* 開発・運営を継続するため、広告表示についてご理解いただけますようお願い申し上げます。
+* アプリ内課金では、広告の非表示やオフラインプレイ(機内モード、電波の届かない場所など)が可能になります。
+* 注：※ アプリの更新や外部リンクを開くときは、インターネットが必要です。
+
+### [ 注意事項 ]
+
+* 現金・賞品・暗号資産などは使いません。ギャンブル目的のアプリではありません。
+* 動作が重いときは、メニューの設定からキャッシュクリアをお試しください。
+* 不具合やクラッシュが続く場合は、端末の設定からアプリのストレージデータを削除して、完全リセットを行ってください。
+
+### [ 対応言語 ]
+
+* 英語 / 日本語 / 中国語(簡体字)
+- 注：プレイ中の一部の言葉は、英語で表示されることがあります。
+
+## [en]
+
+### [ App Description ]
+
+Classic Simple Old Maid is a simple Old Maid game where YOU take on CPU×3.
+
+It uses standard Old Maid rules: draw one card from another player, match same-number pairs, and discard them. The first player to run out of cards wins, and the player left holding the Joker (Old Maid) at the end loses.
+
+On top of regular Old Maid, it adds a BET feature that uses in-game COIN. BET your COIN before the game starts and earn COIN according to your finishing rank. It brings the fun of competing for rank and rewards to simple Old Maid, with a classic design crafted as an Old Maid game for adults.
+
+### [ App Features ]
+
+* Designed for portrait play, comfortable to operate with one hand on a smartphone.
+* Tuned to stay readable and easy to operate even on small phone screens.
+* Supports Android 8 and later, running smoothly even on older Android devices.
+* Special effects are reduced and optimized, so it stays light and smooth.
+
+### [ How to Play ]
+
+#### Steps
+
+1. Tap START to begin. Each player is dealt cards (52 cards plus one Joker).
+2. Drop any pairs in your hand right away.
+3. On your turn, draw one card from the next player's hand.
+4. If the drawn card makes a pair, drop it.
+5. When your hand is empty, you finish. Players finish in order: 1st, 2nd, 3rd, 4th.
+6. The player still holding the Joker at the very end comes in last.
+
+### [ In-App Purchases ]
+
+* Ads help us keep making and running the app. Thank you for understanding.
+* An in-app purchase lets you hide ads and play offline (airplane mode, no-signal areas, and so on).
+* Note: You still need the internet to update the app or open outside links.
+
+### [ Notes ]
+
+* No real money, prizes, or crypto are used. This app is not for gambling.
+* If the app feels slow, open Settings in the menu and clear the cache.
+* If problems continue, delete the app's data in your device settings for a full reset.
+
+### [ Supported Languages ]
+
+* English / Japanese / Chinese (Simplified)
+- Note: Some words shown during play may be in English.
+
+## [zh]
+
+### [ 应用说明 ]
+
+Classic Simple Old Maid 是一款由 YOU 对战 CPU×3 的简单抽鬼牌游戏。
+
+采用标准的抽鬼牌规则：从其他玩家处抽取一张牌，凑成相同数字的对子并丢弃。最先出完手牌的玩家获胜，最后还拿着鬼牌（Old Maid）的玩家落败。
+
+在普通抽鬼牌的基础上，新增了使用游戏内 COIN 的 BET 功能。游戏开始前先 BET COIN，并根据名次获得 COIN。它为简单的抽鬼牌增添了竞争名次与奖励的乐趣；采用经典设计，面向成人打造的抽鬼牌游戏。
+
+### [ 应用特点 ]
+
+* 专为竖屏游玩设计，单手握持手机也便于操作。
+* 即使在小屏幕手机上，也调整得清晰易读、易于操作。
+* 支持 Android 8 及以上，较旧的 Android 设备也能流畅运行。
+* 已精简并优化特殊演出与特效，轻巧流畅。
+
+### [ 玩法 ]
+
+#### 步骤
+
+1. 点击 START 开始。给每位玩家发牌(52 张加 1 张鬼牌)。
+2. 手牌中的对子立刻丢弃。
+3. 轮到你时，从下一位玩家的手牌中抽一张。
+4. 抽到的牌若能凑成对子，就丢弃。
+5. 手牌清空即「完成」。按完成顺序排为 第1、第2、第3、第4。
+6. 直到最后还拿着鬼牌的人，排在最后一名。
+
+### [ 内购项目 ]
+
+* 广告能帮助我们持续制作和运营这款应用，感谢您的理解。
+* 通过应用内购买，可隐藏广告并支持离线游玩(飞行模式、无信号的地方等)。
+* 注：更新应用或打开外部链接时，仍需要联网。
+
+### [ 注意事项 ]
+
+* 不使用任何现金、奖品或加密资产。本应用并非用于赌博。
+* 如果运行变慢，请在菜单的设置中清除缓存。
+* 如果仍有问题，可在设备设置中删除该应用的数据，恢复到初始状态。
+
+### [ 支持语言 ]
+
+* 英语 / 日语 / 中文(简体)
+- 注：游玩过程中的部分文字可能以英文显示。

@@ -1,7 +1,0 @@
-# 13-guide-en  （ガイドモーダルの透明統一 / lang=en）
-- 関連テストID: Z01, Z02, L10N03
-- 手順: プレイ中→ヘッダー Guide を開く
-- 期待: 全ゲーム内モーダル統一(see-through)。背後の盤面が透ける。ガイド本文は config 由来
-  (overview_info.old_maid_guide_content)＝メニューのガイドと同一ソース。
-- 実際: 13-guide-en.png 参照（背後の盤面カードが透過。Simple Old Maid Guide/How to Play/Rule Tips 表示）
-- 判定: PASS（一次）。最終チェックは人間。

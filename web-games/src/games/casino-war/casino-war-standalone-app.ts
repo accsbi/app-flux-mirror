@@ -14,15 +14,12 @@ export class CasinoWarStandaloneApp extends StandaloneCardGameApp {
   protected readonly backMethodName = 'onSystemBack'
   protected readonly heroImageSrc = buildFeatureImageUrl('casino-war')
   protected readonly detailSlug = 'casino-war'
-  protected readonly guideContentKey = 'casino_war_guide_content'
-  protected readonly guideFallbackKeys = [
-    'casino_war_guide_intro',
-    'casino_war_guide_rules',
-    'casino_war_guide_payout'
-  ] as const
+  protected readonly guideContentKey = 'guide_content'
 
   protected resolveTitle(block: AppConfigLanguage | undefined): string {
-    return getLocalizedString(block?.menu, 'game_casino_war') || 'Simple Casino War'
+    const t = getLocalizedString(block?.menu, 'game_casino_war')
+    if (!t) throw new Error('casino-war のタイトルが CSV/config にありません（直書き禁止）。')
+    return t
   }
 
   protected renderGameScreen(): TemplateResult {

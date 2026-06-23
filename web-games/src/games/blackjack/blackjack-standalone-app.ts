@@ -14,18 +14,12 @@ export class BlackjackStandaloneApp extends StandaloneCardGameApp {
   protected readonly backMethodName = 'onAndroidBack'
   protected readonly heroImageSrc = buildFeatureImageUrl('blackjack')
   protected readonly detailSlug = 'blackjack'
-  protected readonly guideContentKey = 'blackjack_guide_content'
-  protected readonly guideFallbackKeys = [
-    'overview_intro',
-    'features_content',
-    'procedure_content',
-    'description_content_1',
-    'description_content_2',
-    'description_content_3'
-  ] as const
+  protected readonly guideContentKey = 'guide_content'
 
   protected resolveTitle(block: AppConfigLanguage | undefined): string {
-    return block?.app_title || 'Simple Blackjack'
+    const t = block?.app_title
+    if (!t) throw new Error('blackjack のタイトルが CSV/config にありません（直書き禁止）。')
+    return t
   }
 
   // Blackjack は盤面の戻る制御を介さず常にホームへ戻す（従来挙動を維持）。

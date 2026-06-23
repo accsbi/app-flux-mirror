@@ -14,15 +14,12 @@ export class PokerStandaloneApp extends StandaloneCardGameApp {
   protected readonly backMethodName = 'onSystemBack'
   protected readonly heroImageSrc = buildFeatureImageUrl('poker')
   protected readonly detailSlug = 'poker'
-  protected readonly guideContentKey = 'poker_guide_content'
-  protected readonly guideFallbackKeys = [
-    'poker_guide_intro',
-    'poker_guide_rules',
-    'poker_guide_payout'
-  ] as const
+  protected readonly guideContentKey = 'guide_content'
 
   protected resolveTitle(block: AppConfigLanguage | undefined): string {
-    return getLocalizedString(block?.menu, 'game_poker') || 'Simple Poker'
+    const t = getLocalizedString(block?.menu, 'game_poker')
+    if (!t) throw new Error('poker のタイトルが CSV/config にありません（直書き禁止）。')
+    return t
   }
 
   protected renderGameScreen(): TemplateResult {

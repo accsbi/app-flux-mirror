@@ -225,6 +225,13 @@ export class HighLowStandaloneApp extends LitElement {
   private s(key: string, fb = '') { return hlGet(this.config, this.language, 'settings', key, fb) }
   private o(key: string, fb = '') { return hlGet(this.config, this.language, 'overview_info', key, fb) }
   private g(key: string, fb = '') { return hlGet(this.config, this.language, 'game', key, fb) }
+  // START 説明は game.quick_start（base MD の `### [ クイックスタート ] {quick_start_app}` 由来）のみ。
+  // 直書きフォールバック禁止：未生成ならエラー（このモーダルは設定ロード後にのみ表示される）。
+  private get startRulesText(): string {
+    const text = this.g('quick_start')
+    if (!text) throw new Error(`quick_start がありません (high-low/${this.language})。build_content.py で生成してください（直書きフォールバック禁止）。`)
+    return text
+  }
 
   // START 押下：まずゲーム画面（盤面）へ切り替え、その上で（未非表示なら）ルール説明を重ねる。
   private onStart(): void {
@@ -318,8 +325,9 @@ export class HighLowStandaloneApp extends LitElement {
   }
 
   private guideLines(): string[] {
-    const intro = this.o('overview_intro')
-    return intro ? intro.split('\n') : []
+    const guide = this.o('guide_content')
+    if (!guide) throw new Error('guide_content がありません。build_content.py で生成してください（直書きフォールバック禁止）。')
+    return guide.split('\n')
   }
 
   // ── Remove Ads（広告削除）UI + 課金 ─────────────────────────────
@@ -455,7 +463,7 @@ export class HighLowStandaloneApp extends LitElement {
         </div>
         ${this.showRules ? html`
           <main class="modal-shell"><section class="modal-card rules-card">
-            <p class="rules-text">${this.g('rules_text', this.o('overview_intro', ''))}</p>
+            <p class="rules-text">${this.startRulesText}</p>
             <button class="rules-ok" @click=${() => this.confirmRules()}>${this.g('rules_ok', 'OK')}</button>
             <label class="rules-dont">
               <input type="checkbox" .checked=${this.rulesDontShow}
@@ -479,10 +487,11 @@ export class HighLowStandaloneApp extends LitElement {
           .backLabel=${isAndroidApp() ? '' : this.chrome.back}
           .storeNotice=${isAndroidApp() ? '' : this.chrome.alsoOnGooglePlay}
           .storeTitle=${isAndroidApp() ? '' : (getGameTitle('high-low') ?? HIGH_LOW_WEB_LINKS.title)}
-          .storeUrl=${isAndroidApp() ? '' : HIGH_LOW_WEB_LINKS.storeUrl}
+          .storeUrl=${isAndroidApp() ? '' : (this.config?.app_info?.play_store_url ?? '')}
+          .storeState=${isAndroidApp() ? 'hidden' : (this.config?.app_info?.store_state ?? 'button')}
           .storeBadgeSrc=${isAndroidApp() ? '' : HIGH_LOW_WEB_LINKS.storeBadgeUrl}
           .storeBadgeAlt=${HIGH_LOW_WEB_LINKS.storeBadgeAlt}
-          .youtubeUrl=${isAndroidApp() ? '' : HIGH_LOW_WEB_LINKS.youtubeUrl}
+          .youtubeUrl=${isAndroidApp() ? '' : (this.config?.app_info?.youtube_url ?? '')}
           .youtubeBadgeSrc=${isAndroidApp() ? '' : HIGH_LOW_WEB_LINKS.youtubeBadgeUrl}
           .youtubeBadgeAlt=${HIGH_LOW_WEB_LINKS.youtubeBadgeAlt}
           .newsLabel=${isAndroidApp() ? this.chrome.newsShort : this.chrome.news}

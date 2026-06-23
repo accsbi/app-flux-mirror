@@ -122,28 +122,21 @@ export class CcgGameCard extends LitElement {
       flex-direction: column;
       gap: 10px;
     }
+    /* Google Play / YouTube バッジは「内容幅で左詰め・隣接」。flex で全幅に引き伸ばすと
+       両SVGが両端に離れて無駄な隙間になる（素人UI）。高さ基準で自然幅にして gap で詰める。 */
     .store-links {
       display: flex;
-      align-items: stretch;
-      gap: 8px;
-      width: 100%;
+      align-items: center;
+      gap: 10px;
     }
     .store-icon-link {
       display: flex;
       align-items: center;
-      height: 44px;
-    }
-    .store-link-google {
-      flex: 2 1 0;
-      justify-content: flex-start;
-    }
-    .store-link-youtube {
-      flex: 1 1 0;
-      justify-content: center;
+      height: 40px;
     }
     .store-icon {
       display: block;
-      width: 100%;
+      width: auto;
       height: 100%;
       object-fit: contain;
     }

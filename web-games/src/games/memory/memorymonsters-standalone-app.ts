@@ -11,7 +11,7 @@ import {
   getRemoveAdsUiLanguage,
   loadRemoveAdsUiConfig
 } from '../../shared/config/remove-ads-ui-config'
-import { getLocalizedString, splitTextLines } from '../../shared/config/text-utils'
+import { getLocalizedString, splitTextLines, requireGuideContent } from '../../shared/config/text-utils'
 import { getSharedChromeText } from '../../shared/config/shared-chrome-text'
 import { buildFeatureImageUrl } from '../../shared/infra/game-feature-image'
 import { getGameTitle } from '../../shared/infra/game-title'
@@ -119,9 +119,9 @@ export class MemoryMonstersStandaloneApp extends LitElement {
     window.addEventListener('memory-ad-complete', this.onAdComplete)
     window.__onEntitlementsChanged = this.onEntitlementsChanged
     window.__onBillingResult = this.onBillingResult
-    ;(window as Window & { __MEMORYMONSTERS_APP__?: { onAndroidBack: () => boolean } }).__MEMORYMONSTERS_APP__ = {
-      onAndroidBack: () => this.handleSystemBack()
-    }
+      ; (window as Window & { __MEMORYMONSTERS_APP__?: { onAndroidBack: () => boolean } }).__MEMORYMONSTERS_APP__ = {
+        onAndroidBack: () => this.handleSystemBack()
+      }
   }
 
   firstUpdated(): void {
@@ -517,7 +517,7 @@ export class MemoryMonstersStandaloneApp extends LitElement {
       removeAds: getLocalizedString(menu, 'remove_ads') || 'Remove Ads',
       backLabel: chrome.back,
       guideTitle: chrome.guideOverview,
-      guideLines: splitTextLines(overview?.guide_content ?? '', { preserveEmpty: true }),
+      guideLines: requireGuideContent(overview, 'memory'),
       settingsTitle: chrome.settings,
       languageLabel: getLocalizedString(settings, 'language') || 'Language',
       effectLabel: getLocalizedString(settings, 'sound_effect') || 'Effect',
@@ -587,10 +587,11 @@ export class MemoryMonstersStandaloneApp extends LitElement {
           .extraActionLabel=${this.isAndroidApp() ? t.removeAds : ''}
           .storeNotice=${this.isAndroidApp() ? '' : getSharedChromeText(this.language).alsoOnGooglePlay}
           .storeTitle=${this.isAndroidApp() ? '' : t.title}
-          .storeUrl=${this.isAndroidApp() ? '' : MEMORY_BATTLE_WEB_LINKS.storeUrl}
+          .storeUrl=${this.isAndroidApp() ? '' : (this.memoryConfig?.app_info?.play_store_url ?? '')}
+          .storeState=${this.isAndroidApp() ? 'hidden' : (this.memoryConfig?.app_info?.store_state ?? 'button')}
           .storeBadgeSrc=${this.isAndroidApp() ? '' : MEMORY_BATTLE_WEB_LINKS.storeBadgeUrl}
           .storeBadgeAlt=${MEMORY_BATTLE_WEB_LINKS.storeBadgeAlt}
-          .youtubeUrl=${this.isAndroidApp() ? '' : MEMORY_BATTLE_WEB_LINKS.youtubeUrl}
+          .youtubeUrl=${this.isAndroidApp() ? '' : (this.memoryConfig?.app_info?.youtube_url ?? '')}
           .youtubeBadgeSrc=${this.isAndroidApp() ? '' : MEMORY_BATTLE_WEB_LINKS.youtubeBadgeUrl}
           .youtubeBadgeAlt=${MEMORY_BATTLE_WEB_LINKS.youtubeBadgeAlt}
           .newsLabel=${this.isAndroidApp() ? t.newsShort : t.news}
@@ -602,15 +603,15 @@ export class MemoryMonstersStandaloneApp extends LitElement {
           .version=${this.isAndroidApp() ? t.version : ''}
           @menu-back=${this.goExternalHome}
           @menu-start=${() => {
-            this.playSubmit()
-            this.route = 'game'
-          }}
+        this.playSubmit()
+        this.route = 'game'
+      }}
           @menu-guide=${this.openGuide}
           @menu-settings=${this.openSettings}
           @menu-extra=${this.openRemoveAds}
         ></standalone-game-menu>
         ${this.route === 'guide'
-          ? html`
+        ? html`
               <main class="modal-shell">
                 <section class="modal-card">
                   <guide-overview-panel
@@ -622,25 +623,25 @@ export class MemoryMonstersStandaloneApp extends LitElement {
                 </section>
               </main>
             `
-          : null}
+        : null}
         ${this.route === 'settings'
-          ? renderSettingsModal({
-            language: this.language,
-            effectEnabled: this.isEffectEnabled,
-            bgmEnabled: this.isBgmEnabled,
-            isInitialSetup: this.isInitialSetupPending,
-            soundHelpOpen: this.isSoundHelpOpen,
-            onClose: () => this.closeSettings(),
-            onEffectChange: (enabled) => this.setEffectEnabled(enabled),
-            onBgmChange: (enabled) => this.setBgmEnabled(enabled),
-            onLanguageChange: (lang) => { this.language = lang; localStorage.setItem(LANGUAGE_KEY, lang) },
-            onClearCache: () => this.openClearCacheConfirm(),
-            onOpenSoundHelp: () => this.openSoundHelp(),
-            onCloseSoundHelp: () => this.closeSoundHelp()
-          })
-          : null}
+        ? renderSettingsModal({
+          language: this.language,
+          effectEnabled: this.isEffectEnabled,
+          bgmEnabled: this.isBgmEnabled,
+          isInitialSetup: this.isInitialSetupPending,
+          soundHelpOpen: this.isSoundHelpOpen,
+          onClose: () => this.closeSettings(),
+          onEffectChange: (enabled) => this.setEffectEnabled(enabled),
+          onBgmChange: (enabled) => this.setBgmEnabled(enabled),
+          onLanguageChange: (lang) => { this.language = lang; localStorage.setItem(LANGUAGE_KEY, lang) },
+          onClearCache: () => this.openClearCacheConfirm(),
+          onOpenSoundHelp: () => this.openSoundHelp(),
+          onCloseSoundHelp: () => this.closeSoundHelp()
+        })
+        : null}
         ${this.isRemoveAdsOpen
-          ? html`
+        ? html`
               <main class="modal-shell">
                 <section class="modal-card">
                   <remove-ads-dialog-panel
@@ -664,9 +665,9 @@ export class MemoryMonstersStandaloneApp extends LitElement {
                 </section>
               </main>
             `
-          : null}
+        : null}
         ${this.isCacheConfirmOpen
-          ? html`
+        ? html`
               <main class="modal-shell">
                 <section class="modal-card">
                   <confirm-dialog-panel
@@ -680,9 +681,9 @@ export class MemoryMonstersStandaloneApp extends LitElement {
                 </section>
               </main>
             `
-          : null}
+        : null}
         ${this.isInitialSetupNoticeOpen
-          ? html`
+        ? html`
               <main class="modal-shell">
                 <section class="modal-card">
                   <guide-overview-panel
@@ -694,7 +695,7 @@ export class MemoryMonstersStandaloneApp extends LitElement {
                 </section>
               </main>
             `
-          : null}
+        : null}
       </div>
       ${renderSceneFade(this.sceneFade.state)}
     `

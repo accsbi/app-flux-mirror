@@ -39,6 +39,8 @@ export const sharedOverlayStyles = css`
   .bet-overlay {
     z-index: 26;
     background: rgba(6, 10, 11, 0.76);
+    /* 上部の紋章/アーチ（bet-selector-panel の Classic 装飾）が切れないよう余白を確保。 */
+    padding: 56px 12px 16px;
   }
 `
 

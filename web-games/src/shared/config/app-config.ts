@@ -6,6 +6,8 @@ export type AppConfigRoot = {
     app_name?: string
     news_url_template?: string
     play_store_url?: string
+    youtube_url?: string
+    store_state?: string
   }
   play_store?: {
     default_language?: string
@@ -32,7 +34,6 @@ type RuntimeConfigWindow = Window & {
   __APP_CONFIG_JSON__?: AppConfigRoot
 }
 const MOJIBAKE_TOKENS = ['繧', '繝', '郢', '隨', '邵', '髫', '鬩', '陟', '蛻', '螳']
-const GUIDE_LINES_TO_HIDE = ['privacy policy', 'プライバシーポリシー', '隐私政策', 'privacy-policy/', '(external link)', '（外部リンク）']
 
 function normalizeLanguage(value: string | null | undefined): AppLanguage {
   if (!value) {
@@ -197,9 +198,5 @@ export function splitTextLines(value: string, options?: { preserveEmpty?: boolea
   return value
     .split('\n')
     .map((line) => line.trim())
-    .filter((line) => {
-      const normalized = line.toLowerCase()
-      return !GUIDE_LINES_TO_HIDE.some((token) => normalized.includes(token))
-    })
     .filter((line) => options?.preserveEmpty || line.length > 0)
 }

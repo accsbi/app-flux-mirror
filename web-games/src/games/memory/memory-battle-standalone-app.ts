@@ -34,7 +34,7 @@ export class MemoryBattleStandaloneApp extends LitElement {
     // この殻は memorymonsters 側で START 後（route='game'）に初めてマウントされる＝
     // 「メニューからゲーム画面へ変わった直後」。よって未非表示なら、ここでルール説明を重ねる
     // （元 app-flux の HIGH&LOW と同じく、ゲーム画面に変わってから説明）。
-    void loadMemoryAppConfig().then((c) => { this.memoryConfig = c }).catch(() => undefined)
+    void loadMemoryAppConfig().then((c) => { this.memoryConfig = c })
     if (localStorage.getItem(RULES_HIDDEN_KEY) !== 'true') {
       this.rulesDontShow = false
       this.showRules = true
@@ -73,17 +73,12 @@ export class MemoryBattleStandaloneApp extends LitElement {
     return saved === 'ja' || saved === 'zh' || saved === 'en' ? saved : 'en'
   }
 
-  // 開始説明（rules_text）は設定 game.rules_text（= base MD の Quick Start 由来）から取得。
+  // 開始説明は設定 game.quick_start（= base MD の {quick_start_app} 由来）から取得。
   private get rulesText(): string {
     const game = getMemoryAppLanguage(this.memoryConfig, this.language)?.game
-    const fromConfig = getLocalizedString(game, 'rules_text')
-    if (fromConfig.length > 0) return fromConfig
-    const fb: Record<AppLanguage, string> = {
-      en: 'How to play will be shown here.',
-      ja: 'ここに遊び方のメッセージが入ります。',
-      zh: '这里将显示玩法说明。'
-    }
-    return fb[this.language] ?? fb.en
+    const fromConfig = getLocalizedString(game, 'quick_start')
+    if (game && !fromConfig) throw new Error(`quick_start がありません (memory/${this.language})。build_content.py で生成してください（直書きフォールバック禁止）。`)
+    return fromConfig
   }
 
   private get rulesDontShowLabel(): string {
@@ -154,7 +149,7 @@ export class MemoryBattleStandaloneApp extends LitElement {
       display: grid;
       place-items: center;
       padding: 16px;
-      background: rgba(5, 10, 11, 0.8);
+      background: rgba(5, 10, 11, 0.78);
     }
     .rules-card {
       width: min(100%, 460px);

@@ -639,7 +639,7 @@ export class OldMaidGameTable extends LitElement {
   }
   private guideLines(): string[] {
     const block = this.appConfig ? getLanguageBlock(this.appConfig, this.selectedLanguage) : undefined
-    const content = getLocalizedString(block?.overview_info, 'old_maid_guide_content')
+    const content = getLocalizedString(block?.overview_info, 'guide_content')
     return splitTextLines(content).filter((line) => line.length > 0)
   }
   private assetUrl(p: string): string {
@@ -1443,8 +1443,8 @@ export class OldMaidGameTable extends LitElement {
 
           <!-- COIN が 0 になったときの補充ダイアログ（CASINO WAR と同方式）。 -->
           ${this.isCoinRecoveryDialogOpen
-            ? html`<section class="overlay see-through">
-                <div class="modal coin-recovery-modal see-through">
+            ? html`<section class="overlay">
+                <div class="modal coin-recovery-modal">
                   <h3>${chrome.coinRecoveryTitle}</h3>
                   <p>${chrome.coinRecoveryLine1}</p>
                   <p>${chrome.coinRecoveryLine2}</p>
@@ -1454,8 +1454,8 @@ export class OldMaidGameTable extends LitElement {
             : nothing}
 
           ${this.confirmHomeOpen
-            ? html`<section class="overlay see-through">
-                <div class="modal see-through">
+            ? html`<section class="overlay">
+                <div class="modal">
                   <confirm-dialog-panel
                     .title=${chrome.leaveTitle}
                     .message=${chrome.leaveMessage}
@@ -1469,8 +1469,8 @@ export class OldMaidGameTable extends LitElement {
             : nothing}
 
           ${this.activePanel === 'settings'
-            ? html`<section class="overlay see-through">
-                <div class="modal see-through">
+            ? html`<section class="overlay">
+                <div class="modal">
                   ${renderSettingsPanel({
                     language: this.selectedLanguage,
                     effectEnabled: this.isSoundEnabled,
@@ -1491,8 +1491,8 @@ export class OldMaidGameTable extends LitElement {
               </section>`
             : nothing}
           ${this.activePanel === 'guide'
-            ? html`<section class="overlay see-through">
-                <div class="modal see-through">
+            ? html`<section class="overlay">
+                <div class="modal">
                   <guide-overview-panel
                     .title=${chrome.guideOverview}
                     .lines=${this.guideLines()}

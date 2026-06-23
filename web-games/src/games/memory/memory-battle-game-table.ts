@@ -8,7 +8,7 @@ import {
   getMemoryEnemyLanguage,
   loadMemoryAppConfig
 } from './memory-app-config'
-import { getLocalizedString, splitTextLines } from '../../shared/config/text-utils'
+import { getLocalizedString, splitTextLines, requireGuideContent } from '../../shared/config/text-utils'
 import { getSharedChromeText } from '../../shared/config/shared-chrome-text'
 import { BGM_SETTING_CHANGED_EVENT, loadBgmEnabledSetting, saveBgmEnabledSetting } from '../../shared/infra/bgm-setting'
 import {
@@ -18,7 +18,12 @@ import {
   LEGACY_ALL_CLEAR_KEY,
   LEGACY_CURRENT_LEVEL_KEY
 } from '../../shared/infra/memory-battle-progress-store'
-import { ensurePlayableSharedCoin, loadSharedCoin, saveSharedCoin } from '../../shared/infra/shared-coin-store'
+import { ensurePlayableSharedCoin, saveSharedCoin } from '../../shared/infra/shared-coin-store'
+import { clearPendingStake, savePendingStake, takePendingStake } from '../../shared/infra/pending-stake-store'
+import { recoverSharedCoin, scheduleCoinRecoveryDialogIfZero } from '../../shared/ui/styles/shared'
+import { getAndroidBillingBridge } from '../../shared/infra/android-billing-bridge'
+import { sharedCoinRecoveryStyles } from '../../shared/ui/styles/shared-game-ui-styles'
+import '../../shared/ui/panels/bet-selector-panel'
 import { applyStageScale } from '../../shared/ui/styles/stage-layout'
 import {
   buildDrawCard,
@@ -39,7 +44,7 @@ import {
   wait
 } from './memory-battle-game-table.helpers'
 import { memoryBattleGameTableStyles } from './memory-battle-game-table.styles'
-import { sharedOverlayStyles } from '../../shared/ui/styles/shared-game-ui-styles'
+import { sharedOverlayStyles, sharedBetStatusStyles } from '../../shared/ui/styles/shared-game-ui-styles'
 import { utilities } from '../../shared/ui/styles/utilities'
 import {
   type BattleTraceLine,
@@ -76,6 +81,16 @@ const DEAL_CARD_STEP_MS = 70
 const POST_DEAL_LOCK_MS = 600
 const DRAW_REVEAL_DELAY_MS = 260
 const USE_STAGE_START_CONFIRM = false
+
+// ★テスト用フラグ：ステージ全解放の切り替え。
+//   true  … 全ステージを解放（テスト用・どのステージも選べる）
+//   false … 通常プレイ（クリア状況に応じて順次解放）
+// 出荷時は必ず false に戻すこと。
+const UNLOCK_ALL_STAGES = true
+
+// BET 機能（POKER/CASINO WAR と共通の共有部品を利用）。
+const MEMORY_GAME_ID = 'memory'
+const MEMORY_MIN_BET = 1 // POKER と同一の最小BET
 
 declare global {
   interface Window {
@@ -200,6 +215,21 @@ export class MemoryBattleGameTable extends LitElement {
   @state()
   private isStageStartConfirmOpen = false
 
+  // ── BET 状態 ───────────────────────────────────────────
+  @state()
+  private isBetDialogOpen = false        // SELECT BET モーダル（ステージ確認画面の前面）
+  @state()
+  private isRewardHelpOpen = false       // 「報酬について？」ヘルプモーダル
+  @state()
+  private isCoinRecoveryDialogOpen = false
+  @state()
+  public currentBet = MEMORY_MIN_BET     // 今回ステージの BET 額
+  @state()
+  public isBetPlaced = false             // この対戦で BET 確定済みか（スタートバトル可否）
+  private pendingStake = 0               // 精算前に保持している BET（途中終了で返還）
+  private betSettled = false             // 勝敗精算済みフラグ（二重精算防止）
+  private coinRecoveryTimerId: number | null = null
+
   @state()
   private isQuitBattleConfirmOpen = false
 
@@ -251,6 +281,8 @@ export class MemoryBattleGameTable extends LitElement {
     this.loadLanguage()
     this.loadSettings()
     this.coin = ensurePlayableSharedCoin()
+    // リロード/異常終了で残った BET を一度だけ返還（途中終了時返還の復帰側）。
+    this.restoreCoinFromPendingStakeIfNeeded()
     void this.initializeConfig()
     window.addEventListener('resize', this.updateScale)
     window.visualViewport?.addEventListener('resize', this.updateScale)
@@ -267,8 +299,18 @@ export class MemoryBattleGameTable extends LitElement {
     if (window.__onAdComplete === this.handleAdComplete) {
       delete window.__onAdComplete
     }
+    this.clearCoinRecoveryTimer()
+    // 勝敗確定前に盤面が外れた（ホーム/別画面移動/リロード）場合は BET を返還。精算済みなら no-op。
+    this.refundPendingStakeIfNeeded()
     this.unregisterDebugApi()
     super.disconnectedCallback()
+  }
+
+  private restoreCoinFromPendingStakeIfNeeded(): void {
+    const pending = takePendingStake(MEMORY_GAME_ID)
+    if (pending <= 0) return
+    this.pendingStake = 0
+    this.coin = saveSharedCoin(this.coin + pending)
   }
 
   firstUpdated(): void {
@@ -371,6 +413,10 @@ export class MemoryBattleGameTable extends LitElement {
   }
 
   private maxUnlockedStage(): number {
+    // テスト用：UNLOCK_ALL_STAGES=true なら全ステージ解放。
+    if (UNLOCK_ALL_STAGES) {
+      return this.maxStage()
+    }
     return Math.max(1, Math.min(this.maxStage(), this.clearedStageCount + 1))
   }
 
@@ -389,7 +435,7 @@ export class MemoryBattleGameTable extends LitElement {
     }
     return {
       stage: this.currentStage,
-      reward_coin: 0,
+      betMultiplier: 1.0 + 0.2 * this.currentStage,
       languages: {
         en: {
           name: '',
@@ -397,6 +443,15 @@ export class MemoryBattleGameTable extends LitElement {
         }
       }
     }
+  }
+
+  // 勝利時の倍率（LV1=1.2 … LV10=3.0）。config に betMultiplier があれば優先。
+  public currentBetMultiplier(): number {
+    const enemy = this.currentEnemy()
+    if (typeof enemy.betMultiplier === 'number' && enemy.betMultiplier > 0) {
+      return enemy.betMultiplier
+    }
+    return 1.0 + 0.2 * enemy.stage
   }
 
   private currentEnemyName(): string {
@@ -423,16 +478,6 @@ export class MemoryBattleGameTable extends LitElement {
     return imagePath ? this.assetUrl(imagePath) : null
   }
 
-  public coinValueSizeClass(): string {
-    const digits = String(this.coin).length
-    if (digits >= 9) {
-      return 'is-tiny'
-    }
-    if (digits >= 7) {
-      return 'is-small'
-    }
-    return ''
-  }
 
   private texts() {
     const memoryLanguageBlock = getMemoryAppLanguage(this.memoryConfig, this.language)
@@ -458,6 +503,7 @@ export class MemoryBattleGameTable extends LitElement {
       practiceSetupTitle: getLocalizedString(game, 'practice_setup_title') || 'Solo Practice Stage',
       practiceSetupMessage:
         getLocalizedString(game, 'practice_setup_message') || 'Choose the card count and start the solo practice game.',
+      practiceCoinNote: getLocalizedString(game, 'practice_coin_note') || 'Note: Solo practice does not use COIN.',
       practiceCardCountLabel: getLocalizedString(game, 'practice_card_count_label') || 'Card Count',
       practiceStartButton: getLocalizedString(game, 'practice_start_button') || 'Start Solo Practice',
       practiceClearTitle: getLocalizedString(game, 'practice_clear_title') || 'Practice Clear',
@@ -491,6 +537,10 @@ export class MemoryBattleGameTable extends LitElement {
       enemyStatusFormat: getLocalizedString(game, 'enemy_status_format'),
       enemyIntroTitle: getLocalizedString(game, 'enemy_intro_title'),
       enemyReward: getLocalizedString(game, 'enemy_reward'),
+      rewardHelpLabel: getLocalizedString(game, 'reward_help_label') || 'About rewards?',
+      rewardHelpTitle: getLocalizedString(game, 'reward_help_title') || 'About rewards',
+      rewardHelpWin: getLocalizedString(game, 'reward_help_win') || 'Win: you gain BET × the stage multiplier in COIN.',
+      rewardHelpLose: getLocalizedString(game, 'reward_help_lose') || 'Lose: your BET is forfeited (0 COIN).',
       startBattle: getLocalizedString(game, 'start_battle'),
       dealingCards: getLocalizedString(game, 'dealing_cards'),
       drawBattleTitle: getLocalizedString(game, 'draw_battle_title'),
@@ -545,7 +595,7 @@ export class MemoryBattleGameTable extends LitElement {
         getLocalizedString(settings, 'sound_help_message') || 'If sound does not play, please check whether your device is muted.',
       soundHelpOk: getLocalizedString(settings, 'sound_help_ok') || 'OK',
       guideTitle: chrome.guideOverview,
-      guideLines: splitTextLines(getLocalizedString(overview, 'guide_content'), { preserveEmpty: true }),
+      guideLines: requireGuideContent(overview, 'memory-battle'),
       ok: getLocalizedString(common, 'ok') || 'OK',
       yes: getLocalizedString(common, 'yes') || 'Yes',
       no: getLocalizedString(common, 'no') || 'No',
@@ -746,6 +796,8 @@ export class MemoryBattleGameTable extends LitElement {
   }
 
   private beginTitleScreen(): void {
+    // ステージ確認/対戦から戻る際、未精算の BET があれば返還（途中終了時返還）。
+    this.refundPendingStakeIfNeeded()
     this.invalidateBattleAutomation()
     this.gameMode = 'stage'
     this.screen = 'title'
@@ -797,9 +849,119 @@ export class MemoryBattleGameTable extends LitElement {
     this.battleTraceLines = []
     this.isEarlyBattleDecisionOpen = false
     this.clinchedWinner = null
+    // ステージ確認画面に入るたびに BET 状態をリセット（前ステージの BET を持ち越さない）。
+    // 未精算の stake が残っていれば返還してから（COIN を失わない）。
+    this.refundPendingStakeIfNeeded()
+    this.isBetPlaced = false
+    this.betSettled = false
+    this.isBetDialogOpen = false
+    this.isRewardHelpOpen = false
+    if (this.currentBet < MEMORY_MIN_BET) this.currentBet = MEMORY_MIN_BET
+    if (this.currentBet > this.coin) this.currentBet = this.coin
+  }
+
+  // ── BET（ステージ確認画面の前面モーダル）─────────────────
+  public openBetDialog(): void {
+    this.playEffect(this.memoryAsset('submit_sound'))
+    // 既に BET 済みなら一旦返還してから編集（COIN 表示を満額にする）。
+    this.refundPendingStakeIfNeeded()
+    this.isBetPlaced = false
+    this.coin = ensurePlayableSharedCoin()
+    if (this.currentBet < MEMORY_MIN_BET) this.currentBet = MEMORY_MIN_BET
+    if (this.currentBet > this.coin) this.currentBet = this.coin
+    this.isBetDialogOpen = true
+  }
+  public decreaseBet(): void {
+    if (this.currentBet > MEMORY_MIN_BET) this.currentBet = Math.max(MEMORY_MIN_BET, this.currentBet - 1)
+  }
+  public increaseBet(): void {
+    if (this.currentBet < this.coin) this.currentBet = Math.min(this.coin, this.currentBet + 1)
+  }
+  public onBetValueChange(e: CustomEvent<{ value: number }>): void {
+    this.currentBet = Math.max(MEMORY_MIN_BET, Math.min(this.coin, Math.floor(e.detail.value)))
+  }
+  // BET 確定（POKER と同一フロー）: COIN を差し引き pendingStake を保存し、そのままバトル開始。
+  public confirmBet(): void {
+    if (this.coin < MEMORY_MIN_BET || this.currentBet < MEMORY_MIN_BET || this.currentBet > this.coin) return
+    this.playEffect(this.memoryAsset('submit_sound'))
+    this.coin = saveSharedCoin(this.coin - this.currentBet)
+    this.pendingStake = this.currentBet
+    savePendingStake(MEMORY_GAME_ID, this.currentBet)
+    this.isBetPlaced = true
+    this.betSettled = false
+    this.isBetDialogOpen = false
+    this.openDrawBattle()
+  }
+  // BET キャンセル: COIN を差し引かずステージ確認画面へ戻す（モーダルを閉じるだけ）。
+  public cancelBet(): void {
+    this.playEffect(this.memoryAsset('submit_sound'))
+    this.isBetDialogOpen = false
+  }
+  public openRewardHelp(): void {
+    this.playEffect(this.memoryAsset('submit_sound'))
+    this.isRewardHelpOpen = true
+  }
+  public closeRewardHelp(): void {
+    this.playEffect(this.memoryAsset('submit_sound'))
+    this.isRewardHelpOpen = false
+  }
+  // 画面に表示する報酬テキスト「報酬 BET × {mult} COIN」用の倍率（小数1桁）。
+  public betMultiplierLabel(): string {
+    const m = this.currentBetMultiplier()
+    return Number.isInteger(m) ? String(m) : m.toFixed(1)
+  }
+
+  // 勝敗精算（勝ち=BET×倍率 / 引き分け=返還 / 負け=没収0）。二重精算しない。
+  private settleBet(result: MemoryBattleResult): void {
+    if (this.betSettled) return
+    this.betSettled = true
+    let payout = 0
+    if (result === 'win') payout = Math.floor(this.currentBet * this.currentBetMultiplier())
+    else if (result === 'draw') payout = this.currentBet // 引き分けは返還
+    // lose → 0（没収。BET は確定時に差引済み）
+    this.resultReward = payout
+    this.coin = saveSharedCoin(this.coin + payout)
+    this.pendingStake = 0
+    this.isBetPlaced = false
+    clearPendingStake(MEMORY_GAME_ID)
+    this.scheduleCoinRecoveryDialogIfZero()
+  }
+
+  // 途中終了時の BET 返還（pendingStake>0 のときのみ。一度だけ）。
+  private refundPendingStakeIfNeeded(): void {
+    if (this.pendingStake <= 0) { clearPendingStake(MEMORY_GAME_ID); return }
+    this.coin = saveSharedCoin(this.coin + this.pendingStake)
+    this.pendingStake = 0
+    this.isBetPlaced = false
+    clearPendingStake(MEMORY_GAME_ID)
+  }
+
+  // ── COIN 補充（CASINO WAR と同方式）─────────────────────
+  private confirmCoinRecovery(): void {
+    this.playEffect(this.memoryAsset('submit_sound'))
+    this.clearCoinRecoveryTimer()
+    this.coin = recoverSharedCoin()
+    this.isCoinRecoveryDialogOpen = false
+    window.setTimeout(() => {
+      const bridge = getAndroidBillingBridge()
+      bridge?.showRecoveryInterstitialAd?.() ?? bridge?.showInterstitialAd?.()
+    }, 0)
+  }
+  private clearCoinRecoveryTimer(): void {
+    if (this.coinRecoveryTimerId !== null) { clearTimeout(this.coinRecoveryTimerId); this.coinRecoveryTimerId = null }
+  }
+  private scheduleCoinRecoveryDialogIfZero(): void {
+    this.clearCoinRecoveryTimer()
+    this.coinRecoveryTimerId = scheduleCoinRecoveryDialogIfZero({
+      coin: this.coin,
+      setOpen: (open) => { this.isCoinRecoveryDialogOpen = open },
+      schedule: (cb, delayMs) => window.setTimeout(() => { this.coinRecoveryTimerId = null; cb() }, delayMs)
+    })
   }
 
   public openDrawBattle(): void {
+    // BET 未確定ではバトルを開始できない（スタートバトルは disabled だが二重防御）。
+    if (!this.isBetPlaced) return
     this.invalidateBattleAutomation()
     this.playEffect(this.memoryAsset('submit_sound'))
     this.drawWinner = null
@@ -1464,12 +1626,11 @@ export class MemoryBattleGameTable extends LitElement {
   }
 
   private async handleWin(): Promise<void> {
-    const enemy = this.currentEnemy()
     const clearedStageCountBeforeWin = this.clearedStageCount
     const wonStage = this.currentStage
     const isNewStageClear = wonStage > clearedStageCountBeforeWin
-    this.resultReward = enemy.reward_coin
-    this.coin = saveSharedCoin(loadSharedCoin() + enemy.reward_coin)
+    // BET × ステージ倍率で精算（固定報酬は廃止）。resultReward は精算側で設定。
+    this.settleBet('win')
     this.playEffect(this.memoryAsset('win_sound'))
     this.clearedStageCount = Math.max(this.clearedStageCount, wonStage)
     this.hasCompletedAllStages = this.clearedStageCount >= this.maxStage()
@@ -1486,12 +1647,14 @@ export class MemoryBattleGameTable extends LitElement {
   }
 
   private async handleLose(): Promise<void> {
+    this.settleBet('lose') // 敗北 = BET 没収（獲得0）
     this.playEffect(this.memoryAsset('lose_sound'))
     this.screen = 'result-lose'
     // CPU対戦の勝敗時には広告を出さない（広告は対戦途中＝プレイヤー5ペア時点に移動）。
   }
 
   private async handleDraw(): Promise<void> {
+    this.settleBet('draw') // 引き分け = BET 返還（仕様の勝ち/負けに無い端ケースは公平に返還）
     this.playEffect(this.memoryAsset('draw_sound'))
     this.screen = 'result-draw'
     // CPU対戦の勝敗時には広告を出さない（広告は対戦途中＝プレイヤー5ペア時点に移動）。
@@ -1702,6 +1865,15 @@ export class MemoryBattleGameTable extends LitElement {
   }
 
   handleSystemBack(): boolean {
+    if (this.isRewardHelpOpen) {
+      this.isRewardHelpOpen = false
+      return true
+    }
+    if (this.isBetDialogOpen) {
+      // BET モーダルを閉じてステージ確認画面へ戻す（COIN は差し引かない）。
+      this.isBetDialogOpen = false
+      return true
+    }
     if (this.showEnemyInfo) {
       this.showEnemyInfo = false
       return true
@@ -1744,19 +1916,13 @@ export class MemoryBattleGameTable extends LitElement {
     return false
   }
 
-  public currentEnemyStatusLabel(): string {
-    if (this.isPracticeMode()) {
-      return this.texts().practiceStatusLabel
-    }
-    const t = this.texts()
-    return formatTemplate(t.enemyStatusFormat, {
-      name: this.currentEnemyName(),
-      stage: this.currentEnemy().stage
-    })
-  }
 
+  // 「BET / STAGE」を出すのは CPU 対戦で BET 確定後だけ（先行・後攻を決める draw-battle /
+   // turn-select と実戦 battle）。練習モードと、BET 前の enemy-intro（村人＝BET & スタート画面）
+   // では出さない（COIN のみ）。BET 未確定で「◯」を見せる違和感も無くす。
   public shouldShowEnemyStatus(): boolean {
-    return this.screen === 'enemy-intro' || this.screen === 'draw-battle' || this.screen === 'battle' || this.screen === 'practice-setup' || this.screen === 'result-practice'
+    if (this.isPracticeMode() || !this.isBetPlaced) return false
+    return this.screen === 'draw-battle' || this.screen === 'turn-select' || this.screen === 'battle'
   }
 
   // 敵画像タップ → 敵情報をふわっと重ねる / 閉じる（カード表示へ戻る）。
@@ -1832,6 +1998,62 @@ export class MemoryBattleGameTable extends LitElement {
             ></game-footer-bar>
           </section>
           ${this.showEnemyInfo ? renderEnemyInfoOverlay(this) : null}
+
+          <!-- SELECT BET モーダル（ステージ確認画面の前面）。確定でスタートバトル可、キャンセルで確認画面へ。 -->
+          ${this.isBetDialogOpen
+        ? html`
+                <section class="overlay bet-overlay">
+                  <bet-selector-panel
+                    title="Select BET"
+                    available-label="COIN:"
+                    .availableCoin=${this.coin}
+                    .bet=${this.currentBet}
+                    start-label="START"
+                    .instructionText=${chrome.betInstruction}
+                    .disableDecrease=${this.currentBet <= MEMORY_MIN_BET}
+                    .disableIncrease=${this.currentBet >= this.coin}
+                    .disableStart=${this.coin < MEMORY_MIN_BET || this.currentBet < MEMORY_MIN_BET || this.currentBet > this.coin}
+                    .showTools=${true}
+                    @bet-home=${() => this.requestGoHome()}
+                    @bet-settings=${() => this.openSettings()}
+                    @bet-guide=${() => this.openGuide()}
+                    @bet-decrease=${this.decreaseBet}
+                    @bet-increase=${this.increaseBet}
+                    @bet-value-change=${this.onBetValueChange}
+                    @bet-start=${this.confirmBet}
+                  ></bet-selector-panel>
+                </section>
+              `
+        : null}
+
+          <!-- 「報酬について？」ヘルプ（勝ち=倍率 / 負け=没収を明記）。 -->
+          ${this.isRewardHelpOpen
+        ? html`
+                <section class="overlay">
+                  <div class="modal coin-recovery-modal">
+                    <h3>${t.rewardHelpTitle}</h3>
+                    <p>${t.rewardHelpWin}</p>
+                    <p>${t.rewardHelpLose}</p>
+                    <p class="reward-help-mult">BET × ${this.betMultiplierLabel()}</p>
+                    <button class="recovery-ok-btn" @click=${this.closeRewardHelp}>${chrome.back}</button>
+                  </div>
+                </section>
+              `
+        : null}
+
+          <!-- COIN が 0 になったときの補充ダイアログ（CASINO WAR と同方式）。 -->
+          ${this.isCoinRecoveryDialogOpen
+        ? html`
+                <section class="overlay">
+                  <div class="modal coin-recovery-modal">
+                    <h3>${chrome.coinRecoveryTitle}</h3>
+                    <p>${chrome.coinRecoveryLine1}</p>
+                    <p>${chrome.coinRecoveryLine2}</p>
+                    <button class="recovery-ok-btn" @click=${this.confirmCoinRecovery}>${t.ok}</button>
+                  </div>
+                </section>
+              `
+        : null}
           ${isMemoryTraceVisible() && (this.screen === 'battle' || this.battleTraceLines.length > 0)
         ? html`
               <aside class="battle-trace-panel" aria-label="Memory battle trace">
@@ -1850,18 +2072,18 @@ export class MemoryBattleGameTable extends LitElement {
                 <section class="overlay">
                   <div class="modal">
                     ${renderSettingsPanel({
-            language: this.language,
-            effectEnabled: this.isEffectEnabled,
-            bgmEnabled: this.isBgmEnabled,
-            soundHelpOpen: this.isSoundHelpOpen,
-            showClearCache: false,
-            onClose: () => this.closeSettings(),
-            onEffectChange: (enabled) => this.setEffectEnabled(enabled),
-            onBgmChange: (enabled) => this.setBgmEnabled(enabled),
-            onLanguageChange: (next) => this.setLanguage(next),
-            onOpenSoundHelp: () => { this.isSoundHelpOpen = true },
-            onCloseSoundHelp: () => { this.isSoundHelpOpen = false }
-          })}
+          language: this.language,
+          effectEnabled: this.isEffectEnabled,
+          bgmEnabled: this.isBgmEnabled,
+          soundHelpOpen: this.isSoundHelpOpen,
+          showClearCache: false,
+          onClose: () => this.closeSettings(),
+          onEffectChange: (enabled) => this.setEffectEnabled(enabled),
+          onBgmChange: (enabled) => this.setBgmEnabled(enabled),
+          onLanguageChange: (next) => this.setLanguage(next),
+          onOpenSoundHelp: () => { this.isSoundHelpOpen = true },
+          onCloseSoundHelp: () => { this.isSoundHelpOpen = false }
+        })}
                   </div>
                 </section>
               `
@@ -1999,5 +2221,5 @@ export class MemoryBattleGameTable extends LitElement {
     `
   }
 
-  static styles = [sharedOverlayStyles, utilities, memoryBattleGameTableStyles]
+  static styles = [sharedOverlayStyles, sharedBetStatusStyles, sharedCoinRecoveryStyles, utilities, memoryBattleGameTableStyles]
 }

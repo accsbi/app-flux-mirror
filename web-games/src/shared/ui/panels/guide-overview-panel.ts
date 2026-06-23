@@ -48,6 +48,11 @@ export class GuideOverviewPanel extends LitElement {
       return html`<hr class="guide-hr" aria-hidden="true" />`
     }
 
+    // 主題 `[ 見出し ]`（build が連結時に各節へ付与）はボールド＋少し大きく表示する。
+    if (/^\[\s+.+\s+\]$/.test(t)) {
+      return html`<p class="guide-subject">${this.renderInline(t)}</p>`
+    }
+
     const heading = /^(#{1,6})\s+(.*)$/.exec(t)
     if (heading) {
       const level = Math.min(heading[1].length, 4)
@@ -137,6 +142,16 @@ export class GuideOverviewPanel extends LitElement {
     .gh4 { font-size: 0.98em; color: #9fd9cf; }
     /* 先頭の見出しは上余白を詰める */
     .guide-body > .gh:first-child { margin-top: 0; }
+
+    /* 主題 [ 見出し ]：ボールド＋少し大きめ。本文と明確に差をつける。 */
+    .guide-subject {
+      font-weight: 800;
+      font-size: 1.12em;
+      color: #bdeee6;
+      line-height: 1.3;
+      margin-top: 16px;
+    }
+    .guide-body > .guide-subject:first-child { margin-top: 0; }
 
     /* 箇条書き / 番号：マーカーをぶら下げて読みやすく */
     .gli {

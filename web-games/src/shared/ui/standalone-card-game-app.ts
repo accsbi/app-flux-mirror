@@ -56,7 +56,6 @@ export abstract class StandaloneCardGameApp extends LitElement {
   /** ガイド本文（単一文字列）の overview_info キー */
   protected abstract readonly guideContentKey: string
   /** ガイド本文が空のときに連結するフォールバックキー群 */
-  protected abstract readonly guideFallbackKeys: readonly string[]
   /** タイトル文字列の解決（ゲームごとに参照元が異なる） */
   protected abstract resolveTitle(block: AppConfigLanguage | undefined): string
   /** ゲーム盤面の描画（盤面タグ・demo 属性などゲーム固有） */
@@ -331,11 +330,10 @@ export abstract class StandaloneCardGameApp extends LitElement {
     const chrome = getSharedChromeText(this.language)
 
     const customGuideContent = getLocalizedString(overview, this.guideContentKey)
-    const guideLines = customGuideContent.length > 0
-      ? splitTextLines(customGuideContent)
-      : this.guideFallbackKeys
-          .map((key) => getLocalizedString(overview, key))
-          .flatMap((section) => splitTextLines(section))
+    if (overview && !customGuideContent) {
+      throw new Error(`guide_content (${this.guideContentKey}) がありません。build_content.py で生成してください（直書きフォールバック禁止）。`)
+    }
+    const guideLines = splitTextLines(customGuideContent)
 
     return {
       // タイトルは CSV(file_name=detailSlug) を唯一のソースに。無ければ config 由来へフォールバック。
@@ -413,18 +411,15 @@ export abstract class StandaloneCardGameApp extends LitElement {
   // 「次回から表示しない」の保存先はゲームごとに分ける（detailSlug = CSV file_name）。
   private get rulesHiddenKey(): string { return `${this.detailSlug}_rules_hidden` }
 
-  // 開始説明（rules_text）は設定 game.rules_text（= base MD の Quick Start 由来）から取得。
-  // 未設定時のみ仮テキストにフォールバック。
+  // 開始説明は設定 game.quick_start（= base MD の `### [ クイックスタート ] {quick_start_app}` 由来）のみ。
+  // 直書きフォールバック禁止：設定ロード済みで未生成ならエラーにする（build_content.py で生成）。
   private get rulesText(): string {
     const block = this.appConfig ? getLanguageBlock(this.appConfig, this.language) : undefined
-    const fromConfig = getLocalizedString(block?.game, 'rules_text')
-    if (fromConfig.length > 0) return fromConfig
-    const fb: Record<AppLanguage, string> = {
-      en: 'How to play will be shown here.',
-      ja: 'ここに遊び方のメッセージが入ります。',
-      zh: '这里将显示玩法说明。'
+    const text = getLocalizedString(block?.game, 'quick_start')
+    if (block && !text) {
+      throw new Error(`quick_start がありません (${this.detailSlug}/${this.language})。build_content.py で生成してください（直書きフォールバック禁止）。`)
     }
-    return fb[this.language] ?? fb.en
+    return text
   }
 
   private get rulesDontShowLabel(): string {
@@ -499,12 +494,13 @@ export abstract class StandaloneCardGameApp extends LitElement {
           .backLabel=${t.back}
           .storeNotice=${getSharedChromeText(this.language).alsoOnGooglePlay}
           .storeTitle=${t.title}
-          .storeUrl=${CARD_GAMES_HUB_WEB_LINKS.storeUrl}
+          .storeUrl=${this.appConfig?.app_info?.play_store_url ?? ''}
+          .storeState=${this.appConfig?.app_info?.store_state ?? 'button'}
           .storeBadgeSrc=${CARD_GAMES_HUB_WEB_LINKS.storeBadgeUrl}
-          .storeBadgeAlt=${CARD_GAMES_HUB_WEB_LINKS.storeBadgeAlt}
-          .youtubeUrl=${CARD_GAMES_HUB_WEB_LINKS.youtubeUrl}
+          .storeBadgeAlt=${`${t.title} on Google Play`}
+          .youtubeUrl=${this.appConfig?.app_info?.youtube_url ?? ''}
           .youtubeBadgeSrc=${CARD_GAMES_HUB_WEB_LINKS.youtubeBadgeUrl}
-          .youtubeBadgeAlt=${CARD_GAMES_HUB_WEB_LINKS.youtubeBadgeAlt}
+          .youtubeBadgeAlt=${`${t.title} on YouTube`}
           .newsLabel=${t.news}
           .newsUrl=${t.newsUrl}
           @menu-back=${() => this.dispatchEvent(new CustomEvent('menu-back', { bubbles: true, composed: true }))}

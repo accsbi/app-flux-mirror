@@ -2,18 +2,23 @@
 //
 // Classic Card Games Collection のデータ層。正本（編集する場所）はトップレベルの catalog/ のみ:
 //   - meta（構造データ） = catalog/games-list.csv
-//   - 説明              = catalog/descriptions/<file_name>.json
+//   - 説明              = catalog/site_description_md/<id>_<file_name>.md（build 生成・markdown 原文・3言語1ファイル）
 //
 // app-flux frontend/catalog/ と同じく「データはトップレベル catalog/ にまとめる」。
-// Vite の ?raw / import.meta.glob で build 時に catalog/ から直接読み込む
-// （public/data に複製・配置しない）。ロジックは app-flux gamesAppsCatalog.ts を移植。
+// 説明は JSON に潰さず markdown のまま取り込み、詳細ページでそのまま描画する
+// （人間は .md をそのままレビューできる）。
+// Vite の ?raw / import.meta.glob で build 時に catalog/ から直接読み込む。
+
+import { parseMdByLang, mdToPlain } from '../lib/markdown'
 
 // catalog/ を build 時に取り込む（唯一のソース）。
 import csvRaw from '../../catalog/games-list.csv?raw'
-const descModules = import.meta.glob<DescFile>('../../catalog/descriptions/*.json', {
-  eager: true,
-  import: 'default',
-})
+// サイト説明MDは build_content.py が base MD から生成する site_description_md/（タグ無し・全3言語）のみ。
+// 旧 descriptions/ は全ゲーム移行済みのため廃止（site_description_md/ に置換済み）。
+const descModules = import.meta.glob<string>(
+  '../../catalog/site_description_md/*.md',
+  { eager: true, query: '?raw', import: 'default' },
+)
 
 export type Lang = 'en' | 'ja' | 'zh'
 export const LANGS: Lang[] = ['en', 'ja', 'zh']
@@ -168,40 +173,27 @@ function csvToMeta(text: string): GameMeta[] {
     }))
 }
 
-// ── 説明 JSON ─────────────────────────────────────────────────────────
-interface DescFile {
-  default_lang?: Lang
-  languages: Partial<Record<Lang, { sections: DescSection[] }>>
+// ── 説明 markdown ─────────────────────────────────────────────────────
+//   catalog/site_description_md/<id>_<slug>.md（3言語1ファイル）を slug→lang→節へ整える。
+//   glob キーは相対パス。basename 先頭の "<id>_"（数字）を除いて slug を得る。
+const descBySlugLang: Record<string, Partial<Record<Lang, DescSection[]>>> = {}
+for (const [path, raw] of Object.entries(descModules)) {
+  const base = path.split('/').pop()!.replace(/\.md$/, '')
+  const slug = base.replace(/^\d+_/, '')
+  const byLang = parseMdByLang(raw)
+  const langs: Partial<Record<Lang, DescSection[]>> = {}
+  for (const lang of LANGS) {
+    if (byLang[lang] && byLang[lang]!.length > 0) langs[lang] = byLang[lang]
+  }
+  // site_description_md は全3言語を含むので言語ごとに格納（merge は同一 slug 二重時の保険）。
+  descBySlugLang[slug] = { ...descBySlugLang[slug], ...langs }
 }
 
-// カードやヘッダーに平文で出すため、インライン markdown 記号を除去する（app-flux 同等）。
-function stripInlineMd(s: string): string {
-  return s
-    .replace(/\*\*(.+?)\*\*/g, '$1')
-    .replace(/\*(.+?)\*/g, '$1')
-    .replace(/`(.+?)`/g, '$1')
-    .replace(/\[(.+?)\]\([^)]*\)/g, '$1')
-    .replace(/\s+/g, ' ')
-    .trim()
-}
-
-/** 説明 JSON から、要求言語（無ければ default→en）のセクション群を取り出す。 */
-function pickSections(desc: DescFile, lang: Lang): DescSection[] {
-  const fallback = desc.default_lang ?? DEFAULT_LANG
-  return (
-    desc.languages[lang]?.sections ??
-    desc.languages[fallback]?.sections ??
-    desc.languages[DEFAULT_LANG]?.sections ??
-    []
-  )
-}
-
-// ── catalog/descriptions/*.json を slug→DescFile のマップに整える ────────────
-//   glob のキーは相対パス（…/descriptions/<slug>.json）。basename から slug を取る。
-const descBySlug: Record<string, DescFile> = {}
-for (const [path, mod] of Object.entries(descModules)) {
-  const slug = path.split('/').pop()!.replace(/\.json$/, '')
-  descBySlug[slug] = mod
+/** 指定 slug/言語のセクション群（無ければ default→en→空）。 */
+function pickSections(slug: string, lang: Lang): DescSection[] {
+  const byLang = descBySlugLang[slug]
+  if (!byLang) return []
+  return byLang[lang] ?? byLang[DEFAULT_LANG] ?? []
 }
 
 /** 指定言語の表示用エントリ一覧を返す。CSV 初出順（= 数字 id 昇順）を維持。 */
@@ -210,14 +202,13 @@ export function loadGames(lang: Lang): GameEntry[] {
   return csvToMeta(csvRaw)
     .filter((m) => m.published)
     .map((m): GameEntry => {
-    const desc = descBySlug[m.fileName]
-    const sections = desc ? pickSections(desc, lang) : [] // 説明が無くてもタイトル＋リンクは表示
+    const sections = pickSections(m.fileName, lang) // 説明が無くてもタイトル＋リンクは表示
     const description = sections[0]?.body ?? ''
-    const webSection = sections.find((s) => s.targets.includes('web')) ?? sections[1] ?? sections[0]
+    const webSection = sections.find((s) => s.targets.includes('site_description') || s.targets.includes('web') || s.targets.length === 0) ?? sections[1] ?? sections[0]
     return {
       ...m,
-      description: stripInlineMd(description),
-      cardText: stripInlineMd(webSection?.body ?? ''),
+      description: mdToPlain(description),
+      cardText: mdToPlain(webSection?.body ?? ''),
       sections,
     }
   })

@@ -4,6 +4,8 @@ export type MemoryAppInfo = {
   version?: string
   news_url_template?: string
   play_store_url?: string
+  youtube_url?: string
+  store_state?: string
 }
 
 export type MemoryAppAssetConfig = {
@@ -32,7 +34,10 @@ export type MemoryEnemyLanguage = {
 
 export type MemoryEnemyConfig = {
   stage: number
-  reward_coin: number
+  // 勝利時の倍率。獲得COIN = floor(BET × betMultiplier)。LV1=1.2 … LV10=3.0。
+  betMultiplier?: number
+  // 旧仕様の固定報酬。BET×倍率へ移行したため廃止（後方互換のため任意で残す）。
+  reward_coin?: number
   pair_capture_chance_percent?: number
   image?: string
   languages?: Record<string, MemoryEnemyLanguage>

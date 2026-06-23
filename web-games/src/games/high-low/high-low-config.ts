@@ -2,7 +2,7 @@ import type { AppLanguage } from '../../shared/config/app-config'
 
 export type HLConfig = {
   default_language?: string
-  app_info?: { version?: string }
+  app_info?: { version?: string; play_store_url?: string; youtube_url?: string; store_state?: string }
   languages?: Record<string, HLConfigLang>
 }
 
@@ -43,7 +43,7 @@ export function loadHighLowConfig(): Promise<HLConfig> {
   }
   configPromise = fetch(resolveHighLowConfigUrl())
     .then(r => r.json() as Promise<HLConfig>)
-    .catch(() => ({}))
+    .catch(() => { throw new Error('high-low config の取得に失敗しました（フォールバック禁止）。') })
   return configPromise
 }
 

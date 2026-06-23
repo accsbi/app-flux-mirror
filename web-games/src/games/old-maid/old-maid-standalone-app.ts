@@ -13,11 +13,11 @@ export class OldMaidStandaloneApp extends StandaloneCardGameApp {
   protected readonly backMethodName = 'onAndroidBack'
   protected readonly heroImageSrc = buildFeatureImageUrl('old-maid')
   protected readonly detailSlug = 'old-maid'
-  protected readonly guideContentKey = 'old_maid_guide_content'
-  protected readonly guideFallbackKeys = [] as const
+  protected readonly guideContentKey = 'guide_content'
 
   protected resolveTitle(): string {
-    return 'Simple Old Maid'
+    // タイトルは CSV(games-list.csv, getGameTitle) が唯一の正。ここに来る＝CSV欠如なのでエラー。
+    throw new Error('old-maid のタイトルが CSV(games-list.csv) にありません（直書き禁止）。')
   }
 
   // 盤面の戻る制御は介さず常にホーム（メニュー）へ戻す。

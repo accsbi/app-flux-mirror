@@ -40,12 +40,14 @@ export const sharedNoMoreBetStyles = css`
     z-index: 4;
   }
 
-  /* サイズは全ゲーム共通（単一ソース）。casino-war で調整した大きさに統一。 */
+  /* サイズは全ゲーム共通（単一ソース）。WIN/LOSE(.result-overlay-image)と同寸に統一。 */
   .no-more-bet-image {
     display: block;
-    width: min(96%, 460px);
+    width: min(280px, 68%);
     max-width: 100%;
+    max-height: 96px;
     height: auto;
+    object-fit: contain;
     filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.55));
   }
 `

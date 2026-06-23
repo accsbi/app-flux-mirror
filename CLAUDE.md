@@ -23,3 +23,7 @@
 - `screenshots_log/<game>/human_checked/` は **人間専用**。**AI・スクリプトは書き込み/移動/削除/リネーム禁止**。
 - 一般に、**自分が作っていないファイル/フォルダ（ユーザー作成物）を勝手に削除・改変しない**。
 - 最終チェックは人間が行う。AI の判定は一次判定。
+
+## 5. 文章規範（日本語の説明・ガイド文）
+- `catalog/base_markdown/*_base.md` の日本語（概略・アプリの説明・ガイド・概要など）を書く/推敲するときは **[docs/japanese-writing-standard.md](docs/japanese-writing-standard.md)** に従う。
+- 特に「LLM っぽい表現の禁止」「冗長の排除」「演出の抑制」を点検する。

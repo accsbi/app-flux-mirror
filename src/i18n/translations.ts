@@ -1,7 +1,7 @@
 // src/i18n/translations.ts
 //
 // UI 文言の唯一の正（single source of truth）。en/ja/zh。
-// 説明文（ゲーム内容）は /data/descriptions/*.json 側。ここには UI ラベルのみ。
+// 説明文（ゲーム内容）は catalog/site_description_md/<id>_<slug>.md 側。ここには UI ラベルのみ。
 // app-flux frontend/src/i18n/translations.ts の構造を踏襲。
 
 import type { Lang } from '../data/games-catalog'
@@ -25,6 +25,7 @@ export interface Translation {
     screenshots: string
     getOnGooglePlay: string
     watchOnYoutube: string
+    downloadTitle: string
     notFound: string
   }
   /** About / Contact / Blog の静的ページ。タイトルは nav を流用。 */
@@ -75,6 +76,7 @@ export const translations: Record<Lang, Translation> = {
       screenshots: 'Screenshots',
       getOnGooglePlay: 'Get it on Google Play',
       watchOnYoutube: 'Watch on YouTube',
+      downloadTitle: 'Download & Play',
       notFound: 'Game not found.',
     },
     pages: {
@@ -112,6 +114,7 @@ export const translations: Record<Lang, Translation> = {
       screenshots: 'スクリーンショット',
       getOnGooglePlay: 'Google Play で入手',
       watchOnYoutube: 'YouTube で見る',
+      downloadTitle: 'ダウンロード',
       notFound: 'ゲームが見つかりません。',
     },
     pages: {
@@ -149,6 +152,7 @@ export const translations: Record<Lang, Translation> = {
       screenshots: '截图',
       getOnGooglePlay: '在 Google Play 获取',
       watchOnYoutube: '在 YouTube 观看',
+      downloadTitle: '下载',
       notFound: '未找到游戏。',
     },
     pages: {
