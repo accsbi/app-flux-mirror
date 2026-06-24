@@ -20,7 +20,9 @@ export default defineConfig({
     outDir: resolve(__dirname, 'dist-android'),
     emptyOutDir: true,
     rollupOptions: {
-      input: { [game]: resolve(__dirname, 'web-games', `${game}.html`) },
+      // 入口は Android 専用 index（web-games/android-<game>.html。__ANDROID_APP__＋モバイルCSS入り）。
+      // WEB 版(<game>.html)とは別ファイル。出力は dist-android/android-<game>.html。
+      input: { [`android-${game}`]: resolve(__dirname, 'web-games', `android-${game}.html`) },
     },
   },
 })
