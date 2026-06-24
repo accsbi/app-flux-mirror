@@ -25,11 +25,12 @@
 - モーダルと各部品（ヘッダー/フッター/カード/マーカー/メッセージ）が **重ならない**。前後関係を守る。
 - 全観点とIDは **[docs/UI_TEST_CASES.md](docs/UI_TEST_CASES.md)**。実装/修正後はこの一覧で確認。
 
-## 3. スクショ＆検証記録（証跡）
-- **`.log` ファイルは作らない**。検証結果は **追記式 HTML に蓄積**する（`screenshots_log/<game>/VERIFY-LOG.html`、テスト実行は `screenshots_log/test_plan/<game>/result.html`）。
-- 画像は **サムネイル＋クリックで拡大（ライトボックス）**・**相対参照**（Base64 で埋め込まない）。スクショは `screenshots_log/<game>/` に置く。
-- 一時ファイルに隠さない（`/tmp` 等でブラックボックス化しない）。判定根拠（URL・表示文字・実フェッチ先・エラー）を HTML に残し、**ミスを OK と書かない**。
-- `screenshots_log/<game>/human_checked/` は人間専用（§4）。AI は触らない。
+## 3. テスト記録（証跡）— 一箇所・単一HTML・時系列
+- **テストは全部 `b2b_test/<app>/` に集約**（例 `b2b_test/00004_old-maid/`）。散らかさない（`.log` 作らない・別々のHTMLにしない）。
+- 記録は **単一ファイル `b2b_test/<app>/test-log.html`** に**時系列で追記**（日付/項目/確証根拠/判定/証跡）。画像は **サムネ＋クリック拡大（ライトボックス）**・**相対参照**。
+- テスト用スクショは **`b2b_test/<app>/img/` に JPG（軽量・quality~80）**。PNG は重いので置かない。判定根拠（URL・表示文字・実フェッチ先・エラー）を残し、**ミスを OK と書かない**。
+- **INFO/ストア掲載画像だけは PNG**（`catalog/google_play_store_images/...`）。テスト記録とは別管理。
+- ブラックボックス禁止（`/tmp` 等に隠さない・フォーク任せで過程を隠さない）。`b2b_test/<app>/docs/`・`human_checked/`（§4）はユーザー領域＝AI は触らない。
 
 ## 4. 人間専用領域 — 触らない
 - `screenshots_log/<game>/human_checked/` は **人間専用**。**AI・スクリプトは書き込み/移動/削除/リネーム禁止**。
