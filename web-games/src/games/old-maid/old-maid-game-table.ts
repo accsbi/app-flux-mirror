@@ -15,7 +15,7 @@ import { renderSettingsPanel } from '../../shared/ui/panels/settings-modal'
 import '../../shared/ui/panels/guide-overview-panel'
 import '../../shared/ui/panels/confirm-dialog-panel'
 import '../../shared/ui/panels/ad-mock-dialog'
-import { countGameForAd, isAndroidApp, OLD_MAID_WEB_AD_COUNT_KEY } from '../../shared/infra/web-ad-mock'
+import { countGameForAd, isAndroidApp, isOfflineForAd, OLD_MAID_WEB_AD_COUNT_KEY } from '../../shared/infra/web-ad-mock'
 import '../../shared/ui/chrome/game-feedback'
 import { classicButtonStyles } from '../../shared/ui/classic-button.styles'
 import type { GameFeedback } from '../../shared/ui/chrome/game-feedback'
@@ -164,6 +164,8 @@ export class OldMaidGameTable extends LitElement {
   // ── 広告 ─────────────────────────────────────────────────────────
   // Player の手札が初めて3枚以下になった時点で1回だけ表示。WEB=モック / Android=実広告。
   @state() private adMockOpen = false
+  // オフライン（Android・機内モード等）で広告タイミングに達した時の警告（遊び続けさせない）。
+  @state() private isOfflineAdWarningOpen = false
   @state() private adMockCount = 0
   private adShownThisGame = false
   // 配り直後（初手で手札が既に3枚以下）に出ないよう、プレイヤーが1回引いてから許可する。
@@ -1156,6 +1158,13 @@ export class OldMaidGameTable extends LitElement {
     if (ph === 0 || ph > 3) return
     this.adShownThisGame = true
     if (isAndroidApp()) {
+      // オフライン（機内モード等）は実広告を出せない＝Remove Ads 未購入なら遊び続けさせない。
+      // 統一文言で警告し、メニューへ戻す（手本: highandlow onOfflineAdBlocked / native OLD MAID）。
+      if (isOfflineForAd()) {
+        this.isOfflineAdWarningOpen = true
+        this.bump()
+        return
+      }
       getAndroidBillingBridge()?.showInterstitialAd?.()
       return
     }
@@ -1521,6 +1530,22 @@ export class OldMaidGameTable extends LitElement {
                     .cancelLabel=${chrome.cancel}
                     @confirm-accept=${() => this.goHome()}
                     @confirm-cancel=${() => (this.confirmHomeOpen = false)}
+                  ></confirm-dialog-panel>
+                </div>
+              </section>`
+            : nothing}
+
+          ${this.isOfflineAdWarningOpen
+            ? html`<section class="overlay">
+                <div class="modal">
+                  <confirm-dialog-panel
+                    .title=${chrome.offlineAdTitle}
+                    .message=${chrome.offlineAdMessage}
+                    .okLabel=${chrome.ok}
+                    @confirm-accept=${() => {
+                      this.isOfflineAdWarningOpen = false
+                      this.goHome()
+                    }}
                   ></confirm-dialog-panel>
                 </div>
               </section>`
