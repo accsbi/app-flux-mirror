@@ -19,10 +19,8 @@ export type RemoveAdsUiConfigRoot = {
 let removeAdsUiConfigPromise: Promise<RemoveAdsUiConfigRoot> | null = null
 
 function resolveRemoveAdsUiConfigUrl(): string {
-  const runtimeWindow = window as Window & { __ANDROID_APP__?: boolean }
-  if (runtimeWindow.__ANDROID_APP__) {
-    return './assets/configs/remove_ads_ui.json'
-  }
+  // WEB/Android とも playing_cards のパスに統一（app-flux の ./assets/configs/ 分岐は誤りで 404 になる）。
+  // Android(appassets)では BASE_URL='./' → ./web-games/game-assets/configs/... に解決され、sync 済みファイルを読む。
   return new URL(`${import.meta.env.BASE_URL}web-games/game-assets/configs/remove_ads_ui.json`, window.location.href).toString()
 }
 
