@@ -493,7 +493,7 @@ export class OldMaidGameTable extends LitElement {
       }
       /* 親決め(big)=大きめ、対局中(small)=小さめで邪魔しない。 */
       .seat-avatars.is-big .seat-avatar img { width: 96px; height: 96px; }
-      .seat-avatars.is-small .seat-avatar img { width: 48px; height: 48px; }
+      .seat-avatars.is-small .seat-avatar img { width: 68px; height: 68px; }
       /* 席配置（右回り・固定 / .play 基準）: 上=CPU2 / 左=CPU3 / 右=CPU1 / 下=YOU。 */
       .seat-avatar.a-top { top: 13%; left: 50%; }
       .seat-avatar.a-left { top: 45%; left: 13%; }
@@ -1586,8 +1586,11 @@ export class OldMaidGameTable extends LitElement {
               </section>`
             : nothing}
 
-          <game-feedback .lang=${this.selectedLanguage} gameTitle="old-maid-game"></game-feedback>
         </div>
+
+        <!-- フィードバックは拡大ステージ(.stage)の transform 外に出す＝position:fixed が viewport 基準で
+             効き、スマホのキーボードでも縮まず文字も実 px のまま（手本 high-low / Memory と同配置）。 -->
+        <game-feedback .lang=${this.selectedLanguage} gameTitle="old-maid-game"></game-feedback>
       </div>
     `
   }

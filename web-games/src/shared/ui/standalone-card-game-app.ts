@@ -36,6 +36,10 @@ import { renderSettingsModal } from './panels/settings-modal'
 import './panels/confirm-dialog-panel'
 import './panels/other-games-modal-panel'
 import type { OtherGameItem } from './panels/other-games-modal-panel'
+import { type RemoveAdsUiConfigRoot, getRemoveAdsUiLanguage, loadRemoveAdsUiConfig } from '../config/remove-ads-ui-config'
+import { getAndroidBillingBridge, readRemoveAdsStateFromBridge } from '../infra/android-billing-bridge'
+import type { BillingResultPayload, RemoveAdsStatePayload } from '../types/android-bridge'
+import './panels/remove-ads-dialog-panel'
 
 // 3in1 カードゲームのスタンドアロン・アプリ殻（メニュー/設定/ガイド/戻る制御）の唯一の実装。
 // blackjack / poker / casino-war で 95% 同一だったラッパーをここへ集約し、各ゲームは差分のみを
@@ -114,6 +118,18 @@ export abstract class StandaloneCardGameApp extends LitElement {
   protected isNewsOpen = false
   @state()
   protected isOtherGamesOpen = false
+  // 広告削除（Remove Ads）UI。課金は Flutter の AndroidBilling ブリッジ経由（high-low と同方式）。
+  @state()
+  protected isRemoveAdsOpen = false
+  @state()
+  protected removeAdsUiConfig: RemoveAdsUiConfigRoot | null = null
+  @state()
+  protected removeAdsStatusMessage = ''
+  @state()
+  protected isAdsRemoved = false
+  // ストア（Google Play）から取得した表示価格（ブリッジ getRemoveAdsState 由来）。
+  @state()
+  protected removeAdsPrice = ''
   // お知らせ本文のライブ版（Android。空ならバンドル config の news_content を表示）。
   @state()
   protected newsLinesLive: string[] = []
@@ -147,6 +163,11 @@ export abstract class StandaloneCardGameApp extends LitElement {
     this.loadSettings()
     void this.loadConfig()
     void this.loadCardGamesList()
+    // 課金(Remove Ads): UI 文言を読み込み、既存エンタイトルメント/価格をブリッジから取り込み、Flutter 通知を購読。
+    void loadRemoveAdsUiConfig().then(c => { this.removeAdsUiConfig = c })
+    this.syncRemoveAdsStateFromBridge()
+    window.__onEntitlementsChanged = this.onEntitlementsChanged
+    window.__onBillingResult = this.onBillingResult
     this.screen = this.autostartGame ? 'game' : 'menu'
     if (!this.embedded && !this.autostartGame) {
       this.evaluateInitialSetup()
@@ -242,6 +263,8 @@ export abstract class StandaloneCardGameApp extends LitElement {
     window.removeEventListener('focus', this.onWindowFocus)
     window.removeEventListener('pointerdown', this.onFirstUserInteraction)
     window.removeEventListener('keydown', this.onFirstUserInteraction)
+    delete window.__onEntitlementsChanged
+    delete window.__onBillingResult
     this.teardownBgm()
     super.disconnectedCallback()
   }
@@ -318,6 +341,7 @@ export abstract class StandaloneCardGameApp extends LitElement {
   }
 
   private handleSystemBack(): boolean {
+    if (this.isRemoveAdsOpen) { this.playSubmit(); this.isRemoveAdsOpen = false; return true }
     if (this.isNewsOpen) { this.playSubmit(); this.isNewsOpen = false; return true }
     if (this.isOtherGamesOpen) { this.playSubmit(); this.isOtherGamesOpen = false; return true }
     if (this.showRules) { this.playSubmit(); this.showRules = false; return true }
@@ -376,6 +400,120 @@ export abstract class StandaloneCardGameApp extends LitElement {
   // 「別のカードゲーム」: アプリ内モーダルで一覧（Android のみメニューに表示）。
   private onOtherGames(): void { this.playSubmit(); this.isOtherGamesOpen = true }
   private closeOtherGames(): void { this.playSubmit(); this.isOtherGamesOpen = false }
+
+  // ── Remove Ads（広告削除・課金）。手本: high-low-standalone-app.ts。文言は config の ads ブロック由来。──
+  private get removeAdsUi() { return getRemoveAdsUiLanguage(this.removeAdsUiConfig, this.language) }
+
+  private a(key: string, fb = ''): string {
+    const block = this.appConfig ? getLanguageBlock(this.appConfig, this.language) : undefined
+    return getLocalizedString(block?.ads, key) || fb
+  }
+
+  private get removeAdsMessages() {
+    const fb: Record<AppLanguage, { success: string; failed: string; error: string; already: string; unavailable: string }> = {
+      en: { success: 'Thank you for your purchase! Ads have been removed from the app.', failed: 'Purchase failed. Please try again.', error: 'An error occurred during purchase. Please try again.', already: 'Already Purchased', unavailable: 'Purchase is not available right now.' },
+      ja: { success: 'ご購入ありがとうございます！アプリから広告が削除されました。', failed: '購入に失敗しました。もう一度お試しください。', error: '購入中にエラーが発生しました。もう一度お試しください。', already: '購入済み', unavailable: '現在購入できません。' },
+      zh: { success: '感谢您的购买！应用中的广告已被移除。', failed: '购买失败。请重试。', error: '购买过程中出现错误，请重试。', already: '已购买', unavailable: '当前无法购买。' }
+    }
+    const f = fb[this.language] ?? fb.en
+    return {
+      success: this.a('purchase_success_message', f.success),
+      failed: this.a('purchase_failed', f.failed),
+      error: this.a('purchase_error', f.error),
+      already: this.a('already_purchased', f.already),
+      unavailable: this.removeAdsUi?.purchase_message || f.unavailable
+    }
+  }
+
+  // 本文は ads ブロックの benefit（タイトル＋説明）を順に表示。
+  private removeAdsLines(): string[] {
+    return [
+      this.a('remove_ads_benefit_1_title'),
+      this.a('remove_ads_benefit_1_desc'),
+      this.a('remove_ads_benefit_2_title'),
+      this.a('remove_ads_benefit_2_desc')
+    ].filter(s => s.trim().length > 0)
+  }
+
+  private openRemoveAds = (): void => {
+    this.playSubmit()
+    // 最新の価格/購入状態をストア（ブリッジ）から取り直してから開く。
+    this.syncRemoveAdsStateFromBridge()
+    this.removeAdsStatusMessage = ''
+    this.showRules = false
+    this.screen = 'menu'
+    this.isRemoveAdsOpen = true
+  }
+
+  private closeRemoveAds = (): void => {
+    this.playSubmit()
+    this.isRemoveAdsOpen = false
+  }
+
+  // ブリッジから現在の課金状態（removeAds / price）を取り込む（アプリ起動・モーダル開閉時）。
+  private syncRemoveAdsStateFromBridge(): void {
+    const bridge = getAndroidBillingBridge()
+    if (!bridge) return
+    this.applyRemoveAdsState(readRemoveAdsStateFromBridge())
+  }
+
+  private applyRemoveAdsState(payload: Partial<RemoveAdsStatePayload>): void {
+    if (typeof payload.price === 'string') {
+      this.removeAdsPrice = payload.price
+    }
+    if (payload.removeAds === true) {
+      this.isAdsRemoved = true
+      this.isRemoveAdsOpen = false
+      // Flutter 側の広告非表示フラグも即時同期（インタースティシャルを止める）。
+      const win = window as Window & { AppFluxHost?: { postMessage: (msg: string) => void } }
+      win.AppFluxHost?.postMessage(JSON.stringify({ type: 'ads-removed', value: true }))
+    }
+  }
+
+  // Flutter → 課金状態変化通知（購入/復元の確定で removeAds:true が来る）。
+  private readonly onEntitlementsChanged = (payload: Partial<RemoveAdsStatePayload>): void => {
+    this.applyRemoveAdsState(payload)
+  }
+
+  // Flutter → 購入フロー結果通知（PURCHASED/RESTORED/CANCELED/ERROR）。
+  private readonly onBillingResult = (payload: BillingResultPayload): void => {
+    const msg = this.removeAdsMessages
+    const code = payload?.code ?? ''
+    if (code === 'PURCHASED' || code === 'RESTORED') {
+      this.removeAdsStatusMessage = msg.success
+      this.isAdsRemoved = true
+      return
+    }
+    if (code === 'CANCELED') {
+      this.removeAdsStatusMessage = msg.failed
+      return
+    }
+    this.removeAdsStatusMessage = msg.error
+  }
+
+  // 購入押下：ブリッジの buyRemoveAds() を呼ぶ。結果は __onBillingResult で受ける。
+  private onRemoveAdsPurchase = (): void => {
+    const msg = this.removeAdsMessages
+    this.playSubmit()
+    if (this.isAdsRemoved) {
+      this.removeAdsStatusMessage = msg.already
+      return
+    }
+    const bridge = getAndroidBillingBridge()
+    if (!bridge?.buyRemoveAds) {
+      this.removeAdsStatusMessage = msg.unavailable
+      return
+    }
+    this.removeAdsStatusMessage = ''
+    bridge.buyRemoveAds()
+  }
+
+  // 価格をラベルに付与（例: "Purchase ¥300"）。未取得なら素のラベル。
+  private withRemoveAdsPrice(label: string): string {
+    const price = this.removeAdsPrice.trim()
+    if (price.length === 0) return label
+    return `${label} ${price}`
+  }
 
   // 一覧 JSON（card-games-list.json）を読む。
   //   Android: まず app-flux.com/en/playing-cards のライブを取得（サイト再デプロイで即反映＝再申請不要）。
@@ -622,10 +760,34 @@ export abstract class StandaloneCardGameApp extends LitElement {
             this.playSubmit()
             this.screen = 'settings'
           }}
-          @menu-extra=${() => this.playSubmit() /* Remove Ads: 表示のみ。ダイアログ＋課金は P5 で配線 */}
+          @menu-extra=${this.openRemoveAds}
           @menu-news=${() => this.onNews()}
           @menu-other-games=${() => this.onOtherGames()}
         ></standalone-game-menu>
+
+        ${this.isRemoveAdsOpen ? html`
+          <main class="modal-shell"><section class="modal-card">
+            <remove-ads-dialog-panel
+              .title=${chrome.removeAds}
+              .lines=${this.removeAdsLines()}
+              .closeLabel=${this.removeAdsUi?.close_label || 'X'}
+              .showPurchase=${true}
+              .purchaseLabel=${this.isAdsRemoved
+                ? this.removeAdsMessages.already
+                : this.withRemoveAdsPrice(this.a('purchase_button') || this.removeAdsUi?.purchase_label || 'Purchase')}
+              .cancelLabel=${this.removeAdsUi?.cancel_label || 'Cancel'}
+              .showTerms=${true}
+              .termsLabel=${this.removeAdsUi?.terms_label || 'Terms'}
+              .termsTitle=${this.removeAdsUi?.terms_title || 'Terms of Service'}
+              .termsCloseLabel=${this.removeAdsUi?.terms_close_label || 'Close'}
+              .termsContent=${this.removeAdsUi?.terms_content || ''}
+              .priceLabel=${this.removeAdsPrice}
+              .statusLabel=${this.removeAdsStatusMessage}
+              .purchased=${this.isAdsRemoved}
+              @remove-ads-purchase=${this.onRemoveAdsPurchase}
+              @remove-ads-close=${this.closeRemoveAds}
+            ></remove-ads-dialog-panel>
+          </section></main>` : null}
         ${this.screen === 'guide'
           ? html`
               <main class="modal-shell">
