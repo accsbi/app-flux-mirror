@@ -80,11 +80,12 @@ export const menuBaseStyles = css`
     border-radius: 20px;
   }
 
+  /* 基準=high-low(highandlow) 完全一致: 行高 72px・縦 gap 24px。狭幅でも縮めない（実機で半分にならないよう）。 */
   .menu-buttons {
     display: grid;
-    grid-auto-rows: minmax(72px, auto);
+    grid-auto-rows: 72px;
     align-content: start;
-    gap: 16px;
+    gap: 24px;
     width: min(496px, 100%);
     max-width: 100%;
     margin: 16px auto 0;
@@ -173,11 +174,8 @@ export const menuBaseStyles = css`
     .menu-layout {
       padding: 8px;
     }
-    .menu-buttons {
-      gap: 12px;
-    }
+    /* gap は縮めない（high-low と同じ 24px 固定）。行高も 72px のまま。 */
     .menu-btn {
-      min-height: 64px;
       padding: 10px 20px;
     }
     .menu-btn-text {
