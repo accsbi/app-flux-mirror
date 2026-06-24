@@ -3,6 +3,13 @@
 着手前に必ず該当 docs を読むこと。ユニット（単一ファイル/単一スクショ）だけ見て直さない。
 基準ゲーム（blackjack / poker / casino-war）と同じ作りか比較してから書く。
 
+## 0. テストケース先行（最重要・順序厳守）
+- **順序＝①テストケース作成 → ②実装 → ③確証**。逆をやると毎回こける（重大な欠陥）。
+- 着手前に対象のテストケース表を作る（期待結果を先に書く）。基準＝**[screenshots_log/test_plan/plan.html](screenshots_log/test_plan/plan.html)**（OLD MAID UIテスト指示書・サンプル。対象に合わせ訂正）。
+- 確証は実装後、そのケースに沿って判定（OK / NG / 未実施 / 対象外）。**ミスを OK/PASS と書かない**。判定根拠（URL・表示文字・実フェッチ先・エラー）をログ/HTMLに残す。
+- 手本＝**high-low(highandlow) / app-flux DOCS** に一致させてから実装。独自実装に置き換えない（移行で過去バグが再発する）。
+- スキル: `.claude/skills/test-first/SKILL.md`。
+
 ## 1. 共通化（コピペ・ハードコード禁止）
 - 表示文言・ガイド・結果バナー・アセットURL・各種パネルは **shared / common / config** を使う。
   ゲーム個別に同等物を新規実装しない。
