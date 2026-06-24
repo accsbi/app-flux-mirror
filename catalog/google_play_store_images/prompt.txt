@@ -1,0 +1,31 @@
+ファイル名,画像サイズ
+{app_name}-feat.png,1024 x 500
+{app_name}-icon.png,512 x 512
+{app_name}-info1.png,1080 × 1920px
+{app_name}-info2.png,1080 × 1920px
+{app_name}-info3.png,1080 × 1920px
+{app_name}-info4.png,1080 × 1920px
+{app_name}-info5.png,1080 × 1920px
+{app_name}-info6.png,1080 × 1920px
+{app_name}-info7.png,1080 × 1920px
+{app_name}-info8.png,1080 × 1920px
+
+ここでPNG画像を WEBPにする
+
+
+{app_name}-feat.png,1024 x 500
+
+WEBP を TOP画像のまま使い回すこと。
+
+
+共通サイズとして1080 × 1920px
+
+
+
+テストは別に、INFO用の画像を適当にとって。複数枚を取って、こっちで選別する。必須なのは縦型であるこ
+  と。
+  defaultは英語、設定画面やGuideは英語+日本語中国語を数枚。メインはゲーム画面、特に1stが
+  YOUになるような意図的なものはいらない、普通にプレイのものを10枚くらい。似たようなものをしないこと。
+  メニュー画面、Guide画面は必ず含むこと。広告削除の中身や更新、別のカードゲームは不要。保存場所は、"\
+  \wsl.localhost\Ubuntu-24.04\home\dev\wsl_pj\playing_cards\catalog\google_play_store_images\info-tmp
+  " 人間が仕訳するので、とりあえずここで良い。

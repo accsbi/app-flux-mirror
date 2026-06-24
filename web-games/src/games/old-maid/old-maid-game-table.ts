@@ -92,6 +92,8 @@ const T = {
   shuffle: { ja: 'シャッフル', en: 'Shuffle', zh: '洗牌' },
   ok: { ja: 'OK', en: 'OK', zh: '确定' },
   you: { ja: 'あなた', en: 'YOU', zh: '你' },
+  // 引き番の操作ヒント（1行・改行なし）。WEB=ダブルクリック / Android=ダブルタップ を「ダブルタップ」で共通表記。
+  doubleTapHint: { ja: 'ダブルタップで引く', en: 'Double-tap to draw', zh: '双击抽取' },
 }
 
 function calcSpacing(count: number, cardLen: number, avail: number, overlap = 0.5): number {
@@ -245,6 +247,18 @@ export class OldMaidGameTable extends LitElement {
         padding-top: 4px;
       }
       /* どのカードから引くか等のメッセージ（専用バンド＝必ず最前面で読めるように） */
+      /* 引き番だけ出す操作ヒント（1行・改行なし）。drawFrom メッセージの直上に控えめに。 */
+      .draw-hint {
+        position: relative;
+        z-index: 12;
+        text-align: center;
+        font-size: 15px;
+        font-weight: 700;
+        color: #ffd479;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+        white-space: nowrap;
+        margin-bottom: 1px;
+      }
       .msg-band {
         position: relative;
         z-index: 12;
@@ -1207,11 +1221,11 @@ export class OldMaidGameTable extends LitElement {
       <div class="area-top">
         <div class="row ${dim ? 'dimmed' : ''}" style="width:${total}px">
           ${Array.from({ length: n }).map(
-            (_, i) => html`<img src=${this.backUrl()} alt="card" style="left:${i * spacing}px" />`,
-          )}
+      (_, i) => html`<img src=${this.backUrl()} alt="card" style="left:${i * spacing}px" />`,
+    )}
           ${showCursor
-            ? html`<div class="cursor" style="left:${this.cursorIndex * spacing + CARD_W / 2 - 13}px; top:-20px"></div>`
-            : nothing}
+        ? html`<div class="cursor" style="left:${this.cursorIndex * spacing + CARD_W / 2 - 13}px; top:-20px"></div>`
+        : nothing}
         </div>
       </div>
     `
@@ -1230,11 +1244,11 @@ export class OldMaidGameTable extends LitElement {
       <div class="col-${side}">
         <div class="vcol ${dim ? 'dimmed' : ''}" style="height:${total}px">
           ${Array.from({ length: n }).map(
-            (_, i) => html`<div class="vcard" style="top:${i * spacing}px"><img src=${this.backUrl()} alt="card" /></div>`,
-          )}
+      (_, i) => html`<div class="vcard" style="top:${i * spacing}px"><img src=${this.backUrl()} alt="card" /></div>`,
+    )}
           ${showCursor
-            ? html`<div class="cursor" style="top:${this.cursorIndex * spacing + CARD_W / 2 - 9}px; ${side === 'left' ? 'right:-6px; transform:rotate(90deg)' : 'left:-6px; transform:rotate(-90deg)'}"></div>`
-            : nothing}
+        ? html`<div class="cursor" style="top:${this.cursorIndex * spacing + CARD_W / 2 - 9}px; ${side === 'left' ? 'right:-6px; transform:rotate(90deg)' : 'left:-6px; transform:rotate(-90deg)'}"></div>`
+        : nothing}
         </div>
       </div>
     `
@@ -1258,17 +1272,17 @@ export class OldMaidGameTable extends LitElement {
     return html`
       <div class="discard-pile ${faint}">
         ${Array.from({ length: pairs }).map((_, i) => {
-          const c1 = d[i * 2]
-          const c2 = d[i * 2 + 1]
-          const seed = (i * 2654435761) >>> 0
-          const ox = ((seed % 100) / 100) * 56 - 28
-          const oy = (((seed >> 8) % 100) / 100) * 40 - 20
-          const rot = (((seed >> 16) % 100) / 100) * 28 - 14
-          return html`<div class="discard-pair" style="transform: translate(${ox}px, ${oy}px) rotate(${rot}deg)">
+      const c1 = d[i * 2]
+      const c2 = d[i * 2 + 1]
+      const seed = (i * 2654435761) >>> 0
+      const ox = ((seed % 100) / 100) * 56 - 28
+      const oy = (((seed >> 8) % 100) / 100) * 40 - 20
+      const rot = (((seed >> 16) % 100) / 100) * 28 - 14
+      return html`<div class="discard-pair" style="transform: translate(${ox}px, ${oy}px) rotate(${rot}deg)">
             <img src=${this.cardUrl(c1)} alt="" />
             ${c2 ? html`<img class="d2" src=${this.cardUrl(c2)} alt="" />` : nothing}
           </div>`
-        })}
+    })}
       </div>
     `
   }
@@ -1289,8 +1303,8 @@ export class OldMaidGameTable extends LitElement {
       <div class="area-fan">
         <div class="fan framed" style="width:${total}px">
           ${hand.map(
-            (_, i) =>
-              html`<img
+      (_, i) =>
+        html`<img
                 class=${this.pickIndex === i ? 'picking' : (this.selectedFanIndex === i ? 'selected' : '')}
                 src=${this.backUrl()}
                 alt="draw"
@@ -1298,7 +1312,7 @@ export class OldMaidGameTable extends LitElement {
                 @click=${() => this.onFanSelect(i)}
                 @dblclick=${() => void this.onPlayerPick(i)}
               />`,
-          )}
+    )}
         </div>
       </div>
     `
@@ -1318,28 +1332,28 @@ export class OldMaidGameTable extends LitElement {
       <div class="area-hand">
         <div class="row" style="width:${total}px">
           ${repeat(
-            hand,
-            (c) => c, // カード実体でキー付け＝抜いた札の img が隣のカードに再利用されない
-            // （位置キーだと .pulling の img が隣へ再利用され、translateY が戻って下へブレる）。
-            (c, i) => {
-              const isPulling = this.pulledIndex === i
-              const isBlink = this.blinkCards.has(c)
-              const isDrawn = this.lastDrawnCard === c && !isBlink
-              const cls = isPulling
-                ? 'pulling'
-                : isBlink
-                  ? this.blinkOn
-                    ? 'blink'
-                    : 'blink-off'
-                  : isDrawn
-                    ? 'just-drawn'
-                    : ''
-              return html`<img class=${cls} src=${this.cardUrl(c)} alt="card" style="left:${i * spacing}px" loading="lazy" />`
-            },
-          )}
+      hand,
+      (c) => c, // カード実体でキー付け＝抜いた札の img が隣のカードに再利用されない
+      // （位置キーだと .pulling の img が隣へ再利用され、translateY が戻って下へブレる）。
+      (c, i) => {
+        const isPulling = this.pulledIndex === i
+        const isBlink = this.blinkCards.has(c)
+        const isDrawn = this.lastDrawnCard === c && !isBlink
+        const cls = isPulling
+          ? 'pulling'
+          : isBlink
+            ? this.blinkOn
+              ? 'blink'
+              : 'blink-off'
+            : isDrawn
+              ? 'just-drawn'
+              : ''
+        return html`<img class=${cls} src=${this.cardUrl(c)} alt="card" style="left:${i * spacing}px" loading="lazy" />`
+      },
+    )}
           ${cursorHere
-            ? html`<div class="cursor" style="left:${this.cursorIndex * spacing + CARD_W / 2 - 13}px; top:-20px"></div>`
-            : nothing}
+        ? html`<div class="cursor" style="left:${this.cursorIndex * spacing + CARD_W / 2 - 13}px; top:-20px"></div>`
+        : nothing}
         </div>
       </div>
     `
@@ -1423,6 +1437,7 @@ export class OldMaidGameTable extends LitElement {
                 <div class="center"></div>
                 ${this.cardsHidden ? html`<div class="col-right"></div>` : this.renderSideCol('cpu1', 'right')}
               </div>
+              ${this.fanArmed && !this.dialogOpen ? html`<div class="draw-hint">${this.tt('doubleTapHint')}</div>` : nothing}
               <div class="msg-band">${!this.dialogOpen && this.message ? html`<span class="msg-pill">${this.message}</span>` : nothing}</div>
               ${this.cardsHidden ? nothing : this.renderFan()}
               ${this.cardsHidden ? nothing : this.renderHand()}
@@ -1445,16 +1460,16 @@ export class OldMaidGameTable extends LitElement {
 
           <!-- WEB の広告モック（元 Android の手札4枚以下タイミング・共通の ad-mock-dialog）。 -->
           ${this.adMockOpen
-            ? html`<ad-mock-dialog
+        ? html`<ad-mock-dialog
                 .count=${this.adMockCount}
                 .okLabel=${chrome.ok}
                 @ad-mock-close=${() => this.onAdMockClose()}
               ></ad-mock-dialog>`
-            : nothing}
+        : nothing}
 
           <!-- SELECT BET モーダル（親決め前に表示）。確定で親決めへ、キャンセルでホーム。 -->
           ${this.phase === 'bet'
-            ? html`<section class="overlay bet-overlay">
+        ? html`<section class="overlay bet-overlay">
                 <bet-selector-panel
                   title="Select BET"
                   available-label="COIN:"
@@ -1475,11 +1490,11 @@ export class OldMaidGameTable extends LitElement {
                   @bet-start=${this.confirmBet}
                 ></bet-selector-panel>
               </section>`
-            : nothing}
+        : nothing}
 
           <!-- COIN が 0 になったときの補充ダイアログ（CASINO WAR と同方式）。 -->
           ${this.isCoinRecoveryDialogOpen
-            ? html`<section class="overlay">
+        ? html`<section class="overlay">
                 <div class="modal coin-recovery-modal">
                   <h3>${chrome.coinRecoveryTitle}</h3>
                   <p>${chrome.coinRecoveryLine1}</p>
@@ -1487,10 +1502,10 @@ export class OldMaidGameTable extends LitElement {
                   <button class="recovery-ok-btn" @click=${this.confirmCoinRecovery}>${chrome.ok}</button>
                 </div>
               </section>`
-            : nothing}
+        : nothing}
 
           ${this.confirmHomeOpen
-            ? html`<section class="overlay">
+        ? html`<section class="overlay">
                 <div class="modal">
                   <confirm-dialog-panel
                     .title=${chrome.leaveTitle}
@@ -1502,48 +1517,48 @@ export class OldMaidGameTable extends LitElement {
                   ></confirm-dialog-panel>
                 </div>
               </section>`
-            : nothing}
+        : nothing}
 
           ${this.isOfflineAdWarningOpen
-            ? html`<section class="overlay">
+        ? html`<section class="overlay">
                 <div class="modal">
                   <confirm-dialog-panel
                     .title=${chrome.offlineAdTitle}
                     .message=${chrome.offlineAdMessage}
                     .okLabel=${chrome.ok}
                     @confirm-accept=${() => {
-                      this.isOfflineAdWarningOpen = false
-                      this.goHome()
-                    }}
+            this.isOfflineAdWarningOpen = false
+            this.goHome()
+          }}
                   ></confirm-dialog-panel>
                 </div>
               </section>`
-            : nothing}
+        : nothing}
 
           ${this.activePanel === 'settings'
-            ? html`<section class="overlay">
+        ? html`<section class="overlay">
                 <div class="modal">
                   ${renderSettingsPanel({
-                    language: this.selectedLanguage,
-                    effectEnabled: this.isSoundEnabled,
-                    bgmEnabled: this.isBgmEnabled,
-                    soundHelpOpen: this.soundHelpOpen,
-                    showClearCache: false,
-                    onClose: () => this.closePanel(),
-                    onEffectChange: (e) => this.setSoundEnabled(e),
-                    onBgmChange: (e) => this.setBgmEnabled(e),
-                    onLanguageChange: (next) => {
-                      this.selectedLanguage = next
-                      localStorage.setItem(LANGUAGE_KEY, next)
-                    },
-                    onOpenSoundHelp: () => (this.soundHelpOpen = true),
-                    onCloseSoundHelp: () => (this.soundHelpOpen = false),
-                  })}
+          language: this.selectedLanguage,
+          effectEnabled: this.isSoundEnabled,
+          bgmEnabled: this.isBgmEnabled,
+          soundHelpOpen: this.soundHelpOpen,
+          showClearCache: false,
+          onClose: () => this.closePanel(),
+          onEffectChange: (e) => this.setSoundEnabled(e),
+          onBgmChange: (e) => this.setBgmEnabled(e),
+          onLanguageChange: (next) => {
+            this.selectedLanguage = next
+            localStorage.setItem(LANGUAGE_KEY, next)
+          },
+          onOpenSoundHelp: () => (this.soundHelpOpen = true),
+          onCloseSoundHelp: () => (this.soundHelpOpen = false),
+        })}
                 </div>
               </section>`
-            : nothing}
+        : nothing}
           ${this.activePanel === 'guide'
-            ? html`<section class="overlay">
+        ? html`<section class="overlay">
                 <div class="modal">
                   <guide-overview-panel
                     .title=${chrome.guideOverview}
@@ -1553,7 +1568,7 @@ export class OldMaidGameTable extends LitElement {
                   ></guide-overview-panel>
                 </div>
               </section>`
-            : nothing}
+        : nothing}
 
         </div>
 
