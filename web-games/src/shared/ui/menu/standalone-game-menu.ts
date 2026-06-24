@@ -62,7 +62,7 @@ export class StandaloneGameMenu extends LitElement {
     applyStageScale(this)
   }
 
-  private emit(name: 'menu-back' | 'menu-start' | 'menu-guide' | 'menu-settings' | 'menu-extra'): void {
+  private emit(name: 'menu-back' | 'menu-start' | 'menu-guide' | 'menu-settings' | 'menu-extra' | 'menu-other-games' | 'menu-news'): void {
     this.dispatchEvent(new CustomEvent(name, { bubbles: true, composed: true }))
   }
 
@@ -70,8 +70,9 @@ export class StandaloneGameMenu extends LitElement {
     const hasHeroImage = this.heroImageSrc.trim().length > 0
     const hasBackButton = this.backLabel.trim().length > 0
     const hasExtraAction = this.extraActionLabel.trim().length > 0
-    const hasNewsLink = this.newsLabel.trim().length > 0 && this.newsUrl.trim().length > 0
-    const hasOtherGames = this.otherGamesLabel.trim().length > 0 && this.otherGamesUrl.trim().length > 0
+    // News/Other は外部遷移ではなくアプリ内モーダルを開く（離脱防止）。URL ではなくラベル有無で表示。
+    const hasNewsLink = this.newsLabel.trim().length > 0
+    const hasOtherGames = this.otherGamesLabel.trim().length > 0
     const extIcon = this.externalIconSrc.trim().length > 0
       ? html`<img class="menu-btn-icon" src=${this.externalIconSrc} alt="" aria-hidden="true" />`
       : null
@@ -116,10 +117,10 @@ export class StandaloneGameMenu extends LitElement {
         ? html`<button class="menu-btn" @click=${() => this.emit('menu-extra')}><span class="menu-btn-text">${this.extraActionLabel}</span></button>`
         : null}
                 ${hasOtherGames
-        ? html`<a class="menu-btn news-btn" href=${this.otherGamesUrl} target="_blank" rel="noopener noreferrer">${extIcon}<span class="menu-btn-text">${this.otherGamesLabel}</span></a>`
+        ? html`<button class="menu-btn news-btn" @click=${() => this.emit('menu-other-games')}>${extIcon}<span class="menu-btn-text">${this.otherGamesLabel}</span></button>`
         : null}
                 ${hasNewsLink
-        ? html`<a class="menu-btn news-btn" href=${this.newsUrl}><span class="menu-btn-text">${this.newsLabel}</span></a>`
+        ? html`<button class="menu-btn news-btn" @click=${() => this.emit('menu-news')}>${extIcon}<span class="menu-btn-text">${this.newsLabel}</span></button>`
         : null}
               </div>
 
@@ -299,13 +300,17 @@ export class StandaloneGameMenu extends LitElement {
         text-decoration: none;
       }
 
-      /* 外部リンクボタンの先頭アイコン（Android のみ・externalIconSrc 指定時） */
+      /* 外部リンクボタンの先頭アイコン（Android のみ・externalIconSrc 指定時）。
+         元 SVG は暗色(#1a1a1a)で暗い緑ボタンに埋もれるため、ボタン文字色（金 --gold-light #f4cf7a）
+         に近づける filter を掛けて可視化する（external-note-icon の invert と同趣旨）。 */
       .menu-btn-icon {
         width: 24px;
         height: 24px;
         margin-right: 10px;
         flex: 0 0 auto;
         vertical-align: middle;
+        filter: brightness(0) saturate(100%) invert(86%) sepia(35%) saturate(520%)
+          hue-rotate(337deg) brightness(96%) contrast(92%);
       }
 
       /* バージョンは枠(menu-card)の外＝stage 下部の余白に置く（ボタンと重ねない）。 */

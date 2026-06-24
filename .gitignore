@@ -7,3 +7,8 @@ dist/
 # scripts/ is its own nested git repo (and fully captured in the tarball backup)
 scripts/
 dist-android/
+
+# ローカル検証エビデンス（deploy 不要・GitHub に載せない）
+screenshots_log/
+dist-enpc/
+dist-subpath-test/

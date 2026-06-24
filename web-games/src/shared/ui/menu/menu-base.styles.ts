@@ -70,12 +70,13 @@ export const menuBaseStyles = css`
     background: transparent;
   }
 
-  /* 枠を埋めて角丸を綺麗に見せる（比率一致なので切れない）。 */
+  /* feat(1024x500) と枠(aspect 1024/500)は比率一致。cover はサブピクセル丸めで下端（"Classic Old Maid"
+     等の文字）をクロップするため contain にする（比率一致なのでレターボックスは出ない）。 */
   .feature-image {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: 20px;
   }
 

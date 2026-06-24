@@ -73,6 +73,11 @@
 
 * [Privacy policy link](https://app-flux.com/ja/games-apps/privacy-policy/)
 
+### [ お知らせ ] {news_app}
+
+[ 更新履歴 ]
+・ v1.0.0　初版を公開しました。
+
 
 ## [en] {Google / APP}
 
@@ -148,6 +153,11 @@ BET payout
 
 * [Privacy policy link](https://app-flux.com/en/games-apps/privacy-policy/)
 
+### [ News ] {news_app}
+
+[ Updates ]
+- v1.0.0  Initial release.
+
 
 ## [zh] {Google / APP}
 
@@ -222,3 +232,8 @@ BET倍率
 ### [ 隐私政策(外部链接) ] {guide_overview_app}
 
 * [Privacy policy link](https://app-flux.com/zh/games-apps/privacy-policy/)
+
+### [ 公告 ] {news_app}
+
+[ 更新历史 ]
+- v1.0.0  首次发布。

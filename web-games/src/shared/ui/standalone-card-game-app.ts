@@ -20,8 +20,10 @@ import {
   saveBgmEnabledSetting
 } from '../infra/bgm-setting'
 import { buildGameAssetUrl } from '../infra/game-asset-url'
+import { buildFeatureImageUrl } from '../infra/game-feature-image'
 import { playSubmitSound } from '../infra/submit-sound'
-import { CARD_GAMES_HUB_WEB_LINKS, buildDetailUrl } from '../infra/web-store-links'
+import { CARD_GAMES_HUB_WEB_LINKS, buildDetailUrl, buildOtherCardGamesUrl, buildLiveDataUrl } from '../infra/web-store-links'
+import { isAndroidApp } from '../infra/web-ad-mock'
 import { getGameTitle } from '../infra/game-title'
 import { SceneFadeController, renderSceneFade, sceneFadeStyles } from './scene-fade'
 import { clearLocalStoragePreservingProgress } from '../infra/storage-utils'
@@ -32,6 +34,8 @@ import './menu/standalone-game-menu'
 import './panels/guide-overview-panel'
 import { renderSettingsModal } from './panels/settings-modal'
 import './panels/confirm-dialog-panel'
+import './panels/other-games-modal-panel'
+import type { OtherGameItem } from './panels/other-games-modal-panel'
 
 // 3in1 カードゲームのスタンドアロン・アプリ殻（メニュー/設定/ガイド/戻る制御）の唯一の実装。
 // blackjack / poker / casino-war で 95% 同一だったラッパーをここへ集約し、各ゲームは差分のみを
@@ -105,6 +109,21 @@ export abstract class StandaloneCardGameApp extends LitElement {
   @state()
   protected isSoundHelpOpen = false
 
+  // 「お知らせ・更新」「別のカードゲーム」モーダル（外部遷移せずアプリ内＝離脱防止）。
+  @state()
+  protected isNewsOpen = false
+  @state()
+  protected isOtherGamesOpen = false
+  // お知らせ本文のライブ版（Android。空ならバンドル config の news_content を表示）。
+  @state()
+  protected newsLinesLive: string[] = []
+  // card-games-list.json（games-list.csv 由来・バンドル）を読み込んだ一覧。
+  @state()
+  protected cardGames: Array<{
+    file_name: string; title: string; google_play_store_url: string
+    store_state: string; web_published: boolean
+  }> = []
+
   // START 時のルール説明（チュートリアル）ダイアログ。high-low と同一挙動：
   // 初回は表示、チェックで次回以降は <slug>_rules_hidden に保存して非表示。
   @state()
@@ -127,6 +146,7 @@ export abstract class StandaloneCardGameApp extends LitElement {
     if (csvTitle) document.title = csvTitle
     this.loadSettings()
     void this.loadConfig()
+    void this.loadCardGamesList()
     this.screen = this.autostartGame ? 'game' : 'menu'
     if (!this.embedded && !this.autostartGame) {
       this.evaluateInitialSetup()
@@ -298,6 +318,8 @@ export abstract class StandaloneCardGameApp extends LitElement {
   }
 
   private handleSystemBack(): boolean {
+    if (this.isNewsOpen) { this.playSubmit(); this.isNewsOpen = false; return true }
+    if (this.isOtherGamesOpen) { this.playSubmit(); this.isOtherGamesOpen = false; return true }
     if (this.showRules) { this.playSubmit(); this.showRules = false; return true }
     if (this.screen === 'settings' || this.screen === 'guide') {
       this.playSubmit()
@@ -323,6 +345,75 @@ export abstract class StandaloneCardGameApp extends LitElement {
     return true
   }
 
+  // 「お知らせ・更新」: Android はアプリ内モーダル(更新履歴)。WEB は従来どおり詳細ページへ（同一オリジン＝離脱でない）。
+  private onNews(): void {
+    this.playSubmit()
+    if (isAndroidApp()) {
+      this.newsLinesLive = []   // 先にバンドル(現在言語)を表示し、ライブが来たら上書き
+      this.isNewsOpen = true
+      void this.loadNewsLive()
+    } else {
+      window.location.href = buildDetailUrl(this.detailSlug, this.language)
+    }
+  }
+  private closeNews(): void { this.playSubmit(); this.isNewsOpen = false }
+
+  // お知らせ本文を app-flux.com/en/playing-cards のライブ config から取得（Android のみ・現在言語）。
+  // 失敗時は newsLinesLive 空のままバンドル config の news_content を表示する。
+  private async loadNewsLive(): Promise<void> {
+    if (!isAndroidApp()) return
+    try {
+      const res = await fetch(buildLiveDataUrl(`web-games/game-assets/configs/${this.detailSlug}_app_config.json`), { cache: 'no-store' })
+      if (!res.ok) return
+      const cfg = await res.json()
+      const news = cfg?.languages?.[this.language]?.overview_info?.news_content
+      if (typeof news === 'string' && news.trim()) this.newsLinesLive = splitTextLines(news)
+    } catch {
+      // ライブ失敗 → バンドルの news を使う
+    }
+  }
+
+  // 「別のカードゲーム」: アプリ内モーダルで一覧（Android のみメニューに表示）。
+  private onOtherGames(): void { this.playSubmit(); this.isOtherGamesOpen = true }
+  private closeOtherGames(): void { this.playSubmit(); this.isOtherGamesOpen = false }
+
+  // 一覧 JSON（card-games-list.json）を読む。
+  //   Android: まず app-flux.com/en/playing-cards のライブを取得（サイト再デプロイで即反映＝再申請不要）。
+  //            失敗(オフライン/未デプロイ/CORS無)時のみバンドル(appassets)へフォールバック。
+  //   WEB: 同一オリジン(buildGameAssetUrl)のみ（dev/本番サイトそのものが最新）。
+  private async loadCardGamesList(): Promise<void> {
+    const urls = [
+      isAndroidApp() ? buildLiveDataUrl('web-games/game-assets/configs/card-games-list.json') : '',
+      buildGameAssetUrl('configs/card-games-list.json'),
+    ].filter(Boolean)
+    for (const url of urls) {
+      try {
+        const res = await fetch(url, { cache: 'no-store' })
+        if (!res.ok) continue
+        const data = (await res.json()) as { games?: typeof this.cardGames }
+        if (Array.isArray(data.games)) { this.cardGames = data.games; return }
+      } catch {
+        // 次(フォールバック)へ。全滅時は一覧空でモーダルは開く（致命的でない）。
+      }
+    }
+  }
+
+  // モーダルに渡す項目：現在のゲームを除外し、サイト公開(web_published)かつ非hidden の全カードゲームを動的に。
+  // store_state=button → GOOGLE PLAY / comingsoon → Coming Soon 表示（hidden は出さない）。CSV を増やせば自動で増える。
+  protected otherGameItems(): OtherGameItem[] {
+    return this.cardGames
+      .filter((g) => g.file_name !== this.detailSlug && g.web_published && g.store_state !== 'hidden')
+      .map((g) => ({
+        title: g.title,
+        // feat 画像も Android はライブ(app-flux.com)から。WEB は同一オリジン。
+        featImageUrl: isAndroidApp()
+          ? buildLiveDataUrl(`site-assets/images/games-apps/${g.file_name}/${g.file_name}-feat.webp`)
+          : buildFeatureImageUrl(g.file_name),
+        storeUrl: g.store_state === 'button' ? g.google_play_store_url : '',
+        comingSoon: g.store_state === 'comingsoon',
+      }))
+  }
+
   protected texts() {
     const block = this.appConfig ? getLanguageBlock(this.appConfig, this.language) : undefined
     const overview = block?.overview_info
@@ -344,6 +435,12 @@ export abstract class StandaloneCardGameApp extends LitElement {
       back: chrome.back,
       news: chrome.news,
       newsUrl: buildDetailUrl(this.detailSlug, this.language),
+      // お知らせ・更新モーダル（Android）/ 別のカードゲームモーダル。
+      newsTitle: chrome.newsShort,
+      newsLines: splitTextLines(getLocalizedString(overview, 'news_content') || ''),
+      otherGamesTitle: chrome.otherCardGames,
+      playLabel: 'Google Play',
+      comingSoonLabel: chrome.comingSoon,
       guideTitle: chrome.guideOverview,
       guideLines: guideLines.filter((line) => line.length > 0),
       settingsTitle: chrome.settings,
@@ -474,6 +571,12 @@ export abstract class StandaloneCardGameApp extends LitElement {
 
   render() {
     const t = this.texts()
+    // Android アプリ時はメニュー項目を WEB と出し分ける（手本: memorymonsters-standalone-app）。
+    //   Android: Back 非表示 / Remove Ads・Other Card Games 追加 / News→短縮 /
+    //            ストア(Google Play)・YouTube 非表示 / 外部注記・Ver 表示。
+    //   WEB(flag=false): 全条件が else=従来値に落ちるのでサイト側は不変。
+    const android = isAndroidApp()
+    const chrome = getSharedChromeText(this.language)
 
     const fade = renderSceneFade(this.sceneFade.state)
 
@@ -491,18 +594,24 @@ export abstract class StandaloneCardGameApp extends LitElement {
           .startLabel=${t.start}
           .guideLabel=${t.guide}
           .settingsLabel=${t.settings}
-          .backLabel=${t.back}
-          .storeNotice=${getSharedChromeText(this.language).alsoOnGooglePlay}
-          .storeTitle=${t.title}
-          .storeUrl=${this.appConfig?.app_info?.play_store_url ?? ''}
-          .storeState=${this.appConfig?.app_info?.store_state ?? 'button'}
-          .storeBadgeSrc=${CARD_GAMES_HUB_WEB_LINKS.storeBadgeUrl}
+          .backLabel=${android ? '' : t.back}
+          .extraActionLabel=${android ? chrome.removeAds : ''}
+          .storeNotice=${android ? '' : getSharedChromeText(this.language).alsoOnGooglePlay}
+          .storeTitle=${android ? '' : t.title}
+          .storeUrl=${android ? '' : (this.appConfig?.app_info?.play_store_url ?? '')}
+          .storeState=${android ? 'hidden' : (this.appConfig?.app_info?.store_state ?? 'button')}
+          .storeBadgeSrc=${android ? '' : CARD_GAMES_HUB_WEB_LINKS.storeBadgeUrl}
           .storeBadgeAlt=${`${t.title} on Google Play`}
-          .youtubeUrl=${this.appConfig?.app_info?.youtube_url ?? ''}
-          .youtubeBadgeSrc=${CARD_GAMES_HUB_WEB_LINKS.youtubeBadgeUrl}
+          .youtubeUrl=${android ? '' : (this.appConfig?.app_info?.youtube_url ?? '')}
+          .youtubeBadgeSrc=${android ? '' : CARD_GAMES_HUB_WEB_LINKS.youtubeBadgeUrl}
           .youtubeBadgeAlt=${`${t.title} on YouTube`}
-          .newsLabel=${t.news}
+          .newsLabel=${android ? chrome.newsShort : t.news}
           .newsUrl=${t.newsUrl}
+          .otherGamesLabel=${android ? chrome.otherCardGames : ''}
+          .otherGamesUrl=${android ? buildOtherCardGamesUrl(this.language) : ''}
+          .externalIconSrc=${android ? buildGameAssetUrl('common/images/external_link.svg') : ''}
+          .externalNote=${android ? chrome.externalLinkNote : ''}
+          .version=${android ? (this.appConfig?.app_info?.version ?? '') : ''}
           @menu-back=${() => this.dispatchEvent(new CustomEvent('menu-back', { bubbles: true, composed: true }))}
           @menu-start=${() => this.onStartWithRules()}
           @menu-guide=${() => {
@@ -513,6 +622,9 @@ export abstract class StandaloneCardGameApp extends LitElement {
             this.playSubmit()
             this.screen = 'settings'
           }}
+          @menu-extra=${() => this.playSubmit() /* Remove Ads: 表示のみ。ダイアログ＋課金は P5 で配線 */}
+          @menu-news=${() => this.onNews()}
+          @menu-other-games=${() => this.onOtherGames()}
         ></standalone-game-menu>
         ${this.screen === 'guide'
           ? html`
@@ -527,6 +639,36 @@ export abstract class StandaloneCardGameApp extends LitElement {
                       this.screen = 'menu'
                     }}
                   ></guide-overview-panel>
+                </section>
+              </main>
+            `
+          : null}
+        ${this.isNewsOpen
+          ? html`
+              <main class="modal-shell">
+                <section class="modal-card">
+                  <guide-overview-panel
+                    .title=${t.newsTitle}
+                    .lines=${this.newsLinesLive.length ? this.newsLinesLive : t.newsLines}
+                    .okLabel=${t.back}
+                    @guide-close=${() => this.closeNews()}
+                  ></guide-overview-panel>
+                </section>
+              </main>
+            `
+          : null}
+        ${this.isOtherGamesOpen
+          ? html`
+              <main class="modal-shell">
+                <section class="modal-card">
+                  <other-games-modal-panel
+                    .title=${t.otherGamesTitle}
+                    .games=${this.otherGameItems()}
+                    .playLabel=${t.playLabel}
+                    .comingSoonLabel=${t.comingSoonLabel}
+                    .okLabel=${t.back}
+                    @other-games-close=${() => this.closeOtherGames()}
+                  ></other-games-modal-panel>
                 </section>
               </main>
             `

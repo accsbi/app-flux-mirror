@@ -1,0 +1,6 @@
+# Cloudflare Pages 用ヘッダ（build で dist/ 直下にコピーされ Cloudflare が読む）。
+# Android アプリ(WebView=appassets.androidplatform.net)が「別のカードゲーム一覧・お知らせ」の
+# JSON をクロスオリジン fetch するための CORS。データ(JSON)だけに許可。
+/web-games/game-assets/configs/*
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, OPTIONS

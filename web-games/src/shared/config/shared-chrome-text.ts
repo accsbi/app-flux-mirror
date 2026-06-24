@@ -30,6 +30,8 @@ export type SharedChromeText = {
   removeAds: string
   /** メニューの「別のカードゲーム」ボタン（Android のみ・外部リンク） */
   otherCardGames: string
+  /** 「別のカードゲーム」一覧で、ストア未公開(comingsoon)ゲームに出すバッジ */
+  comingSoon: string
   /** News ボタン下「アイコン＝外部リンク」の説明文（Android のみ） */
   externalLinkNote: string
   /** メニューの戻るボタン */
@@ -89,6 +91,7 @@ const SHARED_CHROME_TEXT: Record<AppLanguage, SharedChromeText> = {
     newsShort: 'お知らせ・更新',
     removeAds: '広告を削除',
     otherCardGames: '別のカードゲーム',
+    comingSoon: '近日公開',
     externalLinkNote: 'インターネット環境が必要です',
     back: '戻る',
     alsoOnGooglePlay: 'Google Play ストアでも入手可能',
@@ -123,6 +126,7 @@ const SHARED_CHROME_TEXT: Record<AppLanguage, SharedChromeText> = {
     newsShort: '公告 / 更新',
     removeAds: '移除广告',
     otherCardGames: '其他纸牌游戏',
+    comingSoon: '即将推出',
     externalLinkNote: '需要互联网连接',
     back: '返回',
     alsoOnGooglePlay: 'Google Play 商店亦可下载',
@@ -157,6 +161,7 @@ const SHARED_CHROME_TEXT: Record<AppLanguage, SharedChromeText> = {
     newsShort: 'News / Updates',
     removeAds: 'Remove Ads',
     otherCardGames: 'Other Card Games',
+    comingSoon: 'Coming Soon',
     externalLinkNote: 'Internet connection required',
     back: 'Back',
     alsoOnGooglePlay: 'Also available on Google Play',

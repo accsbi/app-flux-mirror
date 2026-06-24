@@ -40,6 +40,20 @@ export function buildOtherCardGamesUrl(language: string): string {
   return `https://app-flux.com/${language}/games-apps`
 }
 
+// playing_cards の web/データを公開するライブ・ベースURL。
+// 方針: **Cloudflare Pages** に新規デプロイ（app-flux は触らない・後でドメイン載せ替え）。
+// Android アプリのモーダル（別のカードゲーム一覧・お知らせ・feat 画像）はアプリにバンドルせず
+// ここから**ライブ取得**する。サイト再デプロイで反映＝Google 再申請不要。手順: docs/DEPLOY_CLOUDFLARE.md。
+// ★ Cloudflare の公開URL確定後にここを差し替える（例 'https://<project>.pages.dev'）。
+//   未設定/未デプロイ間は fetch 失敗→バンドルにフォールバックする。
+// ※ ゲーム一覧そのものはハードコードしない（中身は card-games-list.json＝games-list.csv 由来）。
+export const PLAYING_CARDS_LIVE_BASE = 'https://app-flux.com/en/playing-cards'
+
+/** ライブデータ(JSON/画像)の絶対URLを組む。例 buildLiveDataUrl('web-games/game-assets/configs/card-games-list.json') */
+export function buildLiveDataUrl(relPath: string): string {
+  return `${PLAYING_CARDS_LIVE_BASE}/${relPath.replace(/^\//, '')}`
+}
+
 export const MEMORY_BATTLE_WEB_LINKS: WebPromotionLinks = {
   title: 'Classic Simple Memory Battle',
   storeUrl: 'https://play.google.com/store/apps/details?id=com.games.memorymonsters',

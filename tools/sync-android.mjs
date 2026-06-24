@@ -6,27 +6,35 @@
 //      Flutter root に assets/ を作らない＝二重 assets/ を避ける）
 //   3) 他ゲームの asset を剪定（per-game アプリなので APK を軽くする）
 import { execSync } from 'node:child_process'
-import { readFileSync, rmSync, mkdirSync, cpSync, readdirSync } from 'node:fs'
+import { readFileSync, rmSync, mkdirSync, cpSync, readdirSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 
-const ALLOW = ['old-maid', 'memory-battle', 'high-low'] // 今回 Android 化する3つのみ
-const ALL_GAMES = ['blackjack', 'poker', 'casino-war', 'old-maid', 'memory-battle', 'high-low']
 const WIN_ROOT = '/mnt/c/Users/dev/pj/google_play_store_app'
 
-const game = process.argv[2]
-if (!game) { console.error('usage: node tools/sync-android.mjs <slug>'); process.exit(1) }
-if (!ALLOW.includes(game)) { console.error(`Android 対象は ${ALLOW.join(' / ')} のみ（${game} は保留/対象外）`); process.exit(1) }
-
-// id を games-list.csv から（ハードコードしない）
-const csv = readFileSync('catalog/games-list.csv', 'utf8').split(/\r?\n/)
+// ゲーム一覧はハードコードしない。games-list.csv（file_name=slug, id）を唯一のソースに読む。
+// 増減は CSV を直すだけ＝この script は不変。
+const csv = readFileSync('catalog/games-list.csv', 'utf8').split(/\r?\n/).filter((l) => l.trim())
 const header = csv[0].split(',')
 const fi = header.indexOf('file_name'), ii = header.indexOf('id')
-let id = ''
-for (const line of csv.slice(1)) { const c = line.split(','); if ((c[fi] || '').trim() === game) { id = (c[ii] || '').trim(); break } }
+const ROWS = csv.slice(1).map((l) => l.split(',')).filter((c) => (c[fi] || '').trim())
+const ALL_GAMES = ROWS.map((c) => (c[fi] || '').trim())              // 剪定で「他ゲーム」を知るため（全件）
+const idOf = (slug) => { const r = ROWS.find((c) => (c[fi] || '').trim() === slug); return r ? (r[ii] || '').trim() : '' }
+
+const game = process.argv[2]
+if (!game) { console.error(`usage: node tools/sync-android.mjs <slug>\n候補(games-list.csv): ${ALL_GAMES.join(' / ')}`); process.exit(1) }
+if (!ALL_GAMES.includes(game)) { console.error(`${game} は games-list.csv に無い。候補: ${ALL_GAMES.join(' / ')}`); process.exit(1) }
+const id = idOf(game)
 if (!id) { console.error(`id not found for ${game} in games-list.csv`); process.exit(1) }
 
 const WIN = join(WIN_ROOT, `${id}_${game}`)
 const www = join(WIN, 'android/app/src/main/assets/www')
+
+// Android 移行の可否もハードコード(ALLOW)しない。Win 側に Flutter プロジェクト(pubspec.yaml)が
+// 在るゲームだけが対象＝移行に着手すれば自動で sync できる（blackjack 等の空フォルダは弾く）。
+if (!existsSync(join(WIN, 'pubspec.yaml'))) {
+  console.error(`${WIN} に Flutter プロジェクト(pubspec.yaml)が無い＝Android 移行が未着手。sync 対象外。`)
+  process.exit(1)
+}
 
 // 1) build:android
 console.log(`[1/4] build:android (${game}) ...`)
@@ -41,12 +49,23 @@ cpSync('dist-android', www, { recursive: true })
 // 3) 他ゲームの asset を剪定（このゲーム＋common＋このゲーム config のみ残す）
 console.log('[3/4] prune other games assets')
 for (const g of ALL_GAMES.filter((x) => x !== game)) {
+  // 他ゲームのゲーム本体 asset は丸ごと不要。
   rmSync(join(www, 'web-games/game-assets', g), { recursive: true, force: true })
-  rmSync(join(www, 'site-assets/images/games-apps', g), { recursive: true, force: true })
+  // 他ゲームの site-assets は「別のカードゲーム」一覧のサムネ用に feat 画像(<g>-feat.webp)だけ残し、
+  // 残り（icon / info1-6 / play-store_512 等）は剪定して APK を軽く保つ。
+  const gaDir = join(www, 'site-assets/images/games-apps', g)
+  if (existsSync(gaDir)) {
+    for (const f of readdirSync(gaDir)) {
+      if (f !== `${g}-feat.webp`) rmSync(join(gaDir, f), { recursive: true, force: true })
+    }
+  }
 }
+// このゲームの config と全ゲーム共通 config は残す（card-games-list.json＝別のカードゲーム一覧、
+// remove_ads_ui.json＝課金UI）。他ゲームの *_app_config.json だけ剪定する。
+const KEEP_CONFIGS = new Set(['remove_ads_ui.json', 'card-games-list.json'])
 const cfgDir = join(www, 'web-games/game-assets/configs')
 for (const f of readdirSync(cfgDir)) {
-  if (!f.includes(game) && f !== 'remove_ads_ui.json') rmSync(join(cfgDir, f))
+  if (!f.includes(game) && !KEEP_CONFIGS.has(f)) rmSync(join(cfgDir, f))
 }
 
 // Android assets は再帰的に取り込まれるため pubspec への列挙は不要。

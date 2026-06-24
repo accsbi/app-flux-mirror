@@ -18,10 +18,10 @@ function resolveRelativeAssetPath(relativePath: string): string {
 
 export function buildGameAssetUrl(relativePath: string): string {
   const resolved = resolveRelativeAssetPath(relativePath)
-  const runtimeWindow = window as Window & { __ANDROID_APP__?: boolean }
-  if (runtimeWindow.__ANDROID_APP__) {
-    return `./game-assets/${resolved}`
-  }
+  // WEB/Android 共通スキーム（hero=buildFeatureImageUrl と同じ）。base 相対で解決:
+  //   WEB(base:'/')      → /web-games/game-assets/...（絶対・サブフォルダ無関係）
+  //   Android(base:'./') → ./web-games/game-assets/...（dist-android root の html から解決）
+  // 旧 Android 専用分岐 './game-assets/' は dist 構成(web-games/game-assets/)と不整合で 404 だった（外部アイコン等）。
   return new URL(
     `${import.meta.env.BASE_URL}web-games/game-assets/${resolved}`,
     window.location.href,

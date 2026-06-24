@@ -51,13 +51,11 @@ function normalizeLanguage(value: string | null | undefined): AppLanguage {
 
 function resolveConfigUrl(configName: string): string {
   const file = `${configName}_app_config.json`
-  const runtimeWindow = window as RuntimeConfigWindow
-  if (runtimeWindow.__ANDROID_APP__) {
-    return `./assets/configs/${file}`
-  }
   if (window.location.pathname.startsWith('/playingcardshub/')) {
     return `/playingcardshub/public/assets/configs/${file}`
   }
+  // WEB/Android 共通（base 相対）。旧 Android 専用分岐 './assets/configs/' は dist 構成
+  // (web-games/game-assets/configs/) と不整合だったため撤去（buildGameAssetUrl と統一）。
   return new URL(`${import.meta.env.BASE_URL}web-games/game-assets/configs/${file}`, window.location.href).toString()
 }
 
