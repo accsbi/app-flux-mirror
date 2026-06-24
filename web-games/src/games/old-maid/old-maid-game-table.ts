@@ -146,6 +146,10 @@ export class OldMaidGameTable extends LitElement {
   // 裏返し（引きファン）を出すのは「YOUがCPUから引く＝自分が札を選んでいる間」だけ。
   // 引かれる時・引いた後の演出中は出さない（意味不明な裏返しの登場を防ぐ）。
   @state() private fanArmed = false
+  // 引き札のドラッグ/スワイプ（タップ不発対策＋「引き上げて切る」操作）。
+  @state() private dragIndex: number | null = null // ドラッグ中の引き札 index
+  @state() private dragDy = 0                       // 上方向の引き上げ量（論理px）
+  private dragStartY = 0
   @state() private pulledIndex: number | null = null // CPUがYOUから抜く手札のindex（上へ抜くアニメ）
   @state() private lastDrawnCard: OMCard | null = null // YOUが直前に引いたカード（強調表示）
   @state() private pendingCpuTarget: Seat | null = null
@@ -390,12 +394,24 @@ export class OldMaidGameTable extends LitElement {
         object-fit: contain;
         opacity: 0.92;
         filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
-        cursor: pointer;
+        cursor: grab;
+        /* タッチで「引き上げる」ドラッグ中にスクロール/選択が起きないように。 */
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
         transition: transform ${PICK_ANIM_MS}ms ease, opacity ${PICK_ANIM_MS}ms ease;
       }
       .fan img:hover {
         transform: translateY(-16px);
         z-index: 20;
+      }
+      /* ドラッグ中の札：指/カーソルに即追従させるため transition を切る（translateY はインライン）。 */
+      .fan img.dragging {
+        transition: none;
+        opacity: 1;
+        cursor: grabbing;
+        filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.6));
       }
       .fan img.picking {
         transform: translateY(-150px) scale(1.05);
@@ -840,7 +856,46 @@ export class OldMaidGameTable extends LitElement {
     this.maybeShowHandCountAd()
   }
 
-  // プレイヤーが引きファンの1枚をクリック
+  // ステージは --game-scale で拡縮されるため、画面pxの移動量を論理pxに戻す係数。
+  private get stageScale(): number {
+    const v = parseFloat(getComputedStyle(this).getPropertyValue('--game-scale'))
+    return v > 0 ? v : 1
+  }
+
+  // 引き札を掴む（pointerdown）。以後ドラッグで引き上げる。タップ不発・重なりで押しにくい問題の対策。
+  private onFanDown(e: PointerEvent, i: number): void {
+    if (this.phase !== 'player' || this.busy) return
+    this.dragIndex = i
+    this.dragStartY = e.clientY
+    this.dragDy = 0
+    try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId) } catch { /* noop */ }
+    e.preventDefault()
+  }
+
+  // 上へドラッグした分だけ札を持ち上げる（指/カーソルに追従。--game-scale 補正）。
+  private onFanMove(e: PointerEvent): void {
+    if (this.dragIndex === null) return
+    this.dragDy = Math.max(0, (this.dragStartY - e.clientY) / this.stageScale)
+    this.bump()
+  }
+
+  // 離した時：十分引き上げた or 単なるタップ → その札を引く。中途半端ならスナップで戻す。
+  private async onFanUp(_e: PointerEvent, i: number): Promise<void> {
+    if (this.dragIndex === null) return
+    const dy = this.dragDy
+    this.dragIndex = null
+    this.dragDy = 0
+    this.bump()
+    if (dy >= 56 || dy < 12) await this.onPlayerPick(i) // 引き上げ（スワイプ）or タップで引く
+  }
+
+  private onFanCancel(): void {
+    this.dragIndex = null
+    this.dragDy = 0
+    this.bump()
+  }
+
+  // プレイヤーが引きファンの1枚を引く（ドラッグ/スワイプ or タップ）
   private async onPlayerPick(index: number): Promise<void> {
     if (this.phase !== 'player' || this.busy) return
     const source = this.engine.drawSource('player')
@@ -1256,11 +1311,14 @@ export class OldMaidGameTable extends LitElement {
           ${hand.map(
             (_, i) =>
               html`<img
-                class=${this.pickIndex === i ? 'picking' : ''}
+                class=${this.pickIndex === i ? 'picking' : (this.dragIndex === i ? 'dragging' : '')}
                 src=${this.backUrl()}
                 alt="draw"
-                style="left:${i * spacing}px"
-                @click=${() => this.onPlayerPick(i)}
+                style="left:${i * spacing}px${this.dragIndex === i ? `;transform:translateY(${-this.dragDy}px);z-index:60` : ''}"
+                @pointerdown=${(e: PointerEvent) => this.onFanDown(e, i)}
+                @pointermove=${(e: PointerEvent) => this.onFanMove(e)}
+                @pointerup=${(e: PointerEvent) => void this.onFanUp(e, i)}
+                @pointercancel=${() => this.onFanCancel()}
               />`,
           )}
         </div>
