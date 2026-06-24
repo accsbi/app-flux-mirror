@@ -21,10 +21,11 @@
 - モーダルと各部品（ヘッダー/フッター/カード/マーカー/メッセージ）が **重ならない**。前後関係を守る。
 - 全観点とIDは **[docs/UI_TEST_CASES.md](docs/UI_TEST_CASES.md)**。実装/修正後はこの一覧で確認。
 
-## 3. スクショ＆判定ログ（証跡）
-- UI 検証スクショを撮ったら **必ず同名の判定ログ(.log)** を書く（1対1）。
-- 置き場所 `screenshots_log/<game>/`（ゲームごとフォルダ）。ベース名一致（`hoge.png` / `hoge.log`）。
-- 一時ファイルに隠さない（`/tmp` 等でブラックボックス化しない）。
+## 3. スクショ＆検証記録（証跡）
+- **`.log` ファイルは作らない**。検証結果は **追記式 HTML に蓄積**する（`screenshots_log/<game>/VERIFY-LOG.html`、テスト実行は `screenshots_log/test_plan/<game>/result.html`）。
+- 画像は **サムネイル＋クリックで拡大（ライトボックス）**・**相対参照**（Base64 で埋め込まない）。スクショは `screenshots_log/<game>/` に置く。
+- 一時ファイルに隠さない（`/tmp` 等でブラックボックス化しない）。判定根拠（URL・表示文字・実フェッチ先・エラー）を HTML に残し、**ミスを OK と書かない**。
+- `screenshots_log/<game>/human_checked/` は人間専用（§4）。AI は触らない。
 
 ## 4. 人間専用領域 — 触らない
 - `screenshots_log/<game>/human_checked/` は **人間専用**。**AI・スクリプトは書き込み/移動/削除/リネーム禁止**。
