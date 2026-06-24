@@ -18,17 +18,7 @@
         -webkit-user-select: none; user-select: none;
         -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent;
       }
-      /* ステータスバー(時計)/ナビバー/ノッチと重ならないよう safe-area を body padding に。
-         applyStageScale が body の padding を読んでステージを inset/オフセットする（app-flux sakuraslot 同方式）。
-         flutter_inappwebview の WebView は SafeArea を無視して全画面描画するため、web 側で吸収する。 */
-      body {
-        position: fixed; inset: 0; overscroll-behavior-y: contain;
-        /* env() が WebView で 0 になる場合に備え、Flutter が注入する --fb-* と max を取る（確実）。 */
-        padding-top: max(env(safe-area-inset-top), var(--fb-top, 0px));
-        padding-right: max(env(safe-area-inset-right), var(--fb-right, 0px));
-        padding-bottom: max(env(safe-area-inset-bottom), var(--fb-bottom, 0px));
-        padding-left: max(env(safe-area-inset-left), var(--fb-left, 0px));
-      }
+      body { position: fixed; inset: 0; overscroll-behavior-y: contain; }
     </style>
     <script>
       window.__ANDROID_APP__ = true;
