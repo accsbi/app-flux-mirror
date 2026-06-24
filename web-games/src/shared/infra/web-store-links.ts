@@ -54,6 +54,12 @@ export function buildLiveDataUrl(relPath: string): string {
   return `${PLAYING_CARDS_LIVE_BASE}/${relPath.replace(/^\//, '')}`
 }
 
+// お知らせモーダルの「このアプリについて」外部リンク（別窓）。
+// 形: https://{ドメイン=PLAYING_CARDS_LIVE_BASE}/{language}/games-apps/{file_name}/（言語は表示言語）。
+export function buildAboutUrl(fileName: string, language: string): string {
+  return `${PLAYING_CARDS_LIVE_BASE}/${language}/games-apps/${fileName}/`
+}
+
 export const MEMORY_BATTLE_WEB_LINKS: WebPromotionLinks = {
   title: 'Classic Simple Memory Battle',
   storeUrl: 'https://play.google.com/store/apps/details?id=com.games.memorymonsters',

@@ -5,42 +5,72 @@
       "title": "Classic Simple Blackjack (21)",
       "google_play_store_url": "https://play.google.com/store/apps/details?id=com.game.simpleblackjack",
       "store_state": "button",
-      "web_published": true
+      "web_published": true,
+      "google_description": {
+        "ja": "クラシックなデザインのシンプルなブラックジャック（21）です。",
+        "en": "A simple Blackjack (21) card game with a classic look.",
+        "zh": "一款外观经典、简单的二十一点（Blackjack）纸牌游戏。"
+      }
     },
     {
       "file_name": "poker",
       "title": "Classic Simple Poker (Five-card draw)",
       "google_play_store_url": "https://play.google.com/store/apps/details?id=com.game.simple_poker",
       "store_state": "button",
-      "web_published": true
+      "web_published": true,
+      "google_description": {
+        "ja": "クラシックなデザインのシンプルなファイブカードドローポーカーです。",
+        "en": "A simple five-card draw poker game with a classic look.",
+        "zh": "一款外观经典、简单的五张抽换扑克游戏。"
+      }
     },
     {
       "file_name": "casino-war",
       "title": "Classic Simple Casino War",
       "google_play_store_url": "https://play.google.com/store/apps/details?id=com.game.playingcardshub",
       "store_state": "button",
-      "web_published": true
+      "web_published": true,
+      "google_description": {
+        "ja": "クラシックなデザインのシンプルなカジノウォーです。",
+        "en": "A simple Casino War card game with a classic look. The higher card wins in a quick one-on-one showdown.",
+        "zh": "一款外观经典、简单的 Casino War。在快速的一对一对决中，点数大的牌获胜。"
+      }
     },
     {
       "file_name": "old-maid",
       "title": "Classic Simple Old Maid",
       "google_play_store_url": "https://play.google.com/store/apps/details?id=com.game.old_maid",
       "store_state": "button",
-      "web_published": true
+      "web_published": true,
+      "google_description": {
+        "ja": "CPU3人と順位を競う、クラシックデザインのシンプルなババ抜きトランプカードゲームです。",
+        "en": "A classic Old Maid card game against three CPU players.",
+        "zh": "一款采用经典设计的简单抽乌龟纸牌游戏，与3名电脑玩家争夺排名。"
+      }
     },
     {
       "file_name": "memory-battle",
       "title": "Classic Simple Memory Battle (shinkei-suijyaku)",
       "google_play_store_url": "https://play.google.com/store/apps/details?id=com.games.memorymonsters",
       "store_state": "button",
-      "web_published": true
+      "web_published": true,
+      "google_description": {
+        "ja": "クラシックデザインのシンプルな神経衰弱です。",
+        "en": "A simple memory-matching card game with a classic look. Play solo practice, or take on CPU rivals in battle mode.",
+        "zh": "一款外观经典、简单的翻牌配对（记忆）游戏。可单人练习，也可在对战模式中挑战 CPU。"
+      }
     },
     {
       "file_name": "high-low",
       "title": "Classic Simple High & Low",
       "google_play_store_url": "https://play.google.com/store/apps/details?id=com.game.highandlow",
       "store_state": "comingsoon",
-      "web_published": true
+      "web_published": true,
+      "google_description": {
+        "ja": "クラシックデザインのハイ＆ローです。",
+        "en": "A simple High & Low card game with a classic look. Play one-on-one against the CPU.",
+        "zh": "一款外观经典、简单的高低牌（High & Low）。与 CPU 一对一对战。"
+      }
     }
   ]
 }

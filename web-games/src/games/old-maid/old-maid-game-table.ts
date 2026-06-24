@@ -146,10 +146,8 @@ export class OldMaidGameTable extends LitElement {
   // 裏返し（引きファン）を出すのは「YOUがCPUから引く＝自分が札を選んでいる間」だけ。
   // 引かれる時・引いた後の演出中は出さない（意味不明な裏返しの登場を防ぐ）。
   @state() private fanArmed = false
-  // 引き札のドラッグ/スワイプ（タップ不発対策＋「引き上げて切る」操作）。
-  @state() private dragIndex: number | null = null // ドラッグ中の引き札 index
-  @state() private dragDy = 0                       // 上方向の引き上げ量（論理px）
-  private dragStartY = 0
+  // 引き札の選択：シングルクリック/タップで金色ハイライト（まだ引かない）。ダブルで引く。
+  @state() private selectedFanIndex: number | null = null
   @state() private pulledIndex: number | null = null // CPUがYOUから抜く手札のindex（上へ抜くアニメ）
   @state() private lastDrawnCard: OMCard | null = null // YOUが直前に引いたカード（強調表示）
   @state() private pendingCpuTarget: Seat | null = null
@@ -396,9 +394,9 @@ export class OldMaidGameTable extends LitElement {
         object-fit: contain;
         opacity: 0.92;
         filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
-        cursor: grab;
-        /* タッチで「引き上げる」ドラッグ中にスクロール/選択が起きないように。 */
-        touch-action: none;
+        cursor: pointer;
+        /* タップ操作。ダブルタップのズーム遅延を無効化（mobile でダブルタップ＝引く）。 */
+        touch-action: manipulation;
         user-select: none;
         -webkit-user-select: none;
         -webkit-touch-callout: none;
@@ -408,12 +406,14 @@ export class OldMaidGameTable extends LitElement {
         transform: translateY(-16px);
         z-index: 20;
       }
-      /* ドラッグ中の札：指/カーソルに即追従させるため transition を切る（translateY はインライン）。 */
-      .fan img.dragging {
-        transition: none;
+      /* シングルクリック/タップで選択＝金色ハイライト（まだ引かない）。ダブルで引く。 */
+      .fan img.selected {
         opacity: 1;
-        cursor: grabbing;
-        filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.6));
+        transform: translateY(-16px);
+        z-index: 25;
+        filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.55))
+          drop-shadow(0 0 14px #ffd479) drop-shadow(0 0 6px #ffb800)
+          brightness(1.12);
       }
       .fan img.picking {
         transform: translateY(-150px) scale(1.05);
@@ -849,7 +849,8 @@ export class OldMaidGameTable extends LitElement {
       return
     }
     this.phase = 'player'
-    // 自分が札を選んでいる間だけ裏返しの引きファンを出す。
+    // 自分が札を選んでいる間だけ裏返しの引きファンを出す。新しい引き番では選択を初期化。
+    this.selectedFanIndex = null
     this.fanArmed = true
     this.message = (this.tt('drawFrom') as (n: string) => string)(this.label(src))
     this.bump()
@@ -858,46 +859,15 @@ export class OldMaidGameTable extends LitElement {
     this.maybeShowHandCountAd()
   }
 
-  // ステージは --game-scale で拡縮されるため、画面pxの移動量を論理pxに戻す係数。
-  private get stageScale(): number {
-    const v = parseFloat(getComputedStyle(this).getPropertyValue('--game-scale'))
-    return v > 0 ? v : 1
-  }
-
-  // 引き札を掴む（pointerdown）。以後ドラッグで引き上げる。タップ不発・重なりで押しにくい問題の対策。
-  private onFanDown(e: PointerEvent, i: number): void {
+  // シングルクリック/タップ＝その札を選択（金色ハイライト）。まだ引かない。ダブルで引く。
+  private onFanSelect(i: number): void {
     if (this.phase !== 'player' || this.busy) return
-    this.dragIndex = i
-    this.dragStartY = e.clientY
-    this.dragDy = 0
-    try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId) } catch { /* noop */ }
-    e.preventDefault()
-  }
-
-  // 上へドラッグした分だけ札を持ち上げる（指/カーソルに追従。--game-scale 補正）。
-  private onFanMove(e: PointerEvent): void {
-    if (this.dragIndex === null) return
-    this.dragDy = Math.max(0, (this.dragStartY - e.clientY) / this.stageScale)
+    this.selectedFanIndex = i
     this.bump()
   }
 
-  // 離した時：十分引き上げた or 単なるタップ → その札を引く。中途半端ならスナップで戻す。
-  private async onFanUp(_e: PointerEvent, i: number): Promise<void> {
-    if (this.dragIndex === null) return
-    const dy = this.dragDy
-    this.dragIndex = null
-    this.dragDy = 0
-    this.bump()
-    if (dy >= 56 || dy < 12) await this.onPlayerPick(i) // 引き上げ（スワイプ）or タップで引く
-  }
-
-  private onFanCancel(): void {
-    this.dragIndex = null
-    this.dragDy = 0
-    this.bump()
-  }
-
-  // プレイヤーが引きファンの1枚を引く（ドラッグ/スワイプ or タップ）
+  // プレイヤーが引きファンの1枚を引く（ダブルクリック/ダブルタップ）。
+  // 演出: pickIndex → .fan img.picking で上へ一瞬抜けて消える。
   private async onPlayerPick(index: number): Promise<void> {
     if (this.phase !== 'player' || this.busy) return
     const source = this.engine.drawSource('player')
@@ -905,7 +875,8 @@ export class OldMaidGameTable extends LitElement {
     this.busy = true
     // プレイヤーが1回引いた＝以後は広告許可（配り直後の初手では出さない）。
     this.playerHasActed = true
-    // 札を引いた＝もう選択中ではない。以後（reveal/結果表示中）は裏返しを出さない。
+    // 引いた＝選択(ハイライト)解除。以後（reveal/結果表示中）は裏返しを出さない。
+    this.selectedFanIndex = null
     this.fanArmed = false
     // 引くアクション（カードが浮いて消える）
     this.pickIndex = index
@@ -1320,14 +1291,12 @@ export class OldMaidGameTable extends LitElement {
           ${hand.map(
             (_, i) =>
               html`<img
-                class=${this.pickIndex === i ? 'picking' : (this.dragIndex === i ? 'dragging' : '')}
+                class=${this.pickIndex === i ? 'picking' : (this.selectedFanIndex === i ? 'selected' : '')}
                 src=${this.backUrl()}
                 alt="draw"
-                style="left:${i * spacing}px${this.dragIndex === i ? `;transform:translateY(${-this.dragDy}px);z-index:60` : ''}"
-                @pointerdown=${(e: PointerEvent) => this.onFanDown(e, i)}
-                @pointermove=${(e: PointerEvent) => this.onFanMove(e)}
-                @pointerup=${(e: PointerEvent) => void this.onFanUp(e, i)}
-                @pointercancel=${() => this.onFanCancel()}
+                style="left:${i * spacing}px"
+                @click=${() => this.onFanSelect(i)}
+                @dblclick=${() => void this.onPlayerPick(i)}
               />`,
           )}
         </div>

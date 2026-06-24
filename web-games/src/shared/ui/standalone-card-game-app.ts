@@ -22,7 +22,7 @@ import {
 import { buildGameAssetUrl } from '../infra/game-asset-url'
 import { buildFeatureImageUrl } from '../infra/game-feature-image'
 import { playSubmitSound } from '../infra/submit-sound'
-import { CARD_GAMES_HUB_WEB_LINKS, buildDetailUrl, buildOtherCardGamesUrl, buildLiveDataUrl } from '../infra/web-store-links'
+import { CARD_GAMES_HUB_WEB_LINKS, buildDetailUrl, buildOtherCardGamesUrl, buildLiveDataUrl, buildAboutUrl } from '../infra/web-store-links'
 import { isAndroidApp } from '../infra/web-ad-mock'
 import { getGameTitle } from '../infra/game-title'
 import { SceneFadeController, renderSceneFade, sceneFadeStyles } from './scene-fade'
@@ -32,6 +32,7 @@ import { standaloneAppHostStyles, standaloneModalStyles } from './styles/standal
 import { applyStageScale } from './styles/stage-layout'
 import './menu/standalone-game-menu'
 import './panels/guide-overview-panel'
+import './panels/news-info-modal-panel'
 import { renderSettingsModal } from './panels/settings-modal'
 import './panels/confirm-dialog-panel'
 import './panels/other-games-modal-panel'
@@ -130,14 +131,13 @@ export abstract class StandaloneCardGameApp extends LitElement {
   // ストア（Google Play）から取得した表示価格（ブリッジ getRemoveAdsState 由来）。
   @state()
   protected removeAdsPrice = ''
-  // お知らせ本文のライブ版（Android。空ならバンドル config の news_content を表示）。
-  @state()
-  protected newsLinesLive: string[] = []
   // card-games-list.json（games-list.csv 由来・バンドル）を読み込んだ一覧。
   @state()
   protected cardGames: Array<{
     file_name: string; title: string; google_play_store_url: string
     store_state: string; web_published: boolean
+    // [ 概略 ] {google_description}（言語別・card-games-list.json 由来）。モーダルのカード本文。
+    google_description?: Record<string, string>
   }> = []
 
   // START 時のルール説明（チュートリアル）ダイアログ。high-low と同一挙動：
@@ -369,33 +369,14 @@ export abstract class StandaloneCardGameApp extends LitElement {
     return true
   }
 
-  // 「お知らせ・更新」: Android はアプリ内モーダル(更新履歴)。WEB は従来どおり詳細ページへ（同一オリジン＝離脱でない）。
+  // 「お知らせ・更新情報」: WEB/Android とも 2ボタン式モーダルを開く（news_content 本文は出さない）。
+  //   ① 最新版を確認 → Play ストア（外部別窓） / ② このアプリについて → 詳細ページ（外部別窓） / 戻る。
+  //   外部遷移はモーダル内の各ボタンが担う（Android は Flutter が外部ブラウザで開く＝離脱しない）。
   private onNews(): void {
     this.playSubmit()
-    if (isAndroidApp()) {
-      this.newsLinesLive = []   // 先にバンドル(現在言語)を表示し、ライブが来たら上書き
-      this.isNewsOpen = true
-      void this.loadNewsLive()
-    } else {
-      window.location.href = buildDetailUrl(this.detailSlug, this.language)
-    }
+    this.isNewsOpen = true
   }
   private closeNews(): void { this.playSubmit(); this.isNewsOpen = false }
-
-  // お知らせ本文を app-flux.com/en/playing-cards のライブ config から取得（Android のみ・現在言語）。
-  // 失敗時は newsLinesLive 空のままバンドル config の news_content を表示する。
-  private async loadNewsLive(): Promise<void> {
-    if (!isAndroidApp()) return
-    try {
-      const res = await fetch(buildLiveDataUrl(`web-games/game-assets/configs/${this.detailSlug}_app_config.json`), { cache: 'no-store' })
-      if (!res.ok) return
-      const cfg = await res.json()
-      const news = cfg?.languages?.[this.language]?.overview_info?.news_content
-      if (typeof news === 'string' && news.trim()) this.newsLinesLive = splitTextLines(news)
-    } catch {
-      // ライブ失敗 → バンドルの news を使う
-    }
-  }
 
   // 「別のカードゲーム」: アプリ内モーダルで一覧（Android のみメニューに表示）。
   private onOtherGames(): void { this.playSubmit(); this.isOtherGamesOpen = true }
@@ -543,6 +524,8 @@ export abstract class StandaloneCardGameApp extends LitElement {
       .filter((g) => g.file_name !== this.detailSlug && g.web_published && g.store_state !== 'hidden')
       .map((g) => ({
         title: g.title,
+        // 概略本文＝現在言語の google_description（無ければ en→空でフォールバック・見出しなし）。
+        description: g.google_description?.[this.language] ?? g.google_description?.en ?? '',
         // feat 画像も Android はライブ(app-flux.com)から。WEB は同一オリジン。
         featImageUrl: isAndroidApp()
           ? buildLiveDataUrl(`site-assets/images/games-apps/${g.file_name}/${g.file_name}-feat.webp`)
@@ -573,9 +556,10 @@ export abstract class StandaloneCardGameApp extends LitElement {
       back: chrome.back,
       news: chrome.news,
       newsUrl: buildDetailUrl(this.detailSlug, this.language),
-      // お知らせ・更新モーダル（Android）/ 別のカードゲームモーダル。
-      newsTitle: chrome.newsShort,
-      newsLines: splitTextLines(getLocalizedString(overview, 'news_content') || ''),
+      // お知らせ・更新情報モーダル（2ボタン式）。news_content は参照しない。
+      newsModalTitle: chrome.newsModalTitle,
+      checkLatest: chrome.checkLatest,
+      aboutThisApp: chrome.aboutThisApp,
       otherGamesTitle: chrome.otherCardGames,
       playLabel: 'Google Play',
       comingSoonLabel: chrome.comingSoon,
@@ -809,12 +793,15 @@ export abstract class StandaloneCardGameApp extends LitElement {
           ? html`
               <main class="modal-shell">
                 <section class="modal-card">
-                  <guide-overview-panel
-                    .title=${t.newsTitle}
-                    .lines=${this.newsLinesLive.length ? this.newsLinesLive : t.newsLines}
-                    .okLabel=${t.back}
-                    @guide-close=${() => this.closeNews()}
-                  ></guide-overview-panel>
+                  <news-info-modal-panel
+                    .title=${t.newsModalTitle}
+                    .checkLatestLabel=${t.checkLatest}
+                    .aboutLabel=${t.aboutThisApp}
+                    .backLabel=${t.back}
+                    .storeUrl=${this.appConfig?.app_info?.play_store_url ?? ''}
+                    .aboutUrl=${buildAboutUrl(this.detailSlug, this.language)}
+                    @news-info-close=${() => this.closeNews()}
+                  ></news-info-modal-panel>
                 </section>
               </main>
             `

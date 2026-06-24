@@ -4,7 +4,7 @@
 
 ### [ 概略 ] {google_description}
 
-クラシックデザインのシンプルなババ抜きです。
+CPU3人と順位を競う、クラシックデザインのシンプルなババ抜きトランプカードゲームです。
 
 ### [ アプリの概要 ] {all}
 
@@ -83,7 +83,7 @@
 
 ### [ Overview ] {google_description}
 
-A simple Old Maid card game with a classic look.
+A classic Old Maid card game against three CPU players.
 
 ### [ App Description ] {all}
 
@@ -163,7 +163,7 @@ BET payout
 
 ### [ 概述 ] {google_description}
 
-一款外观经典、简单的抽鬼牌(Old Maid)。
+一款采用经典设计的简单抽乌龟纸牌游戏，与3名电脑玩家争夺排名。
 
 ### [ 应用说明 ] {all}
 

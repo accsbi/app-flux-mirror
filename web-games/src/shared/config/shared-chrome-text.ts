@@ -26,6 +26,12 @@ export type SharedChromeText = {
   news: string
   /** News ラベルの外部サフィックス無し版（Android 用・外部アイコン+注記で示すため括弧不要） */
   newsShort: string
+  /** お知らせ・更新情報モーダルのタイトル */
+  newsModalTitle: string
+  /** お知らせモーダル: 最新版を確認（Play ストアを開く） */
+  checkLatest: string
+  /** お知らせモーダル: このアプリについて（詳細ページ外部リンク） */
+  aboutThisApp: string
   /** メニューの広告削除ボタン（Android のみ表示） */
   removeAds: string
   /** メニューの「別のカードゲーム」ボタン（Android のみ・外部リンク） */
@@ -89,6 +95,9 @@ const SHARED_CHROME_TEXT: Record<AppLanguage, SharedChromeText> = {
     start: 'スタート',
     news: '詳細',
     newsShort: 'お知らせ・更新',
+    newsModalTitle: 'お知らせ・更新情報',
+    checkLatest: '最新版を確認',
+    aboutThisApp: 'このアプリについて',
     removeAds: '広告を削除',
     otherCardGames: '別のカードゲーム',
     comingSoon: '近日公開',
@@ -124,6 +133,9 @@ const SHARED_CHROME_TEXT: Record<AppLanguage, SharedChromeText> = {
     start: '开始',
     news: '详情',
     newsShort: '公告 / 更新',
+    newsModalTitle: '公告与更新信息',
+    checkLatest: '检查最新版本',
+    aboutThisApp: '关于此应用',
     removeAds: '移除广告',
     otherCardGames: '其他纸牌游戏',
     comingSoon: '即将推出',
@@ -159,6 +171,9 @@ const SHARED_CHROME_TEXT: Record<AppLanguage, SharedChromeText> = {
     start: 'START',
     news: 'Details',
     newsShort: 'News / Updates',
+    newsModalTitle: 'News & Updates',
+    checkLatest: 'Check for updates',
+    aboutThisApp: 'About this app',
     removeAds: 'Remove Ads',
     otherCardGames: 'Other Card Games',
     comingSoon: 'Coming Soon',
