@@ -1,6 +1,7 @@
 import { LitElement, css, html } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import './numpad-dialog-panel'
+import { playSubmitSound } from '../../infra/submit-sound'
 
 const HOME_ICON = '\u{1F3E0}'
 const SETTINGS_ICON = '⚙'
@@ -45,6 +46,8 @@ export class BetSelectorPanel extends LitElement {
     }
     this.stopHold()
     this.isRepeating = false
+    // 押下開始の1回だけタップ音（長押し連続加減算 isRepeating 中は鳴らさない）。
+    playSubmitSound()
     callback()
     this.holdTimer = setTimeout(() => {
       this.isRepeating = true
@@ -75,6 +78,7 @@ export class BetSelectorPanel extends LitElement {
   }
 
   private openNumpad(): void {
+    playSubmitSound()
     this.isNumpadOpen = true
   }
 

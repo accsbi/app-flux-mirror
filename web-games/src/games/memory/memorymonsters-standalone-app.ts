@@ -18,6 +18,7 @@ import { getGameTitle } from '../../shared/infra/game-title'
 import { getAndroidBillingBridge, readRemoveAdsStateFromBridge } from '../../shared/infra/android-billing-bridge'
 import {
   BGM_SETTING_CHANGED_EVENT,
+  DEFAULT_BGM_ASSET,
   DEFAULT_BGM_VOLUME,
   loadBgmEnabledSetting,
   loadBgmVolumeSetting,
@@ -26,6 +27,7 @@ import {
 import { clearLocalStoragePreservingProgress } from '../../shared/infra/storage-utils'
 import { MEMORY_BATTLE_WEB_LINKS, buildNewsUrl, buildDetailUrl, buildOtherCardGamesUrl } from '../../shared/infra/web-store-links'
 import { buildGameAssetUrl } from '../../shared/infra/game-asset-url'
+import { playTrackedEffect, stopAllEffects, clearEffectSuppression } from '../../shared/infra/submit-sound'
 import { applyInitialDefaultLanguage, markInitialSetupCompleted, shouldShowInitialSetup } from '../../shared/infra/initial-setup'
 import type { BillingResultPayload, RemoveAdsStatePayload } from '../../shared/types/android-bridge'
 import { standaloneAppHostStyles, standaloneModalStyles } from '../../shared/ui/styles/standalone-app.styles'
@@ -36,7 +38,7 @@ import '../../shared/ui/panels/remove-ads-dialog-panel'
 import { renderSettingsModal } from '../../shared/ui/panels/settings-modal'
 import '../../shared/ui/menu/standalone-game-menu'
 import './memory-battle-standalone-app'
-import { SceneFadeController, renderSceneFade, sceneFadeStyles } from '../../shared/ui/scene-fade'
+import { SceneFadeController, renderSceneFade, sceneFadeStyles, SCENE_FADE_MS } from '../../shared/ui/scene-fade'
 
 import { LANGUAGE_KEY, SOUND_ENABLED_KEY } from '../../shared/config/storage-keys'
 
@@ -122,6 +124,9 @@ export class MemoryMonstersStandaloneApp extends LitElement {
       ; (window as Window & { __MEMORYMONSTERS_APP__?: { onAndroidBack: () => boolean } }).__MEMORYMONSTERS_APP__ = {
         onAndroidBack: () => this.handleSystemBack()
       }
+    // BK-1: ブラウザ戻る(popstate)を監視。
+    window.addEventListener('popstate', this.onPopState)
+    if (this.route === 'game') this.armHistoryGuard()
   }
 
   firstUpdated(): void {
@@ -147,6 +152,7 @@ export class MemoryMonstersStandaloneApp extends LitElement {
     delete window.__onBillingResult
     const runtimeWindow = window as Window & { __MEMORYMONSTERS_APP__?: { onAndroidBack: () => boolean } }
     delete runtimeWindow.__MEMORYMONSTERS_APP__
+    window.removeEventListener('popstate', this.onPopState)
     this.teardownBgm()
     super.disconnectedCallback()
   }
@@ -208,10 +214,11 @@ export class MemoryMonstersStandaloneApp extends LitElement {
   }
 
   private setupBgm(): void {
-    if (this.bgmAudio || !this.memoryConfig?.assets?.bgm) {
+    // BGM は共通 common/bgm/ に集約（DEFAULT_BGM_ASSET）。config 由来の個別 bgm は使わない。
+    if (this.bgmAudio) {
       return
     }
-    this.bgmAudio = new Audio(this.assetUrl(this.memoryConfig.assets.bgm))
+    this.bgmAudio = new Audio(this.assetUrl(DEFAULT_BGM_ASSET))
     this.bgmAudio.loop = true
     this.bgmAudio.preload = 'auto'
     this.bgmAudio.volume = loadBgmVolumeSetting() || DEFAULT_BGM_VOLUME
@@ -251,9 +258,8 @@ export class MemoryMonstersStandaloneApp extends LitElement {
     if (!this.isEffectEnabled || !this.memoryConfig?.assets?.submit_sound) {
       return
     }
-    const audio = new Audio(this.assetUrl(this.memoryConfig.assets.submit_sound))
-    audio.currentTime = 0
-    void audio.play().catch(() => undefined)
+    // 再生/追跡/一括停止・ホーム戻り抑止は共有 submit-sound に集約。
+    playTrackedEffect(this.assetUrl(this.memoryConfig.assets.submit_sound))
   }
 
   private setEffectEnabled(enabled: boolean): void {
@@ -381,6 +387,8 @@ export class MemoryMonstersStandaloneApp extends LitElement {
   // web/Android とも同じ in-page 復帰にし、/games-apps へは戻さない。
   private goHome = (event?: Event): void => {
     event?.stopPropagation()
+    // BG-3: 再生中 SFX を停止＋フェード中(out+in≈2×)の鳴り込みも抑止。
+    stopAllEffects(SCENE_FADE_MS * 2)
     this.sceneFade.run(() => {
       // ゲーム内で変えた言語/音設定を localStorage から取り込み直す（メニューが英語等に戻って見えるのを防ぐ）
       this.loadSettings()
@@ -460,6 +468,25 @@ export class MemoryMonstersStandaloneApp extends LitElement {
       return label
     }
     return `${label} ${price}`
+  }
+
+  // ── BK-1: ブラウザ「戻る」(popstate) ガード ──────────────────
+  // ゲーム中にブラウザ戻ると、Android 戻ると同じ handleSystemBack() を呼び（終了確認等を再利用）、
+  // 確認なしの素通り離脱を防ぐ。
+  private historyGuardArmed = false
+
+  private armHistoryGuard(): void {
+    if (this.historyGuardArmed) return
+    history.pushState({ cardGameBackGuard: true }, '')
+    this.historyGuardArmed = true
+  }
+
+  private readonly onPopState = (): void => {
+    this.historyGuardArmed = false
+    const handled = this.handleSystemBack()
+    if (handled || this.route !== 'menu') {
+      this.armHistoryGuard()
+    }
   }
 
   private handleSystemBack(): boolean {
@@ -603,8 +630,10 @@ export class MemoryMonstersStandaloneApp extends LitElement {
           .version=${this.isAndroidApp() ? t.version : ''}
           @menu-back=${this.goExternalHome}
           @menu-start=${() => {
+        clearEffectSuppression() // BG-3: 直前のホーム戻り抑止が残っていても開始音を鳴らす
         this.playSubmit()
         this.route = 'game'
+        this.armHistoryGuard()
       }}
           @menu-guide=${this.openGuide}
           @menu-settings=${this.openSettings}

@@ -201,7 +201,7 @@ export class StandaloneGameMenu extends LitElement {
       /* ヘッダー内構成のみ（card/hero/buttons の体裁は menu-base.styles を単一ソースで参照） */
       .menu-header {
         width: min(496px, 100%);
-        margin: 0 auto 16px;
+        margin: 0 auto 6px;
         text-align: left;
         box-sizing: border-box;
         display: grid;

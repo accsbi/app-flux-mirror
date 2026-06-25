@@ -1,5 +1,6 @@
 import { LitElement, css, html } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
+import { playSubmitSound } from '../../infra/submit-sound'
 
 @customElement('numpad-dialog-panel')
 export class NumpadDialogPanel extends LitElement {
@@ -16,6 +17,7 @@ export class NumpadDialogPanel extends LitElement {
   }
 
   private appendToInput(digit: string): void {
+    playSubmitSound()
     const currentValue = this.displayValue || '0'
     const newValue = currentValue === '0' ? digit : currentValue + digit
     const numValue = parseInt(newValue, 10)
@@ -25,10 +27,12 @@ export class NumpadDialogPanel extends LitElement {
   }
 
   private clearInput(): void {
+    playSubmitSound()
     this.displayValue = '0'
   }
 
   private backspaceInput(): void {
+    playSubmitSound()
     const currentValue = this.displayValue || '0'
     if (currentValue.length > 1) {
       this.displayValue = currentValue.slice(0, -1)
@@ -38,18 +42,22 @@ export class NumpadDialogPanel extends LitElement {
   }
 
   private setMin(): void {
+    playSubmitSound()
     this.displayValue = '1'
   }
 
   private setMax(): void {
+    playSubmitSound()
     this.displayValue = String(this.maxValue)
   }
 
   private cancel(): void {
+    playSubmitSound()
     this.dispatchEvent(new CustomEvent('numpad-cancel', { bubbles: true, composed: true }))
   }
 
   private confirm(): void {
+    playSubmitSound()
     const value = parseInt(this.displayValue, 10)
     if (!isNaN(value) && value >= 0 && value <= this.maxValue) {
       this.dispatchEvent(new CustomEvent('numpad-confirm', { detail: { value }, bubbles: true, composed: true }))

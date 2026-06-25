@@ -92,6 +92,24 @@ export const memoryBattleGameTableStyles = css`
     display: block;
     box-sizing: border-box;
     padding: 4px 8px 0;
+    /* BG-1: BET 中も暗幕(.bet-overlay z-index:26)より前面でヘッダーを押せるように。手本=old-maid。 */
+    position: relative;
+    z-index: 40;
+  }
+
+  /* BG-1: bet-overlay の暗幕はクリックを通し、BET パネル自身だけ操作可にする。 */
+  .bet-overlay {
+    pointer-events: none;
+  }
+  .bet-overlay bet-selector-panel {
+    pointer-events: auto;
+  }
+
+  /* GD-2: ガイド/設定表示中はヘッダー/ステータス/フッターを非表示（BG-1 の z-index:40 がモーダルに乗る回帰の解消）。 */
+  .stage.chrome-off > game-top-header,
+  .stage.chrome-off .status-strip,
+  .stage.chrome-off .region-footer {
+    display: none;
   }
 
   /* ステータスは他ゲームと統一した共有 .bet-status（COIN/BET/STAGE）＋右端に敵サムネ。
@@ -192,7 +210,8 @@ export const memoryBattleGameTableStyles = css`
     box-sizing: border-box;
     display: grid;
     align-items: end;
-    z-index: 5;
+    /* BG-1: BET 中も暗幕より前面でフッター(FEEDBACK)を押せるように。手本=old-maid。 */
+    z-index: 40;
   }
 
   .content-card,

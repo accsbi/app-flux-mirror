@@ -38,6 +38,7 @@ import { classicBlueActionButtonStyles } from '../../shared/ui/classic-button.st
 import { recoverSharedCoin, runNoMoreBetSequence, scheduleCoinRecoveryDialogIfZero, sharedNoMoreBetStyles, sharedResultOverlayStyles } from '../../shared/ui/styles/shared'
 import { runToolbarSizeCheck } from '../../shared/ui/chrome/toolbar-size-check'
 import { buildGameAssetUrl } from '../../shared/infra/game-asset-url'
+import { playTrackedEffect } from '../../shared/infra/submit-sound'
 import '../../shared/ui/chrome/game-top-header'
 import { renderSettingsPanel } from '../../shared/ui/panels/settings-modal'
 import '../../shared/ui/panels/guide-overview-panel'
@@ -514,9 +515,8 @@ export class BlackjackGameTable extends LitElement {
     if (!this.isSoundEnabled) {
       return
     }
-    const audio = new Audio(this.assetUrl(`effects/${name}.mp3`))
-    audio.currentTime = 0
-    void audio.play().catch(() => undefined)
+    // 再生/追跡/一括停止は共有 submit-sound に集約（ホーム戻り時 stopAllEffects で止まる）。
+    playTrackedEffect(this.assetUrl(`effects/${name}.mp3`))
   }
 
   private loadSettings(): void {
@@ -1075,7 +1075,7 @@ export class BlackjackGameTable extends LitElement {
     }
   }
 
-  private increaseBet(event?: CustomEvent<{ isRepeating?: boolean }>): void {
+  private increaseBet(): void {
     const maxAllowedBet = this.coin
     if (maxAllowedBet < MIN_BET) {
       this.currentBet = MIN_BET
@@ -1084,19 +1084,15 @@ export class BlackjackGameTable extends LitElement {
     if (this.currentBet >= maxAllowedBet) {
       return
     }
-    if (!event?.detail?.isRepeating) {
-      this.playEffect('submit')
-    }
+    // タップ音は共有 bet-selector-panel が鳴らす（二重再生防止のため親では鳴らさない）。
     this.currentBet = Math.min(maxAllowedBet, this.currentBet + 1)
   }
 
-  private decreaseBet(event?: CustomEvent<{ isRepeating?: boolean }>): void {
+  private decreaseBet(): void {
     if (this.currentBet <= MIN_BET) {
       return
     }
-    if (!event?.detail?.isRepeating) {
-      this.playEffect('submit')
-    }
+    // タップ音は共有 bet-selector-panel が鳴らす（二重再生防止）。
     this.currentBet = Math.max(MIN_BET, this.currentBet - 1)
   }
 
@@ -1175,18 +1171,18 @@ export class BlackjackGameTable extends LitElement {
     return html`
       <div class="screen-bg">
         <div class="stage" style=${stageStyle}>
-          <div class="table">
+          <div class="table${this.activePanel !== null ? ' chrome-off' : ''}">
             ${showToolbox
         ? html`
                   <game-top-header
                     home-label=${t.home}
                     settings-label=${t.settings}
                     guide-label=${t.guide}
-                    .toolsDisabled=${this.isBetDialogOpen}
+                    .toolsDisabled=${false}
                     .coin=${this.coin}
-                    @header-home=${this.onHomeClick}
-                    @header-settings=${() => this.openPanel('settings')}
-                    @header-guide=${() => this.openPanel('guide')}
+                    @header-home=${this.onHomeFromBet}
+                    @header-settings=${() => this.openPanelFromBet('settings')}
+                    @header-guide=${() => this.openPanelFromBet('guide')}
                   ></game-top-header>
                   <header class="bet-status">${coinIcon()} COIN ${this.coin} / BET ${this.currentBet}</header>
                 `
@@ -1441,10 +1437,7 @@ export class BlackjackGameTable extends LitElement {
                       .disableDecrease=${this.currentBet <= MIN_BET || this.coin < MIN_BET}
                       .disableIncrease=${this.coin < MIN_BET || this.currentBet >= this.coin}
                       .disableStart=${this.coin < this.currentBet || this.coin < MIN_BET}
-                      .showTools=${true}
-                      @bet-home=${this.onHomeFromBet}
-                      @bet-settings=${() => this.openPanelFromBet('settings')}
-                      @bet-guide=${() => this.openPanelFromBet('guide')}
+                      .showTools=${false}
                       @bet-decrease=${this.decreaseBet}
                       @bet-increase=${this.increaseBet}
                       @bet-value-change=${this.onBetValueChange}
@@ -1732,6 +1725,18 @@ export class BlackjackGameTable extends LitElement {
       margin-top: auto;
       min-height: 0;
     }
+
+    /* BG-1: BET 中もヘッダー/フッターを通常色で押せるように。
+       bet-overlay の暗幕はクリックを通し、BET パネル自身だけ操作可。
+       ヘッダー/フッターを暗幕より前面に出してグレーアウトを防ぐ（手本=old-maid）。 */
+    .bet-overlay { pointer-events: none; }
+    .bet-overlay bet-selector-panel { pointer-events: auto; }
+    game-top-header, .region-footer { position: relative; z-index: 40; }
+    /* GD-2: ガイド/設定/広告削除(activePanel)を開いている間はヘッダー/フッターを非表示
+       （BG-1 の z-index:40 がモーダルに乗る回帰を解消。BET は対象外）。 */
+    .table.chrome-off game-top-header,
+    .table.chrome-off .bet-status,
+    .table.chrome-off .region-footer { display: none; }
 
     .continue-row {
       position: absolute;

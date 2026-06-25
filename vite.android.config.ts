@@ -23,6 +23,10 @@ export default defineConfig({
     target: 'es2019',
     outDir: resolve(__dirname, 'dist-android'),
     emptyOutDir: true,
+    // バンドル(js/css)を出力ルート直下へ（既定の 'assets/' を作らない）。
+    // Android では assets/ 直下に展開するため、内側 assets/ があると
+    // android/.../assets/assets/... という二重 assets になり無駄な入れ子になる。
+    assetsDir: '',
     rollupOptions: {
       input: { [game]: resolve(__dirname, 'web-games/android', `${game}.html`) },
     },

@@ -35,7 +35,7 @@
 
 ## Android へ反映（運用手順）
 ```
-WSL:  npm run sync:android <slug>      # build:android → android/app/src/main/assets/www へコピー＋剪定
+WSL:  npm run sync:android <slug>      # build:android → android/app/src/main/assets/ 直下へコピー＋剪定（www 廃止）
 Win:  cd <id>_<slug> && flutter build apk   （または flutter run）
 ```
 - **対象ゲームはハードコードしない**：`games-list.csv` に在り、かつ Win に Flutter プロジェクト

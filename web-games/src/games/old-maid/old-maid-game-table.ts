@@ -2,6 +2,7 @@ import { LitElement, css, html, type TemplateResult, nothing } from 'lit'
 import { customElement, state, query } from 'lit/decorators.js'
 import { repeat } from 'lit/directives/repeat.js'
 import { buildGameAssetUrl } from '../../shared/infra/game-asset-url'
+import { playTrackedEffect } from '../../shared/infra/submit-sound'
 import { sharedGameHostStyles, sharedGameStageStyles } from '../../shared/ui/styles/shared-game-layout-styles'
 import { utilities } from '../../shared/ui/styles/utilities'
 import { sharedOverlayStyles, sharedBetStatusStyles, sharedCoinRecoveryStyles } from '../../shared/ui/styles/shared-game-ui-styles'
@@ -136,7 +137,8 @@ export class OldMaidGameTable extends LitElement {
   @state() private isCoinRecoveryDialogOpen = false
   private pendingStake = 0          // 精算前にゲーム中保持している BET（途中終了で返還）
   private betSettled = false        // 順位確定の精算済みフラグ（二重精算防止）
-  private lastPayout = 0            // 直近の精算で得た COIN（結果表示用）
+  private lastPayout = 0            // 直近の精算で得た COIN（払い戻し額）
+  @state() private lastNet = 0     // 直近の BET 純増減（払い戻し − 賭け金）。結果画面で YOU の上に表示
   private coinRecoveryTimerId: number | null = null
 
   // 演出用 state
@@ -262,23 +264,31 @@ export class OldMaidGameTable extends LitElement {
       .msg-band {
         position: relative;
         z-index: 12;
-        min-height: 34px;
+        min-height: 40px;
         display: flex;
         align-items: center;
         justify-content: center;
         text-align: center;
-        font-size: 23px;
+        font-size: 16px;
         font-weight: 800;
-        padding: 2px 12px;
+        padding: 0 8px;
+        box-sizing: border-box;
+        width: 100%;
       }
-      /* 文字がカード地（白/赤/黒）と同化しないよう、テキスト背面に半透明の帯を敷く。 */
+      /* 文字がカード地（白/赤/黒）と同化しないよう、テキスト背面に半透明の帯を敷く。
+         長文(en「Discard matching pairs from your hand」等)が左右に見切れないよう
+         幅をステージ内に収め、はみ出す場合は折り返す。 */
       .msg-pill {
         display: inline-block;
-        max-width: 100%;
+        max-width: 94%;
+        box-sizing: border-box;
+        white-space: normal;
+        overflow-wrap: break-word;
+        line-height: 1.25;
         color: #fff;
         background: rgba(0, 0, 0, 0.62);
-        padding: 4px 16px;
-        border-radius: 14px;
+        padding: 8px 16px;
+        border-radius: 16px;
         text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
       }
@@ -474,6 +484,19 @@ export class OldMaidGameTable extends LitElement {
       /* ゲーム自身のダイアログ（親決め/整理/CPUポーズ）は盤面を暗幕で覆わず半透明にして、
          下の席アバター・カードを透かす（手本準拠）。設定/ガイド等の chrome モーダルは従来の暗幕のまま。 */
       .overlay.see-through { background: transparent; }
+      /* BG-1(B): BET 中の小ツール3つ(show-tools=false で廃止)の代わりに、常時表示の
+         ヘッダー(ホーム/設定/ガイド)・フッター(FEEDBACK)を押せるようにする。
+         bet-overlay の暗幕はクリックを通し(pointer-events:none)、BET パネル自身だけ操作可にする。
+         ※実機での押せる判定は人間の疎通テストに委ねる。 */
+      .bet-overlay { pointer-events: none; }
+      .bet-overlay bet-selector-panel { pointer-events: auto; }
+      /* 暗幕(.overlay z-index:30)より上に出してグレーアウトを防ぐ＝通常色で押せる。 */
+      .region-header, .region-footer { position: relative; z-index: 40; }
+      /* GD-2: ガイド/設定(activePanel)を開いている間はヘッダー/フッターを非表示にする。
+         BG-1 で z-index:40 にした副作用＝ガイド/設定(see-through overlay)の上に乗って ×が押せず
+         本文と重なる回帰を解消。BET モーダルは activePanel ではないので対象外（BG-1 活性のまま）。 */
+      .table.chrome-off .region-header,
+      .table.chrome-off .region-footer { display: none; }
       .modal.see-through { background: rgba(8, 20, 22, 0.66); }
       /* 盤面層のマーカー（モーダルより下＝半透明ダイアログ越しに透ける）。.play 基準。 */
       .seat-avatars {
@@ -542,6 +565,26 @@ export class OldMaidGameTable extends LitElement {
       .seat-rank.r2 { color: #9ad0ff; }
       .seat-rank.r3 { color: #ffb27a; }
       .seat-rank.r4 { color: #ff7a7a; }
+      /* 結果画面: YOU アバターの上に BET の COIN 純増減（符号つき）。 */
+      .seat-avatar .coin-delta {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-bottom: 16px;
+        white-space: nowrap;
+        font-weight: 900;
+        font-size: 48px;
+        line-height: 1;
+        padding: 8px 16px;
+        border-radius: 24px;
+        background: rgba(0, 0, 0, 0.55);
+        text-shadow: 0 2px 5px #000, 0 0 9px rgba(0, 0, 0, 0.95);
+        -webkit-text-stroke: 1.5px rgba(0, 0, 0, 0.7);
+      }
+      .seat-avatar .coin-delta.plus { color: #ffd479; }
+      .seat-avatar .coin-delta.minus { color: #ff8a8a; }
+      .seat-avatar .coin-delta .cd-unit { font-size: 24px; margin-left: 8px; opacity: 0.95; }
       /* 「右回り（左の人から引きます）」ヒスト＝ダイアログ下・YOU の上。 */
       .clockwise-hint {
         position: absolute;
@@ -587,14 +630,18 @@ export class OldMaidGameTable extends LitElement {
       .rank.r4 {
         color: #ff7a7a;
       }
+      /* スマホ(6.1インチ)で押しやすいよう、ダイアログのボタンはメニュー同等の大きさに。
+         旧 58px/21px は WEB では目立たないがスマホで小さく押しにくい＝NG だった。 */
+      /* サイズは 8 の倍数で統一（8px グリッド）。スマホで押しやすい高さ＝88px。 */
       .btn {
-        min-width: 240px;
-        min-height: 58px;
+        min-width: 272px;
+        min-height: 88px;
+        padding: 0 32px;
         border: 0;
         border-radius: 999px;
         background: linear-gradient(180deg, #a06a34, #5e3818);
         color: #fff;
-        font-size: 21px;
+        font-size: 32px;
         font-weight: 800;
         cursor: pointer;
       }
@@ -691,13 +738,8 @@ export class OldMaidGameTable extends LitElement {
   }
   private playSound(name: string): void {
     if (!this.isSoundEnabled) return
-    try {
-      const a = new Audio(this.assetUrl(`old-maid/effects/${name}.mp3`))
-      a.volume = 0.6
-      void a.play().catch(() => undefined)
-    } catch {
-      /* ignore */
-    }
+    // 再生/追跡/一括停止は共有 submit-sound に集約（ホーム戻り時 stopAllEffects で止まる）。
+    playTrackedEffect(this.assetUrl(`old-maid/effects/${name}.mp3`), { volume: 0.6 })
   }
 
   // ── フロー ──
@@ -747,6 +789,7 @@ export class OldMaidGameTable extends LitElement {
     savePendingStake(OM_GAME_ID, this.currentBet)
     this.betSettled = false
     this.lastPayout = 0
+    this.lastNet = 0
     this.phase = 'parent'
     this.playSound('start')
     this.bump()
@@ -759,6 +802,9 @@ export class OldMaidGameTable extends LitElement {
     const rank = this.rankOf('player') // 1..4
     const mult = OM_RANK_MULTIPLIER[rank - 1] ?? 0
     this.lastPayout = Math.floor(this.currentBet * mult)
+    // 純増減＝払い戻し − 賭け金（開始時に coin から currentBet を引いてある）。
+    // 1位 +bet / 2位 +bet×0.5 / 3位 −bet×0.5 / 4位 −bet。
+    this.lastNet = this.lastPayout - this.currentBet
     this.coin = saveSharedCoin(this.coin + this.lastPayout)
     this.pendingStake = 0
     clearPendingStake(OM_GAME_ID)
@@ -873,9 +919,15 @@ export class OldMaidGameTable extends LitElement {
     this.maybeShowHandCountAd()
   }
 
-  // シングルクリック/タップ＝その札を選択（金色ハイライト）。まだ引かない。ダブルで引く。
+  // ステート式2タップ：1回目＝その札を選択（金色ハイライト・引かない）。
+  // 選択中の同じ札をもう1回タップ＝引く（計2タップで切る）。別の札なら選択が移る。
+  // ※ @dblclick は使わない（@click と競合してタッチで3タップ要する不具合になるため）。
   private onFanSelect(i: number): void {
     if (this.phase !== 'player' || this.busy) return
+    if (this.selectedFanIndex === i) {
+      void this.onPlayerPick(i)
+      return
+    }
     this.selectedFanIndex = i
     this.bump()
   }
@@ -1084,6 +1136,16 @@ export class OldMaidGameTable extends LitElement {
   private requestHome(): void {
     this.confirmHomeOpen = true
   }
+  // Android システムバック：app の handleGameBack から呼ばれる。
+  // オーバーレイがあれば閉じ、無ければ「終了確認」を出す＝戻るキーでいきなり離脱させない。
+  // 未実装だと app 側が確認なしで emitGoHome() して離脱してしまうバグになる。true=処理済み。
+  handleSystemBack(): boolean {
+    if (this.activePanel !== null) { this.closePanel(); return true }
+    if (this.confirmHomeOpen) { this.confirmHomeOpen = false; return true }
+    if (this.isCoinRecoveryDialogOpen) { return true }
+    this.requestHome()
+    return true
+  }
   private closePanel(): void {
     this.activePanel = null
     this.soundHelpOpen = false
@@ -1191,7 +1253,12 @@ export class OldMaidGameTable extends LitElement {
       // 上がった席は対局中も表示、終了時は全席（最下位=ババ持ちも 4th）表示。
       const showRank = atOver || this.engine.finished.includes(seat)
       const r = this.rankOf(seat)
+      // 結果画面では YOU の上に BET の COIN 純増減を符号つきで出す。
+      const showNet = atOver && seat === 'player'
       return html`<div class="seat-avatar ${cls}${glow}">
+        ${showNet
+        ? html`<div class="coin-delta ${this.lastNet >= 0 ? 'plus' : 'minus'}">${this.lastNet >= 0 ? '+' : ''}${this.lastNet}<span class="cd-unit">COIN</span></div>`
+        : nothing}
         <img src=${this.assetUrl(`old-maid/images/${file}.webp`)} alt=${this.label(seat)} />
         ${showRank ? html`<div class="seat-rank r${r}">${this.rankText(seat)}</div>` : nothing}
       </div>`
@@ -1310,7 +1377,6 @@ export class OldMaidGameTable extends LitElement {
                 alt="draw"
                 style="left:${i * spacing}px"
                 @click=${() => this.onFanSelect(i)}
-                @dblclick=${() => void this.onPlayerPick(i)}
               />`,
     )}
         </div>
@@ -1415,7 +1481,7 @@ export class OldMaidGameTable extends LitElement {
     return html`
       <div class="screen-bg">
         <div class="stage" style=${stageStyle}>
-          <div class="table">
+          <div class="table${this.activePanel !== null ? ' chrome-off' : ''}">
             <section class="region-header">
               <game-top-header
                 home-label=${chrome.home}
@@ -1480,7 +1546,7 @@ export class OldMaidGameTable extends LitElement {
                   .disableDecrease=${this.currentBet <= OM_MIN_BET}
                   .disableIncrease=${this.currentBet >= this.coin}
                   .disableStart=${this.coin < OM_MIN_BET || this.currentBet < OM_MIN_BET || this.currentBet > this.coin}
-                  .showTools=${true}
+                  .showTools=${false}
                   @bet-home=${() => this.requestHome()}
                   @bet-settings=${() => (this.activePanel = 'settings')}
                   @bet-guide=${() => (this.activePanel = 'guide')}

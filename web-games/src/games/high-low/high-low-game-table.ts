@@ -5,6 +5,7 @@ import { getSharedChromeText } from '../../shared/config/shared-chrome-text'
 import type { HLConfig } from './high-low-config'
 import { hlGet } from './high-low-config'
 import { buildHighLowAssetUrl, buildHighLowCommonAssetUrl } from './high-low-assets'
+import { playTrackedEffect } from '../../shared/infra/submit-sound'
 import { loadBgmEnabledSetting, saveBgmEnabledSetting } from '../../shared/infra/bgm-setting'
 import { ensurePlayableSharedCoin, saveSharedCoin } from '../../shared/infra/shared-coin-store'
 import { clearPendingStake, savePendingStake, takePendingStake } from '../../shared/infra/pending-stake-store'
@@ -143,9 +144,8 @@ export class HighLowGameTable extends LitElement {
 
   private playEffect(name: string) {
     if (!this.effectEnabled) return
-    const a = new Audio(buildHighLowAssetUrl(`effects/${name}.mp3`))
-    a.currentTime = 0
-    void a.play().catch(() => undefined)
+    // 再生/追跡/一括停止は共有 submit-sound に集約（ホーム戻り時 stopAllEffects で止まる）。
+    playTrackedEffect(buildHighLowAssetUrl(`effects/${name}.mp3`))
   }
   private sound() { this.playEffect('submit') }
 
@@ -210,10 +210,8 @@ export class HighLowGameTable extends LitElement {
     this.emitHome()
   }
 
-  // BET モーダルのツール（POKER と同一）。パネル/確認を開く間は一旦閉じ、閉じたら開始前なら再表示。
-  private readonly onBetHome = (): void => { this.sound(); this.betDialogOpen = false; this.confirmHome = true }
-  private readonly onBetSettings = (): void => { this.sound(); this.betDialogOpen = false; this.activePanel = 'settings' }
-  private readonly onBetGuide = (): void => { this.sound(); this.betDialogOpen = false; this.activePanel = 'guide' }
+  // BG-1: BET 中の小ツール3つは廃止（showTools=false）。代わりにヘッダー(ホーム/設定/ガイド)・
+  // フッター(FEEDBACK)を常時押せるようにした（暗幕を透過＋前面化）。bet を閉じず上に重ねて開く。
   // ゲーム開始前（preparation）で他の上面が閉じたら SELECT BET を再表示する。
   private reopenBetIfPending(): void {
     if (this.G.phase === 'preparation' && !this.activePanel && !this.confirmHome && !this.adMockOpen && !this.isCoinRecoveryDialogOpen) {
@@ -610,7 +608,7 @@ export class HighLowGameTable extends LitElement {
     return html`
       <div class="screen-bg">
         <div class="stage" style="background-image:url('${bgUrl()}')">
-          <div class="table">
+          <div class="table${this.activePanel !== null ? ' chrome-off' : ''}">
             <section class="region-header">
               <game-top-header
                 .homeLabel=${this.chrome.home}
@@ -697,10 +695,7 @@ export class HighLowGameTable extends LitElement {
                 .disableDecrease=${this.currentBet <= HL_MIN_BET}
                 .disableIncrease=${this.currentBet >= this.coin}
                 .disableStart=${this.coin < HL_MIN_BET || this.currentBet < HL_MIN_BET || this.currentBet > this.coin}
-                .showTools=${true}
-                @bet-home=${this.onBetHome}
-                @bet-settings=${this.onBetSettings}
-                @bet-guide=${this.onBetGuide}
+                .showTools=${false}
                 @bet-decrease=${this.decreaseBet}
                 @bet-increase=${this.increaseBet}
                 @bet-value-change=${this.onBetValueChange}
@@ -745,6 +740,13 @@ export class HighLowGameTable extends LitElement {
     .region-header { flex:0 0 auto; display:flex; flex-direction:column; gap:2px; padding-top:4px; }
     .region-content { flex:1 1 0; min-height:0; position:relative; overflow:hidden; display:flex; flex-direction:column; }
     .region-footer { flex:0 0 8%; min-height:0; }
+    /* BG-1: BET 中もヘッダー/フッターを通常色で押せるように（暗幕を透過＋前面化）。手本=old-maid。 */
+    .bet-overlay { pointer-events: none; }
+    .bet-overlay bet-selector-panel { pointer-events: auto; }
+    .region-header, .region-footer { position: relative; z-index: 40; }
+    /* GD-2: ガイド/設定(activePanel)表示中はヘッダー/フッターを非表示（BG-1 回帰の解消）。 */
+    .table.chrome-off .region-header,
+    .table.chrome-off .region-footer { display: none; }
     /* メイン盤面のグリッド背景枠（Memory の .battle-panel と同じ意匠：角丸・薄縁・半透明濃緑・ぼかし） */
     .main-area { flex:1 1 0; min-height:0; position:relative; overflow:hidden;
       margin:2px 0 4px; border-radius:18px; border:1px solid rgba(255,255,255,.14);

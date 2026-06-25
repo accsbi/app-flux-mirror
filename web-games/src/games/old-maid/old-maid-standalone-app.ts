@@ -20,12 +20,10 @@ export class OldMaidStandaloneApp extends StandaloneCardGameApp {
     throw new Error('old-maid のタイトルが CSV(games-list.csv) にありません（直書き禁止）。')
   }
 
-  // 盤面の戻る制御は介さず常にホーム（メニュー）へ戻す。
-  protected handleGameBack(): boolean {
-    this.emitGoHome()
-    return true
-  }
-
+  // 戻る（Android システムバック / ブラウザ戻る）は基底 handleGameBack を使う。
+  // ＝盤面 old-maid-game-table.handleSystemBack() に委譲し「終了確認ダイアログ(confirmHomeOpen)」を出す。
+  // 以前ここで emitGoHome() を直接呼んで握りつぶしていたため、確認なしでメニュー直帰する重大バグだった
+  //（盤面コメントが警告していた通り）。override を撤去して確認を必ず挟む。
   protected renderGameScreen(): TemplateResult {
     return html`<old-maid-game-table @go-home=${this.goHome}></old-maid-game-table>`
   }

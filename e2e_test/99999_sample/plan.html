@@ -1,0 +1,1063 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>OLD MAID Playwright UIテスト指示書</title>
+        <style>
+            body {
+                margin: 20px;
+                font-family: Arial, "Noto Sans JP", sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+                color: #222;
+                background: #fff;
+            }
+
+            h1,
+            h2 {
+                margin: 0 0 12px;
+            }
+
+            h2 {
+                margin-top: 28px;
+                border-bottom: 1px solid #aaa;
+                padding-bottom: 4px;
+            }
+
+            .meta,
+            .notice {
+                border: 1px solid #bbb;
+                padding: 12px;
+                margin-bottom: 16px;
+            }
+
+            .notice {
+                background: #f7f7f7;
+            }
+
+            code {
+                background: #f1f1f1;
+                padding: 1px 4px;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                table-layout: fixed;
+            }
+
+            th,
+            td {
+                border: 1px solid #999;
+                padding: 8px;
+                vertical-align: top;
+                overflow-wrap: anywhere;
+            }
+
+            th {
+                background: #eee;
+                text-align: left;
+            }
+
+            th:nth-child(1),
+            td:nth-child(1) {
+                width: 48px;
+                text-align: center;
+            }
+
+            th:nth-child(2),
+            td:nth-child(2) {
+                width: 140px;
+            }
+
+            th:nth-child(3),
+            td:nth-child(3) {
+                width: 150px;
+            }
+
+            th:nth-child(5),
+            td:nth-child(5) {
+                width: 80px;
+                text-align: center;
+            }
+
+            th:nth-child(6),
+            td:nth-child(6) {
+                width: 210px;
+            }
+
+            th:nth-child(7),
+            td:nth-child(7) {
+                width: 220px;
+            }
+
+            .status {
+                font-weight: bold;
+            }
+
+            .ok {
+                color: #0a6b20;
+            }
+
+            .ng {
+                color: #a00000;
+            }
+
+            .pending {
+                color: #8a5a00;
+            }
+
+            .skip {
+                color: #555;
+            }
+
+            .screenshot {
+                max-width: 200px;
+                max-height: 260px;
+                border: 1px solid #aaa;
+                display: block;
+            }
+
+            pre {
+                white-space: pre-wrap;
+                word-break: break-word;
+                border: 1px solid #bbb;
+                background: #f7f7f7;
+                padding: 12px;
+                min-height: 80px;
+            }
+
+            ul {
+                margin-top: 6px;
+            }
+
+            @media (max-width: 900px) {
+                body {
+                    margin: 8px;
+                }
+
+                .table-wrap {
+                    overflow-x: auto;
+                }
+
+                table {
+                    min-width: 1150px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h1>OLD MAID Playwright UIテスト指示書 sample ※訂正して使うように！</h1>
+
+        <div class="meta">
+            <div><strong>対象:</strong> Classic Simple Old Maid</div>
+            <div>
+                <strong>テスト種別:</strong>
+                UI表示・画面遷移・モーダル表示・基本疎通
+            </div>
+            <div>
+                <strong>対象外:</strong>
+                CPU思考、ペア判定、順位判定、配当計算などのゲームロジック詳細
+            </div>
+            <div>
+                <strong>結果ファイル:</strong> このHTMLを実行結果として更新する
+            </div>
+            <div>
+                <strong>スクリーンショット:</strong>
+                <code>./screenshots/old-maid/</code> を相対参照する
+            </div>
+        </div>
+
+        <h2>1. 実行ルール</h2>
+
+        <div class="notice">
+            <ol>
+                <li>各確認項目は、1行につき1操作または1判定とする。</li>
+                <li>
+                    判定は
+                    <strong>OK / NG / 未実施 / 対象外</strong>
+                    のいずれかを記録する。
+                </li>
+                <li>
+                    OKの場合も必ず確証画像を保存し、HTMLの「スクショ」列へ相対パスで表示する。
+                </li>
+                <li>NGの場合は、期待結果と実際の結果を「備考」へ記録する。</li>
+                <li>
+                    確認時刻は <code>YYYY-MM-DD HH:mm:ss</code> 形式で記録する。
+                </li>
+                <li>スクリーンショットは原則として操作後の画面を保存する。</li>
+                <li>画像はBase64で埋め込まず、画像フォルダを相対参照する。</li>
+                <li>
+                    前回結果を消さず、実行ごとにHTMLを複製するか、履歴行を追加する。
+                </li>
+                <li>
+                    ボタン操作は表示文字よりも
+                    <code>data-testid</code
+                    >、ID、安定した属性を優先して指定する。
+                </li>
+                <li>
+                    アニメーションや画面遷移の完了後にスクリーンショットを取得する。
+                </li>
+            </ol>
+        </div>
+
+        <h2>2. 判定基準</h2>
+
+        <ul>
+            <li>
+                <strong>OK:</strong>
+                表示、遷移、モーダル、URL、基本操作が期待どおりで、画面崩れや致命的なエラーがない。
+            </li>
+            <li>
+                <strong>NG:</strong>
+                未表示、誤遷移、操作不能、重なり、画面外への欠落、JavaScriptエラーなどがある。
+            </li>
+            <li><strong>未実施:</strong> まだ確認していない。</li>
+            <li><strong>対象外:</strong> 今回のUI自動テスト範囲に含めない。</li>
+        </ul>
+
+        <h2>3. スクリーンショット命名規則</h2>
+
+        <pre>
+形式:
+{NO}_{場所}_{操作}_{YYYYMMDD_HHMMSS}.png
+
+例:
+001_menu_initial_20260624_103000.png
+002_menu_start_tap_20260624_103005.png
+003_guide_modal_open_20260624_103010.png</pre
+        >
+
+        <h2>4. 実行ログ</h2>
+
+        <pre id="run-log">
+[実行開始]
+日時:
+環境:
+URL:
+ブラウザ:
+Viewport:
+Playwright:
+備考:
+
+[コンソールエラー]
+なし
+
+[ページエラー]
+なし
+
+[通信エラー]
+なし
+
+[実行終了]
+総件数:
+OK:
+NG:
+未実施:
+対象外:</pre
+        >
+
+        <h2>5. UI・画面遷移チェックリスト</h2>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>NO</th>
+                        <th>場所</th>
+                        <th>時間</th>
+                        <th>何をしたか？</th>
+                        <th>判定</th>
+                        <th>スクショ</th>
+                        <th>備考</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>起動</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            対象URLを開き、初期読み込みが完了するまで待機した。
+                        </td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/001_launch_initial.png"
+                                alt="起動直後"
+                            />
+                        </td>
+                        <td>
+                            白画面、読み込み停止、重大なページエラーがないこと。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>2</td>
+                        <td>メニュー画面</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            タイトル、背景、主要UIが正しく表示されることを確認した。
+                        </td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/002_menu_display.png"
+                                alt="メニュー画面"
+                            />
+                        </td>
+                        <td>
+                            文字切れ、画像欠落、重なり、画面外へのはみ出しがないこと。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>3</td>
+                        <td>メニュー画面</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            START / Guide / Settings / Remove Ads / Other Card
+                            Games / News Updates
+                            の6ボタンが表示されることを確認した。
+                        </td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/003_menu_six_buttons.png"
+                                alt="メニュー6ボタン"
+                            />
+                        </td>
+                        <td>6ボタンすべてが操作可能な位置にあること。</td>
+                    </tr>
+
+                    <tr>
+                        <td>4</td>
+                        <td>メニュー画面</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>STARTを押下した。</td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/004_start_open.png"
+                                alt="START押下後"
+                            />
+                        </td>
+                        <td>
+                            BET設定モーダルまたは現在仕様の対戦開始前画面へ正しく進むこと。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>5</td>
+                        <td>BET設定</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            BET設定画面またはモーダルが表示されることを確認した。
+                        </td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/005_bet_modal_display.png"
+                                alt="BET設定"
+                            />
+                        </td>
+                        <td>
+                            COIN、BET入力、決定、閉じる操作が画面内に表示されること。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>6</td>
+                        <td>BET設定</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>BET設定を閉じ、メニュー画面へ戻った。</td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/006_bet_close.png"
+                                alt="BET設定を閉じる"
+                            />
+                        </td>
+                        <td>閉じる操作後に背景操作不能状態が残らないこと。</td>
+                    </tr>
+
+                    <tr>
+                        <td>7</td>
+                        <td>メニュー画面</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>Guideを押下した。</td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/007_guide_open.png"
+                                alt="Guide表示"
+                            />
+                        </td>
+                        <td>ガイド画面またはモーダルが表示されること。</td>
+                    </tr>
+
+                    <tr>
+                        <td>8</td>
+                        <td>Guide</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            ガイド内の見出し、本文、画像、スクロール状態を確認した。
+                        </td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/008_guide_content.png"
+                                alt="Guide内容"
+                            />
+                        </td>
+                        <td>本文が途中で切れず、縦スクロールできること。</td>
+                    </tr>
+
+                    <tr>
+                        <td>9</td>
+                        <td>Guide</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>Guideを閉じ、メニュー画面へ戻った。</td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/009_guide_close.png"
+                                alt="Guideを閉じる"
+                            />
+                        </td>
+                        <td>閉じた後にメニューのボタンが再操作できること。</td>
+                    </tr>
+
+                    <tr>
+                        <td>10</td>
+                        <td>メニュー画面</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>Settingsを押下した。</td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/010_settings_open.png"
+                                alt="Settings表示"
+                            />
+                        </td>
+                        <td>設定画面またはモーダルが表示されること。</td>
+                    </tr>
+
+                    <tr>
+                        <td>11</td>
+                        <td>Settings</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>設定項目が欠落せず表示されることを確認した。</td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/011_settings_content.png"
+                                alt="Settings内容"
+                            />
+                        </td>
+                        <td>
+                            言語、音量、表示設定など、現在実装済みの項目を対象とする。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>12</td>
+                        <td>Settings</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            日本語を選択し、表示言語が日本語になることを確認した。
+                        </td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/012_language_ja.png"
+                                alt="日本語表示"
+                            />
+                        </td>
+                        <td>メニュー文字の欠落や折り返し崩れがないこと。</td>
+                    </tr>
+
+                    <tr>
+                        <td>13</td>
+                        <td>Settings</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            英語を選択し、表示言語が英語になることを確認した。
+                        </td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/013_language_en.png"
+                                alt="英語表示"
+                            />
+                        </td>
+                        <td>長い英語表記がボタン外へはみ出さないこと。</td>
+                    </tr>
+
+                    <tr>
+                        <td>14</td>
+                        <td>Settings</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            簡体字中国語を選択し、表示言語が切り替わることを確認した。
+                        </td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/014_language_zh.png"
+                                alt="簡体字中国語表示"
+                            />
+                        </td>
+                        <td>
+                            文字化け、欠落、ボタン外へのはみ出しがないこと。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>15</td>
+                        <td>Settings</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>設定を閉じ、メニュー画面へ戻った。</td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/015_settings_close.png"
+                                alt="Settingsを閉じる"
+                            />
+                        </td>
+                        <td>変更した設定が仕様どおり保持されること。</td>
+                    </tr>
+
+                    <tr>
+                        <td>16</td>
+                        <td>メニュー画面</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>Remove Adsを押下した。</td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/016_remove_ads_open.png"
+                                alt="Remove Ads表示"
+                            />
+                        </td>
+                        <td>
+                            Webでは案内またはモック、アプリでは購入案内が表示されること。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>17</td>
+                        <td>Remove Ads</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>Remove Ads画面またはモーダルを閉じた。</td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/017_remove_ads_close.png"
+                                alt="Remove Adsを閉じる"
+                            />
+                        </td>
+                        <td>閉じた後にメニュー操作へ戻れること。</td>
+                    </tr>
+
+                    <tr>
+                        <td>18</td>
+                        <td>メニュー画面</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>Other Card Gamesを押下した。</td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/018_other_games.png"
+                                alt="Other Card Games遷移"
+                            />
+                        </td>
+                        <td>
+                            想定URL、同一タブまたは別タブの現在仕様どおりに遷移すること。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>19</td>
+                        <td>Other Card Games</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>遷移先URLとページの初期表示を確認した。</td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/019_other_games_destination.png"
+                                alt="Other Card Games遷移先"
+                            />
+                        </td>
+                        <td>404、無限読み込み、空白ページがないこと。</td>
+                    </tr>
+
+                    <tr>
+                        <td>20</td>
+                        <td>メニュー画面</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>News Updatesを押下した。</td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/020_news_open.png"
+                                alt="News Updates表示"
+                            />
+                        </td>
+                        <td>
+                            ニュース画面、一覧、またはモーダルが表示されること。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>21</td>
+                        <td>News Updates</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>ニュース表示を閉じ、メニュー画面へ戻った。</td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/021_news_close.png"
+                                alt="News Updatesを閉じる"
+                            />
+                        </td>
+                        <td>閉じた後に画面が操作不能にならないこと。</td>
+                    </tr>
+
+                    <tr>
+                        <td>22</td>
+                        <td>BET設定</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>有効なBETを設定し、対戦開始操作を行った。</td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/022_bet_submit.png"
+                                alt="BET決定"
+                            />
+                        </td>
+                        <td>
+                            ゲームロジックではなく、ゲーム画面へ進めることのみ確認する。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>23</td>
+                        <td>ゲーム画面</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            PlayerとCPU3人の領域が表示されることを確認した。
+                        </td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/023_game_players.png"
+                                alt="PlayerとCPU3人"
+                            />
+                        </td>
+                        <td>
+                            名前、手札領域、現在ターン表示が重ならないこと。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>24</td>
+                        <td>ゲーム画面</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            COIN、BET、順位または進行表示など、現在実装済みの情報欄を確認した。
+                        </td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/024_game_status.png"
+                                alt="ゲーム情報欄"
+                            />
+                        </td>
+                        <td>数値やラベルが画面外へはみ出さないこと。</td>
+                    </tr>
+
+                    <tr>
+                        <td>25</td>
+                        <td>ゲーム画面</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            カード画像が読み込まれ、欠落画像がないことを確認した。
+                        </td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/025_card_assets.png"
+                                alt="カード画像"
+                            />
+                        </td>
+                        <td>
+                            カード内容の正しさやペア処理は対象外。画像表示のみ確認する。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>26</td>
+                        <td>ゲーム画面</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            選択可能なCPUカードを1枚押下し、画面が応答することを確認した。
+                        </td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/026_card_tap_connectivity.png"
+                                alt="カード操作疎通"
+                            />
+                        </td>
+                        <td>
+                            勝敗、ペア成立、CPU戦略の正しさは判定しない。フリーズしないことのみ確認する。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>27</td>
+                        <td>ゲーム画面</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            戻る、終了、降参など現在実装済みのゲーム終了操作を押下した。
+                        </td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/027_game_exit_confirm.png"
+                                alt="ゲーム終了確認"
+                            />
+                        </td>
+                        <td>確認モーダルがある場合は表示されること。</td>
+                    </tr>
+
+                    <tr>
+                        <td>28</td>
+                        <td>ゲーム画面</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>ゲーム終了操作を確定し、メニュー画面へ戻った。</td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/028_game_exit_menu.png"
+                                alt="ゲーム終了後メニュー"
+                            />
+                        </td>
+                        <td>二重モーダル、暗転残り、操作不能がないこと。</td>
+                    </tr>
+
+                    <tr>
+                        <td>29</td>
+                        <td>再読み込み</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            ページを再読み込みし、メニュー画面が再表示されることを確認した。
+                        </td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/029_reload.png"
+                                alt="再読み込み後"
+                            />
+                        </td>
+                        <td>例外画面や破損した状態が残らないこと。</td>
+                    </tr>
+
+                    <tr>
+                        <td>30</td>
+                        <td>ブラウザ履歴</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>ブラウザの戻る操作を実行した。</td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/030_browser_back.png"
+                                alt="ブラウザ戻る"
+                            />
+                        </td>
+                        <td>仕様外の空白画面や不正なルートにならないこと。</td>
+                    </tr>
+
+                    <tr>
+                        <td>31</td>
+                        <td>Viewport 360×640</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>360×640の縦画面でメニューを表示した。</td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/031_viewport_360x640.png"
+                                alt="360x640表示"
+                            />
+                        </td>
+                        <td>
+                            主要ボタンが画面外へ欠落せず、必要に応じて縦スクロールできること。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>32</td>
+                        <td>Viewport 390×844</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            390×844の縦画面でメニューとゲーム初期画面を表示した。
+                        </td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/032_viewport_390x844.png"
+                                alt="390x844表示"
+                            />
+                        </td>
+                        <td>標準的なスマートフォン縦画面で崩れがないこと。</td>
+                    </tr>
+
+                    <tr>
+                        <td>33</td>
+                        <td>Viewport 412×915</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            412×915の縦画面でメニューとゲーム初期画面を表示した。
+                        </td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/033_viewport_412x915.png"
+                                alt="412x915表示"
+                            />
+                        </td>
+                        <td>
+                            大きめの縦画面でも配置が不自然に広がりすぎないこと。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>34</td>
+                        <td>UI共通</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            全画面でボタンの押下範囲、重なり、見切れを確認した。
+                        </td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/034_ui_overlap_check.png"
+                                alt="UI重なり確認"
+                            />
+                        </td>
+                        <td>
+                            Playwrightの座標クリックではなく、対象要素を指定して操作できること。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>35</td>
+                        <td>UI共通</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            主要画像、背景、アイコン、カード画像の読み込み失敗がないことを確認した。
+                        </td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/035_asset_check.png"
+                                alt="画像読み込み確認"
+                            />
+                        </td>
+                        <td>
+                            404応答、壊れた画像アイコン、代替文字表示がないこと。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>36</td>
+                        <td>コンソール</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>テスト中に発生したconsole.errorを記録した。</td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/036_console_error.png"
+                                alt="コンソールエラー確認"
+                            />
+                        </td>
+                        <td>
+                            エラーがない場合も「なし」と記録する。警告は必要に応じて備考へ記載する。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>37</td>
+                        <td>ページエラー</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>pageerrorイベントの発生有無を記録した。</td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/037_page_error.png"
+                                alt="ページエラー確認"
+                            />
+                        </td>
+                        <td>未処理例外が1件でもあれば原則NGとする。</td>
+                    </tr>
+
+                    <tr>
+                        <td>38</td>
+                        <td>通信</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>主要なrequestfailed、4xx、5xx応答を記録した。</td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/038_network_error.png"
+                                alt="通信エラー確認"
+                            />
+                        </td>
+                        <td>
+                            外部広告や分析系通信は、仕様上許容するものを備考で区別する。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>39</td>
+                        <td>連続操作</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            主要モーダルを順番に開閉し、操作不能や二重表示が起きないことを確認した。
+                        </td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/039_modal_sequence.png"
+                                alt="モーダル連続操作"
+                            />
+                        </td>
+                        <td>
+                            Guide → Settings → News Updatesなどを連続確認する。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>40</td>
+                        <td>最終確認</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            全テスト終了後、メニュー画面が正常に表示・操作できることを確認した。
+                        </td>
+                        <td><span class="status pending">未実施</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/040_final_menu.png"
+                                alt="最終メニュー画面"
+                            />
+                        </td>
+                        <td>
+                            テスト中の状態が残り、以後の操作を妨げていないこと。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>41</td>
+                        <td>ゲーム結果</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            テスト用状態注入または専用URLがある場合に、結果画面の表示だけを確認した。
+                        </td>
+                        <td><span class="status skip">対象外</span></td>
+                        <td>
+                            <img
+                                class="screenshot"
+                                src="./screenshots/old-maid/041_result_screen.png"
+                                alt="結果画面"
+                            />
+                        </td>
+                        <td>
+                            通常プレイによる勝敗到達は今回対象外。テスト用導線がある場合のみ実施する。
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>42</td>
+                        <td>ゲームロジック</td>
+                        <td>YYYY-MM-DD HH:mm:ss</td>
+                        <td>
+                            CPU思考、ペア判定、順位判定、ポイント配分の正しさを確認した。
+                        </td>
+                        <td><span class="status skip">対象外</span></td>
+                        <td>画像なし</td>
+                        <td>
+                            WEB側で手動確認するため、今回のPlaywright
+                            UIテスト対象外。
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2>6. AIへの更新指示</h2>
+
+        <div class="notice">
+            <ul>
+                <li>
+                    テスト実行後、各行の時間、判定、画像パス、備考を更新する。
+                </li>
+                <li>OKの行も削除しない。</li>
+                <li>
+                    NGが発生した場合は、発生画面だけでなく直前画面も必要に応じて保存する。
+                </li>
+                <li>
+                    修正後の再テストでは既存結果を上書きせず、別HTMLまたは履歴行として残す。
+                </li>
+                <li>
+                    総件数、OK件数、NG件数、未実施件数、対象外件数を実行ログへ記録する。
+                </li>
+                <li>
+                    判定根拠が画像だけでは分かりにくい場合は、備考へ実際のURL、表示文字、エラー内容を記録する。
+                </li>
+                <li>ゲーム内部の勝敗処理を推測してOK判定しない。</li>
+            </ul>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,377 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OLD MAID テスト（新方式・AI判定/人間判定）</title>
+  <style>
+    body {
+      margin: 20px;
+      font-family: Arial, "Noto Sans JP", sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #222;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+    }
+
+    .note {
+      border: 1px solid #888;
+      background: #f7f7f7;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border: 1px solid #999;
+      padding: 6px;
+      vertical-align: top;
+      overflow-wrap: anywhere;
+    }
+
+    th {
+      background: #eee;
+      text-align: left;
+    }
+
+    td.id {
+      width: 46px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    td.by {
+      width: 56px;
+      text-align: center;
+    }
+
+    td.ai {
+      width: 56px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    td.hu {
+      width: 64px;
+      background: #eef6ff;
+    }
+
+    .ok {
+      color: #0a6b20;
+    }
+
+    .ng {
+      color: #b00000;
+    }
+
+    .tri {
+      color: #8a5a00;
+    }
+
+    img.thumb {
+      max-width: 96px;
+      max-height: 140px;
+      border: 1px solid #aaa;
+      border-radius: 3px;
+      cursor: zoom-in;
+    }
+
+    #lb {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9;
+      cursor: zoom-out;
+    }
+
+    #lb.on {
+      display: flex;
+    }
+
+    #lb img {
+      max-width: 94vw;
+      max-height: 94vh;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>OLD MAID テスト（新方式）</h1>
+  <div class="note">実行 2026-06-25・dev(Android入口)・viewport540&times;960/DSF2。<b>AI判定＝私が render を目視した事実のみ
+      OK/NG。曖昧・私の目視未完・自動未到達は △（人間判断）。無理にOKしない。修正は行わない（テストのみ）。</b> 人間判定列は空白（あなた用）。スクショはクリックで拡大。</div>
+  <table>
+    <thead>
+      <tr>
+        <th class="id">ID</th>
+        <th class="by">実施者</th>
+        <th>操作</th>
+        <th>期待結果</th>
+        <th class="ai">AI判定</th>
+        <th>スクショ</th>
+        <th class="hu">人間判定</th>
+        <th>備考</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="id">M-1</td>
+        <td class="by">AI</td>
+        <td>メニュー ボタン構成</td>
+        <td>START/ガイド/設定/広告削除/別ゲーム/お知らせ の6個（Android出し分け）</td>
+        <td class="ai ok">OK</td>
+        <td><img class="thumb"
+            src="https://file%2Bwsl-002elocalhost.vscode-resource.vscode-cdn.net/Ubuntu-24.04/home/dev/wsl_pj/playing_cards/b2b_test/00004_old-maid/img/t-menu-ja.jpg">
+        </td>
+        <td class="hu">
+          <p></p>
+          <p></p>
+        </td>
+        <td>6ボタン・Back非表示を目視確認</td>
+      </tr>
+      <tr>
+        <td class="id">M-3</td>
+        <td class="by">AI</td>
+        <td>ヒーロー画像</td>
+        <td>枠いっぱい・「CLASSIC OLD MAID」切れない・上下も切れない（WEBに合わせる）</td>
+        <td class="ai ng">NG</td>
+        <td><img class="thumb"
+            src="https://file%2Bwsl-002elocalhost.vscode-resource.vscode-cdn.net/Ubuntu-24.04/home/dev/wsl_pj/playing_cards/b2b_test/00004_old-maid/img/t-menu-ja.jpg">
+        </td>
+        <td class="hu"></td>
+        <td><b>cover で上下が切れている</b>（Jokerマーク/カード上端＋下の文字）。WEB は全体表示で正常＝それに合わせる。<b>修正対象</b></td>
+      </tr>
+      <tr>
+        <td class="id">M-5</td>
+        <td class="by">AI</td>
+        <td>フォント</td>
+        <td>Cinzel（WEBと同書体・ローカル woff2）</td>
+        <td class="ai ok">OK</td>
+        <td><img class="thumb"
+            src="https://file%2Bwsl-002elocalhost.vscode-resource.vscode-cdn.net/Ubuntu-24.04/home/dev/wsl_pj/playing_cards/b2b_test/00004_old-maid/img/t-menu-en.jpg">
+        </td>
+        <td class="hu"></td>
+        <td>fonts.check Cinzel=true・タイトル目視一致</td>
+      </tr>
+      <tr>
+        <td class="id">M-8</td>
+        <td class="by">AI</td>
+        <td>COIN 表示</td>
+        <td>右上に残高・はみ出さない</td>
+        <td class="ai ok">OK</td>
+        <td><img class="thumb"
+            src="https://file%2Bwsl-002elocalhost.vscode-resource.vscode-cdn.net/Ubuntu-24.04/home/dev/wsl_pj/playing_cards/b2b_test/00004_old-maid/img/t-menu-ja.jpg">
+        </td>
+        <td class="hu"></td>
+        <td>COIN 100 目視</td>
+      </tr>
+      <tr>
+        <td class="id">B-1</td>
+        <td class="by">AI</td>
+        <td>START&rarr;BET画面</td>
+        <td>COIN/BET/keypad/START 崩れず</td>
+        <td class="ai tri">△</td>
+        <td><img class="thumb"
+            src="https://file%2Bwsl-002elocalhost.vscode-resource.vscode-cdn.net/Ubuntu-24.04/home/dev/wsl_pj/playing_cards/b2b_test/00004_old-maid/img/t-bet.jpg">
+        </td>
+        <td class="hu"></td>
+        <td>スクショ撮影済・私の目視未完＝人間判断</td>
+      </tr>
+      <tr>
+        <td class="id">G-1</td>
+        <td class="by">AI</td>
+        <td>盤面 席/カード配置</td>
+        <td>YOU+CPU3人・重なりなし・カード描画</td>
+        <td class="ai ok">OK</td>
+        <td><img class="thumb"
+            src="https://file%2Bwsl-002elocalhost.vscode-resource.vscode-cdn.net/Ubuntu-24.04/home/dev/wsl_pj/playing_cards/b2b_test/00004_old-maid/img/t-game.jpg">
+        </td>
+        <td class="hu"></td>
+        <td>席配置・カード・短文「CPU3's turn」崩れず目視</td>
+      </tr>
+      <tr>
+        <td class="id">G-2</td>
+        <td class="by">AI</td>
+        <td>長文メッセージ「Discard matching pairs&hellip;」見切れ</td>
+        <td>左右見切れない（en 長文）</td>
+        <td class="ai tri">△</td>
+        <td><img class="thumb"
+            src="https://file%2Bwsl-002elocalhost.vscode-resource.vscode-cdn.net/Ubuntu-24.04/home/dev/wsl_pj/playing_cards/b2b_test/00004_old-maid/img/t-game.jpg">
+        </td>
+        <td class="hu"></td>
+        <td>当該フェーズに自動未到達で<b>未捕捉</b>。font 23&rarr;16・折返し修正は入れたが成否を私は未確認＝人間判断</td>
+      </tr>
+      <tr>
+        <td class="id">G-4</td>
+        <td class="by">AI</td>
+        <td>カード引き 1タップ選択/再タップ引く</td>
+        <td>金フォーカス&rarr;再タップで引く（2タップ）</td>
+        <td class="ai tri">△</td>
+        <td><img class="thumb"
+            src="https://file%2Bwsl-002elocalhost.vscode-resource.vscode-cdn.net/Ubuntu-24.04/home/dev/wsl_pj/playing_cards/b2b_test/00004_old-maid/img/t-draw.jpg">
+        </td>
+        <td class="hu"></td>
+        <td>スクショ撮影済・私の目視未完＝人間判断</td>
+      </tr>
+      <tr>
+        <td class="id">R-1/R-2</td>
+        <td class="by">AI</td>
+        <td>結果画面・順位・COIN増減</td>
+        <td>順位1ST〜4TH＋YOU上に COIN純増減（見える大きさ）</td>
+        <td class="ai tri">△</td>
+        <td>&mdash;</td>
+        <td class="hu"></td>
+        <td><b>自動進行が結果(over)に未到達＝撮れていない</b>。要・完走 or 手動＝人間判断</td>
+      </tr>
+      <tr>
+        <td class="id">GD-1</td>
+        <td class="by">AI</td>
+        <td>ガイド表示</td>
+        <td>本文・✕で閉じる・崩れない</td>
+        <td class="ai tri">△</td>
+        <td><img class="thumb"
+            src="https://file%2Bwsl-002elocalhost.vscode-resource.vscode-cdn.net/Ubuntu-24.04/home/dev/wsl_pj/playing_cards/b2b_test/00004_old-maid/img/t-guide.jpg">
+        </td>
+        <td class="hu"></td>
+        <td>スクショ撮影済・私の目視未完＝人間判断</td>
+      </tr>
+      <tr>
+        <td class="id">ST-1</td>
+        <td class="by">AI</td>
+        <td>設定（言語/音）表示</td>
+        <td>プルダウン・音・閉じる 崩れない</td>
+        <td class="ai tri">△</td>
+        <td><img class="thumb"
+            src="https://file%2Bwsl-002elocalhost.vscode-resource.vscode-cdn.net/Ubuntu-24.04/home/dev/wsl_pj/playing_cards/b2b_test/00004_old-maid/img/t-settings.jpg">
+        </td>
+        <td class="hu"></td>
+        <td>スクショ撮影済・私の目視未完＝人間判断</td>
+      </tr>
+      <tr>
+        <td class="id">AD-1</td>
+        <td class="by">AI</td>
+        <td>広告を削除（UI表示）</td>
+        <td>購入モーダル・閉じる・remove_ads_ui 200</td>
+        <td class="ai tri">△</td>
+        <td><img class="thumb"
+            src="https://file%2Bwsl-002elocalhost.vscode-resource.vscode-cdn.net/Ubuntu-24.04/home/dev/wsl_pj/playing_cards/b2b_test/00004_old-maid/img/t-removeads.jpg">
+        </td>
+        <td class="hu"></td>
+        <td>スクショ撮影済・私の目視未完＝人間判断</td>
+      </tr>
+      <tr>
+        <td class="id">O-1</td>
+        <td class="by">AI</td>
+        <td>別のカードゲーム 縦カード</td>
+        <td>画像大&rarr;英語タイトル&rarr;概略&rarr;GOOGLE PLAY・404なし</td>
+        <td class="ai tri">△</td>
+        <td><img class="thumb"
+            src="https://file%2Bwsl-002elocalhost.vscode-resource.vscode-cdn.net/Ubuntu-24.04/home/dev/wsl_pj/playing_cards/b2b_test/00004_old-maid/img/t-other.jpg">
+        </td>
+        <td class="hu"></td>
+        <td>スクショ撮影済・私の目視未完＝人間判断</td>
+      </tr>
+      <tr>
+        <td class="id">N-1</td>
+        <td class="by">AI</td>
+        <td>お知らせ 2ボタン</td>
+        <td>タイトル＋最新版確認＋このアプリについて＋戻る</td>
+        <td class="ai tri">△</td>
+        <td><img class="thumb"
+            src="https://file%2Bwsl-002elocalhost.vscode-resource.vscode-cdn.net/Ubuntu-24.04/home/dev/wsl_pj/playing_cards/b2b_test/00004_old-maid/img/t-news.jpg">
+        </td>
+        <td class="hu"></td>
+        <td>スクショ撮影済・私の目視未完＝人間判断</td>
+      </tr>
+      <tr>
+        <td class="id">BK-1</td>
+        <td class="by">AI</td>
+        <td><b>ブラウザの戻る（ゲーム中）</b></td>
+        <td>確認なしで離脱しない（警告/終了確認）</td>
+        <td class="ai ng">NG</td>
+        <td>&mdash;</td>
+        <td class="hu"></td>
+        <td><b>ブラウザ戻る(popstate)未対応＝確認なしで素通り離脱。</b>history push＋popstate ガードが無い。私の handleSystemBack は Android(Flutter
+          bridge)専用で別経路＝ブラウザ戻りは未実装。要修正（人間判断・修正は未実施）</td>
+      </tr>
+      <tr>
+        <td class="id">BK-2</td>
+        <td class="by">AI</td>
+        <td>Android システム戻る（ゲーム中）</td>
+        <td>終了確認が出る・離脱しない</td>
+        <td class="ai tri">△</td>
+        <td>&mdash;</td>
+        <td class="hu"></td>
+        <td>table.handleSystemBack 実装済だが<b>実機(Flutter)でのみ動作・dev のブラウザでは検証不可</b>＝実機で人間確認</td>
+      </tr>
+      <tr>
+        <td class="id">P-1/P-2/P-3</td>
+        <td class="by">USER</td>
+        <td>Remove Ads 価格/購入/consume</td>
+        <td>Play 価格取得・購入で広告消える・DEBUG consume</td>
+        <td class="ai">&mdash;</td>
+        <td>&mdash;</td>
+        <td class="hu"></td>
+        <td>購入アカウント要＝AI不可・人間判定</td>
+      </tr>
+      <tr>
+        <td class="id">SD-1/FB-2</td>
+        <td class="by">USER</td>
+        <td>効果音・Feedback 実送信</td>
+        <td>音が鳴る・送信が届く</td>
+        <td class="ai">&mdash;</td>
+        <td>&mdash;</td>
+        <td class="hu"></td>
+        <td>実機/実送信＝AI不可・人間判定</td>
+      </tr>
+      <tr>
+        <td class="id">BG-1</td>
+        <td class="by">AI</td>
+        <td>BET モーダルの Home/設定/Guide ボタン</td>
+        <td>分かりやすく・押せる大きさ（+/- ボタンと同サイズ）</td>
+        <td class="ai ng">NG</td>
+        <td>&mdash;</td>
+        <td class="hu"></td>
+        <td>小さすぎて押せない。<b>修正方針</b>：①+/- と同サイズに拡大（モーダル少し大でも可）／②または BET 中もヘッダー/フッターの Home/設定/Guide/FEEDBACK
+          を押せるようにしてこの3ボタンを消す（UI が動かない②が良いが、<b>コードが簡略な方</b>で実装）。<b>修正対象</b></td>
+      </tr>
+      <tr>
+        <td class="id">BG-2</td>
+        <td class="by">AI</td>
+        <td>効果音ON でテンキー/BET +- タップ</td>
+        <td>タップ音が鳴る</td>
+        <td class="ai ng">NG</td>
+        <td>&mdash;</td>
+        <td class="hu"></td>
+        <td>効果音 ON なのに<b>テンキー・BET の +/- で音が鳴らない</b>。<b>修正対象</b></td>
+      </tr>
+      <tr>
+        <td class="id">BG-3</td>
+        <td class="by">AI</td>
+        <td>ホーム戻りアニメ中の効果音</td>
+        <td>戻る最中に背景の効果音が止まる</td>
+        <td class="ai ng">NG</td>
+        <td>&mdash;</td>
+        <td class="hu"></td>
+        <td>ゲーム中&rarr;ホームへ戻る<b>アニメ中にバックグラウンドの効果音が消えない</b>。<b>修正対象</b></td>
+      </tr>
+    </tbody>
+  </table>
+  <div id="lb" onclick="this.classList.remove('on')"><img id="lbimg"></div>
+  <p>
+    <script>document.addEventListener('click', e => { if (e.target.classList && e.target.classList.contains('thumb')) { document.getElementById('lbimg').src = e.target.src; document.getElementById('lb').classList.add('on') } })</script>
+  </p>
+</body>
+
+</html>

@@ -6,13 +6,15 @@ import { LANGUAGE_KEY as LANG_KEY, SOUND_ENABLED_KEY as SOUND_KEY } from '../../
 import { loadHighLowConfig, hlGet, type HLConfig } from './high-low-config'
 import {
   BGM_SETTING_CHANGED_EVENT,
+  DEFAULT_BGM_COMMON_RELATIVE,
   loadBgmEnabledSetting,
   saveBgmEnabledSetting
 } from '../../shared/infra/bgm-setting'
-import { buildHighLowAssetUrl } from './high-low-assets'
+import { buildHighLowAssetUrl, buildHighLowCommonAssetUrl } from './high-low-assets'
 import { buildFeatureImageUrl } from '../../shared/infra/game-feature-image'
 import { getGameTitle } from '../../shared/infra/game-title'
 import { buildGameAssetUrl } from '../../shared/infra/game-asset-url'
+import { playTrackedEffect, stopAllEffects, clearEffectSuppression } from '../../shared/infra/submit-sound'
 import { HIGH_LOW_WEB_LINKS, buildNewsUrl, buildDetailUrl, buildOtherCardGamesUrl } from '../../shared/infra/web-store-links'
 import { isAndroidApp } from '../../shared/infra/web-ad-mock'
 import {
@@ -25,7 +27,7 @@ import type { BillingResultPayload, RemoveAdsStatePayload } from '../../shared/t
 import '../../shared/ui/panels/remove-ads-dialog-panel'
 import { standaloneAppHostStyles, standaloneModalStyles } from '../../shared/ui/styles/standalone-app.styles'
 import { applyStageScale } from '../../shared/ui/styles/stage-layout'
-import { SceneFadeController, renderSceneFade, sceneFadeStyles } from '../../shared/ui/scene-fade'
+import { SceneFadeController, renderSceneFade, sceneFadeStyles, SCENE_FADE_MS } from '../../shared/ui/scene-fade'
 import './high-low-game-table'
 import '../../shared/ui/menu/standalone-game-menu'
 import { renderSettingsModal } from '../../shared/ui/panels/settings-modal'
@@ -110,6 +112,9 @@ export class HighLowStandaloneApp extends LitElement {
     ;(window as Window & { __HIGHANDLOW_APP__?: { onAndroidBack: () => boolean } }).__HIGHANDLOW_APP__ = {
       onAndroidBack: () => this.handleSystemBack()
     }
+    // BK-1: ブラウザ戻る(popstate)を監視。
+    window.addEventListener('popstate', this.onPopState)
+    if (this.screen === 'game') this.armHistoryGuard()
   }
 
   firstUpdated(): void {
@@ -139,6 +144,7 @@ export class HighLowStandaloneApp extends LitElement {
     delete window.__onEntitlementsChanged
     delete window.__onBillingResult
     delete (window as Window & { __HIGHANDLOW_APP__?: { onAndroidBack: () => boolean } }).__HIGHANDLOW_APP__
+    window.removeEventListener('popstate', this.onPopState)
     this.teardownBgm()
     super.disconnectedCallback()
   }
@@ -148,6 +154,25 @@ export class HighLowStandaloneApp extends LitElement {
   //   - guide / settings（メニュー階層）→ メニューへ
   //   - game → 盤面(high-low-game-table)の handleSystemBack に委譲（パネル閉じ or スタート戻り確認）
   // これで「ゲーム/ガイド/設定中の戻るで勝手に落ちる」不具合を解消し、3ゲームで挙動を統一する。
+  // ── BK-1: ブラウザ「戻る」(popstate) ガード ──────────────────
+  // ゲーム中にブラウザ戻ると、Android 戻ると同じ handleSystemBack() を呼び（スタート戻り確認等を
+  // 再利用）、確認なしの素通り離脱を防ぐ。
+  private historyGuardArmed = false
+
+  private armHistoryGuard(): void {
+    if (this.historyGuardArmed) return
+    history.pushState({ cardGameBackGuard: true }, '')
+    this.historyGuardArmed = true
+  }
+
+  private readonly onPopState = (): void => {
+    this.historyGuardArmed = false
+    const handled = this.handleSystemBack()
+    if (handled || this.screen !== 'menu') {
+      this.armHistoryGuard()
+    }
+  }
+
   private handleSystemBack(): boolean {
     if (this.isInitialSetupNoticeOpen) { this.closeInitialSetupNotice(); return true }
     if (this.showCacheConfirm) { this.playSubmit(); this.showCacheConfirm = false; return true }
@@ -162,16 +187,16 @@ export class HighLowStandaloneApp extends LitElement {
         | null
       if (table?.handleSystemBack?.()) { return true }
       // 盤面が未マウント等のフォールバック：メニューへ戻す（落とさない）。
-      this.sceneFade.run(() => { this.syncSettingsFromStorage(); this.screen = 'menu' })
+      this.fadeToMenu()
       return true
     }
     return false
   }
 
-  // ── BGM（唯一の正は bgm-setting.ts。memorymonsters と同じ Audio 方式）─────────
+  // ── BGM（唯一の正は bgm-setting.ts。アセットは共通 common/bgm/ に集約=DEFAULT_BGM_COMMON_RELATIVE）─────────
   private setupBgm(): void {
     if (this.bgmAudio) return
-    this.bgmAudio = new Audio(buildHighLowAssetUrl('effects/main_bgm.ogg'))
+    this.bgmAudio = new Audio(buildHighLowCommonAssetUrl(DEFAULT_BGM_COMMON_RELATIVE))
     this.bgmAudio.loop = true
     this.bgmAudio.preload = 'auto'
     this.bgmAudio.volume = HIGH_LOW_BGM_VOLUME
@@ -235,10 +260,13 @@ export class HighLowStandaloneApp extends LitElement {
 
   // START 押下：まずゲーム画面（盤面）へ切り替え、その上で（未非表示なら）ルール説明を重ねる。
   private onStart(): void {
+    clearEffectSuppression() // BG-3: 直前のホーム戻り抑止が残っていても開始音を鳴らす
     this.playSubmit()
     this.screen = 'game'
     this.rulesDontShow = false
     this.showRules = localStorage.getItem(RULES_HIDDEN_KEY) !== 'true'
+    // BK-1: ゲーム突入時にブラウザ戻るガードを張る。
+    this.armHistoryGuard()
   }
 
   // ルール説明 OK：チェックされていれば次回以降非表示にして閉じる（盤面のまま）。
@@ -296,12 +324,17 @@ export class HighLowStandaloneApp extends LitElement {
     if (saved === 'ja' || saved === 'zh' || saved === 'en') this.language = saved
   }
 
-  // High & Low は専用アセット(buildHighLowAssetUrl)の submit.mp3 を使うため共通 playSubmitSound とは別系統。
+  // High & Low は専用アセット(buildHighLowAssetUrl)の submit.mp3 を使うため URL は別だが、
+  // 再生/追跡/一括停止は共有 submit-sound に集約（ホーム戻り時 stopAllEffects で止まる）。
   private playSubmit(): void {
-    if (localStorage.getItem(SOUND_KEY) === 'false') return
-    const audio = new Audio(buildHighLowAssetUrl('effects/submit.mp3'))
-    audio.currentTime = 0
-    void audio.play().catch(() => undefined)
+    playTrackedEffect(buildHighLowAssetUrl('effects/submit.mp3'))
+  }
+
+  // ゲーム→メニューのフェード。開始時に再生中の効果音を止める（戻りアニメ中に残さない）。
+  private fadeToMenu(): void {
+    // BG-3: 再生中 SFX を停止＋フェード中(out+in≈2×)の鳴り込みも抑止。
+    stopAllEffects(SCENE_FADE_MS * 2)
+    this.sceneFade.run(() => { this.syncSettingsFromStorage(); this.screen = 'menu' })
   }
 
   private setEffect(enabled: boolean): void {
@@ -458,7 +491,7 @@ export class HighLowStandaloneApp extends LitElement {
           <high-low-game-table
             .language=${this.language}
             .config=${this.config}
-            @go-home=${() => this.sceneFade.run(() => { this.syncSettingsFromStorage(); this.screen = 'menu' })}
+            @go-home=${() => this.fadeToMenu()}
           ></high-low-game-table>
         </div>
         ${this.showRules ? html`

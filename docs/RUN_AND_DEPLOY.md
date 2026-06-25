@@ -25,7 +25,7 @@
 ### ② Android アプリのコードを反映（開発確認＝APK / 内部テスト＝AAB）
 ```
 cd ~/wsl_pj/playing_cards
-npm run sync:android old-maid                 # 最新 web を android/app/src/main/assets/www へ
+npm run sync:android old-maid                 # 最新 web を android/app/src/main/assets/ 直下へ（www 廃止・平坦化）
 cd /mnt/c/Users/dev/pj/google_play_store_app/00004_old-maid
 flutter clean && flutter build apk --debug    # 開発確認用（/mnt/c は clean 必須）
 adb install -r build/app/outputs/flutter-apk/app-debug.apk

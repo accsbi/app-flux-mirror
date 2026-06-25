@@ -13,7 +13,7 @@ export const menuBaseStyles = css`
     width: 100%;
     display: grid;
     place-items: center;
-    padding: 8px;
+    padding: 4px;
     box-sizing: border-box;
     position: relative;
   }
@@ -24,7 +24,7 @@ export const menuBaseStyles = css`
     max-height: 100%;
     overflow: hidden;
     text-align: center;
-    padding: 16px 16px 24px;
+    padding: 8px 12px 10px;
     box-sizing: border-box;
     margin: 0;
     border-radius: 16px;
@@ -56,13 +56,16 @@ export const menuBaseStyles = css`
     text-overflow: ellipsis;
   }
 
-  /* 枠は feat 画像(1024x500=2.048:1)と同じ縦横比にし、レターボックス無し＝角丸が綺麗に出る。
-     画像比率と枠比率が一致するので cover でも左右が切れない。 */
+  /* 枠は feat 画像(1024x500=2.048:1)と同じ縦横比。画像比率と枠比率が一致するので上下左右が切れない。
+     ★重要: 親 .menu-card は flex column（justify-center）なので、既定 flex-shrink:1 だと縦に潰され
+     aspect-ratio(242px)が崩れ→画像が枠と比率不一致になり「上下切れ」(M-3 NG)が再発する。
+     flex-shrink:0 で潰させず比率を厳守する。 */
   .feature-wrap {
     width: min(496px, 100%);
     aspect-ratio: 1024 / 500;
     height: auto;
-    margin: 0 auto 16px;
+    flex-shrink: 0;
+    margin: 0 auto 6px;
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
@@ -70,8 +73,7 @@ export const menuBaseStyles = css`
     background: transparent;
   }
 
-  /* feat(1024x500) と枠(aspect 1024/500)は比率一致。cover はサブピクセル丸めで下端（"Classic Old Maid"
-     等の文字）をクロップするため contain にする（比率一致なのでレターボックスは出ない）。 */
+  /* contain＝絶対に切らない。枠が画像と同比率(flex-shrink:0 で厳守)なので帯も出ず「枠いっぱい」になる。 */
   .feature-image {
     display: block;
     width: 100%;
@@ -88,8 +90,8 @@ export const menuBaseStyles = css`
     gap: 24px;
     width: min(496px, 100%);
     max-width: 100%;
-    margin: 16px auto 0;
-    padding-top: 8px;
+    margin: 6px auto 0;
+    padding-top: 2px;
     box-sizing: border-box;
   }
 

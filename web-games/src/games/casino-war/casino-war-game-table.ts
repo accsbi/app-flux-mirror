@@ -29,6 +29,7 @@ import { classicBlueActionButtonStyles } from '../../shared/ui/classic-button.st
 import { recoverSharedCoin, runNoMoreBetSequence, scheduleCoinRecoveryDialogIfZero, sharedNoMoreBetStyles, sharedResultOverlayStyles } from '../../shared/ui/styles/shared'
 import { runToolbarSizeCheck } from '../../shared/ui/chrome/toolbar-size-check'
 import { buildGameAssetUrl } from '../../shared/infra/game-asset-url'
+import { playTrackedEffect } from '../../shared/infra/submit-sound'
 import '../../shared/ui/chrome/game-top-header'
 import { renderSettingsPanel } from '../../shared/ui/panels/settings-modal'
 import '../../shared/ui/panels/guide-overview-panel'
@@ -793,9 +794,8 @@ export class CasinoWarGameTable extends LitElement {
     if (!this.isSoundEnabled) {
       return
     }
-    const audio = new Audio(this.assetUrl(`effects/${name}.mp3`))
-    audio.currentTime = 0
-    void audio.play().catch(() => undefined)
+    // 再生/追跡/一括停止は共有 submit-sound に集約（ホーム戻り時 stopAllEffects で止まる）。
+    playTrackedEffect(this.assetUrl(`effects/${name}.mp3`))
   }
 
   private clearRevealTimers(): void {

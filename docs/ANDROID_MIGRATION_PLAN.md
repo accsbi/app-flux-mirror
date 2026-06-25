@@ -8,7 +8,7 @@
 ---
 
 ## 0. 結論（方針）
-- **WebView ホスト方式**：web を Vite で `base:'./'` ビルド → `dist/` を Android プロジェクトの `assets/www/` に置き、**Flutter の WebView で読む**（app-flux と同じ思想。host は Flutter）。
+- **WebView ホスト方式**：web を Vite で `base:'./'` ビルド → `dist-android/` を Android プロジェクトの `assets/` 直下に置き（`www` は廃止・平坦化）、**Flutter の WebView で読む**（host は Flutter）。
 - **ゲームロジック・UI・多言語・COIN/BET は web 側（単一ソース）**。Android 固有（メニュー/実広告/課金/戻る/ネット監視）は **Flutter 側**。
 - web↔Flutter は **既存ブリッジ契約**（`__ANDROID_APP__` / `onAndroidBack` / billing / `notifyNativeGameEnd`）を使う。web は通知するだけ、判定・表示は Flutter。
 
@@ -16,7 +16,7 @@
 | やること | 場所 | 理由 |
 |---|---|---|
 | web 改修・ビルド（Vite, `base:'./'`） | **WSL** | ソースは WSL が単一ソース |
-| `dist/` を Android の `assets/www/` へコピー | **WSL**（`/mnt/c` に書ける） | Win に BAT/BASH を置かない方針。WSL で完結 |
+| `dist-android/` を Android の `assets/` 直下へコピー | **WSL**（`/mnt/c` に書ける） | Win に BAT/BASH を置かない方針。WSL で完結 |
 | Flutter プロジェクト（WebView host / メニュー / 広告 / 課金 / 戻る） | **Windows** | Flutter/AdMob/IAP は Win + Android Studio が要る |
 | APK ビルド・USB実機デバッグ・`chrome://inspect` | **Windows** | 実機・SDK・USB は Win |
 
@@ -25,12 +25,12 @@
 
 ## 2. WSL→Win 導線（コピー）
 ```
-WSL:  cd playing_cards && npm run sync:android old-maid   # build:android → android/app/src/main/assets/www へコピー＋他ゲーム剪定
+WSL:  cd playing_cards && npm run sync:android old-maid   # build:android → android/app/src/main/assets/ 直下へコピー＋他ゲーム剪定
 Win:  Android Studio で 00004_old-maid(Flutter) を開く → Run（USB実機）
 Win:  chrome://inspect で WebView を Inspect（web 側デバッグ）
 ```
-- **配置先＝`android/app/src/main/assets/www/`（app-flux DOC 準拠の Android assets）**。Flutter プロジェクト root に `assets/` を作らない（二重 `assets/www/assets/` を避ける）。Android assets は再帰取り込みなので pubspec への列挙も不要。
-- Flutter は `flutter_inappwebview` の **`WebViewAssetLoader`**（`AssetsPathHandler('/assets/')`）で `https://appassets.androidplatform.net/assets/www/old-maid.html` を読み、**`UserScript(AT_DOCUMENT_START)` で `__ANDROID_APP__=true` を注入**（B-2）。メニューは web が Android モードで描画。
+- **配置先＝`android/app/src/main/assets/` 直下**（`www` は廃止）。さらに Vite を `assetsDir:''` にして内側 `assets/` を作らない。これで旧 `assets/www/assets/` の二重・無駄な入れ子を解消。`flutter_assets/` はビルド時に APK へ注入されるため `src/main/assets/` には無く衝突しない。Android assets は再帰取り込みなので pubspec への列挙も不要。
+- Flutter は `flutter_inappwebview` の **`WebViewAssetLoader`**（`AssetsPathHandler('/assets/')`）で `https://appassets.androidplatform.net/assets/old-maid.html` を読み、**`UserScript(AT_DOCUMENT_START)` で `__ANDROID_APP__=true` を注入**（B-2）。メニューは web が Android モードで描画。
 - `build:android` は新規 Vite config（`vite.android.config.ts`：`base:'./'`、出力 `dist/`、対象ゲームの html を input）。**WEB 用 `vite.config.ts` は触らない**（web 配信はそのまま）。
 
 ## 3. Android メニューの方針（2案比較・採用=B-2）
@@ -77,8 +77,8 @@ Win:  chrome://inspect で WebView を Inspect（web 側デバッグ）
 - Flutter は WebView の JavaScript channel でこれらを実装する。**契約は web 側に既にあるので、Flutter が受け口を作る**。
 
 ## 6. フェーズ（old-maid を最初に完走）
-1. **P1 基盤（WSL）**：`vite.android.config.ts` + `build:android`（old-maid を `base:'./'` で dist 出力。web html をそのまま使う）。`/mnt/c/.../00004_old-maid/assets/www/` への copy 手順（WSL 完結）を用意。
-2. **P2 Flutter 雛形（Win）**：`flutter_inappwebview` の WebView host ＋ `UserScript(AT_DOCUMENT_START)` で `__ANDROID_APP__=true` 注入 ＋ `onAndroidBack` ＋ assets/www 読込で **old-maid が（Android モードのメニューから）起動**するところまで。
+1. **P1 基盤（WSL）**：`vite.android.config.ts`（`base:'./'`・`assetsDir:''`）+ `build:android`（old-maid を dist-android 出力。web html をそのまま使う）。`/mnt/c/.../00004_old-maid/android/app/src/main/assets/` 直下への copy 手順（WSL 完結・www 無し）を用意。
+2. **P2 Flutter 雛形（Win）**：`flutter_inappwebview` の WebView host ＋ `UserScript(AT_DOCUMENT_START)` で `__ANDROID_APP__=true` 注入 ＋ `onAndroidBack` ＋ assets/ 直下読込（`/assets/<game>.html`）で **old-maid が（Android モードのメニューから）起動**するところまで。
 3. **P3 Android メニュー項目の確定（WSL で確認）**：web `standalone-game-menu` の `isAndroidApp()` 出し分けで項目を確定（START/ガイド/設定/Remove Ads/別ゲーム/ニュース等）。**WSL dev で `__ANDROID_APP__=true` を立ててブラウザ確認**。WEB との差分は app-flux の `frontend/games/playing_cards`（isAndroidApp 条件）を参照。Flutter にメニューは作らない。
 4. **P4 広告（Win）**：AdMob 雛形＋`notifyNativeGameEnd` 受信＋old-maid の AD point(手札≤3)で実広告。間隔(7)/課金/オフラインを Flutter に。
 5. **P5 課金（Win）**：Remove Ads（in_app_purchase）を billing ブリッジに接続。

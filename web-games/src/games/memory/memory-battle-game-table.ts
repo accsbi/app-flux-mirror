@@ -73,6 +73,7 @@ import '../../shared/ui/chrome/game-feedback'
 import type { GameFeedback } from '../../shared/ui/chrome/game-feedback'
 // デバッグ dddddd
 import { LANGUAGE_KEY, SOUND_ENABLED_KEY } from '../../shared/config/storage-keys'
+import { playTrackedEffect } from '../../shared/infra/submit-sound'
 const CPU_TURN_DELAY_MS = 700
 const PLAYER_AUTO_TURN_DELAY_MS = 520
 const CARD_REVEAL_DELAY_MS = 450
@@ -614,9 +615,8 @@ export class MemoryBattleGameTable extends LitElement {
     if (!this.isEffectEnabled) {
       return
     }
-    const audio = new Audio(this.assetUrl(relativePath))
-    audio.currentTime = 0
-    void audio.play().catch(() => undefined)
+    // 再生/追跡/一括停止は共有 submit-sound に集約（ホーム戻り時 stopAllEffects で止まる）。
+    playTrackedEffect(this.assetUrl(relativePath))
   }
 
   private async showBanner(relativePath: string, alt: string): Promise<void> {
@@ -1984,7 +1984,7 @@ export class MemoryBattleGameTable extends LitElement {
     const chrome = getSharedChromeText(this.language)
     return html`
       <main class="game-shell">
-        <section class="stage" style=${`background-image: url('${this.assetUrl(this.memoryAsset('background'))}')`}>
+        <section class="stage${this.isGuideOpen || this.isSettingsOpen ? ' chrome-off' : ''}" style=${`background-image: url('${this.assetUrl(this.memoryAsset('background'))}')`}>
           ${this.renderHeader()}
           ${this.renderStatus()}
           <div class="stage-body">
@@ -2013,10 +2013,7 @@ export class MemoryBattleGameTable extends LitElement {
                     .disableDecrease=${this.currentBet <= MEMORY_MIN_BET}
                     .disableIncrease=${this.currentBet >= this.coin}
                     .disableStart=${this.coin < MEMORY_MIN_BET || this.currentBet < MEMORY_MIN_BET || this.currentBet > this.coin}
-                    .showTools=${true}
-                    @bet-home=${() => this.requestGoHome()}
-                    @bet-settings=${() => this.openSettings()}
-                    @bet-guide=${() => this.openGuide()}
+                    .showTools=${false}
                     @bet-decrease=${this.decreaseBet}
                     @bet-increase=${this.increaseBet}
                     @bet-value-change=${this.onBetValueChange}

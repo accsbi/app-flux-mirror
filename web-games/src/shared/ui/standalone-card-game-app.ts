@@ -14,6 +14,7 @@ import { getSharedChromeText } from '../config/shared-chrome-text'
 import { LANGUAGE_KEY, SOUND_ENABLED_KEY } from '../config/storage-keys'
 import {
   BGM_SETTING_CHANGED_EVENT,
+  DEFAULT_BGM_ASSET,
   DEFAULT_BGM_VOLUME,
   loadBgmEnabledSetting,
   loadBgmVolumeSetting,
@@ -21,11 +22,11 @@ import {
 } from '../infra/bgm-setting'
 import { buildGameAssetUrl } from '../infra/game-asset-url'
 import { buildFeatureImageUrl } from '../infra/game-feature-image'
-import { playSubmitSound } from '../infra/submit-sound'
+import { playSubmitSound, stopAllEffects, clearEffectSuppression } from '../infra/submit-sound'
 import { CARD_GAMES_HUB_WEB_LINKS, buildDetailUrl, buildOtherCardGamesUrl, buildLiveDataUrl, buildAboutUrl } from '../infra/web-store-links'
 import { isAndroidApp } from '../infra/web-ad-mock'
 import { getGameTitle } from '../infra/game-title'
-import { SceneFadeController, renderSceneFade, sceneFadeStyles } from './scene-fade'
+import { SceneFadeController, renderSceneFade, sceneFadeStyles, SCENE_FADE_MS } from './scene-fade'
 import { clearLocalStoragePreservingProgress } from '../infra/storage-utils'
 import { applyInitialDefaultLanguage, markInitialSetupCompleted, shouldShowInitialSetup } from '../infra/initial-setup'
 import { standaloneAppHostStyles, standaloneModalStyles } from './styles/standalone-app.styles'
@@ -168,12 +169,20 @@ export abstract class StandaloneCardGameApp extends LitElement {
     this.syncRemoveAdsStateFromBridge()
     window.__onEntitlementsChanged = this.onEntitlementsChanged
     window.__onBillingResult = this.onBillingResult
+    // BGM-1: 広告(interstitial)終了でネイティブが呼ぶ window.__onAdComplete() を受け、BGM を再評価＝
+    // ON なら確実に再開する。visibility/focus が不安定な端末でも復帰漏れを防ぐ（ユーザー報告: 広告後に BGM が戻らない）。
+    ;(window as Window & { __onAdComplete?: () => void }).__onAdComplete = this.onAdComplete
     this.screen = this.autostartGame ? 'game' : 'menu'
     if (!this.embedded && !this.autostartGame) {
       this.evaluateInitialSetup()
     }
     ;(window as unknown as Record<string, unknown>)[this.backGlobalName] = {
       [this.backMethodName]: () => this.handleSystemBack()
+    }
+    // BK-1: ブラウザ戻る(popstate)を監視。autostart でゲーム直行のときは即ガードを張る。
+    if (!this.embedded) {
+      window.addEventListener('popstate', this.onPopState)
+      if (this.screen === 'game') this.armHistoryGuard()
     }
     // メニュー画面の設定/ガイド/ルール モーダルを「ゲーム内設定」と同じ 540 拡大
     // ステージで描画するための係数(--game-scale 等)を設定。これが無いと .modal-shell が
@@ -199,12 +208,12 @@ export abstract class StandaloneCardGameApp extends LitElement {
     this.updateBgmPlayback()
   }
 
-  // ── BGM（唯一の正は bgm-setting.ts。アセットは 3in1/effects/main_bgm.ogg）──
+  // ── BGM（唯一の正は bgm-setting.ts。アセットは共通 common/bgm/ に集約=DEFAULT_BGM_ASSET）──
   private setupBgm(): void {
     // ハブ(3in1)内に埋め込まれているときは BGM をハブ(casino-games-hub-app)が鳴らす。
     // 基底でも鳴らすと二重再生になるため、embedded では再生体を作らない。
     if (this.embedded || this.bgmAudio) return
-    this.bgmAudio = new Audio(buildGameAssetUrl('effects/main_bgm.ogg'))
+    this.bgmAudio = new Audio(buildGameAssetUrl(DEFAULT_BGM_ASSET))
     this.bgmAudio.loop = true
     this.bgmAudio.preload = 'auto'
     this.bgmAudio.volume = loadBgmVolumeSetting() || DEFAULT_BGM_VOLUME
@@ -248,6 +257,21 @@ export abstract class StandaloneCardGameApp extends LitElement {
   }
   private readonly onWindowBlur = (): void => { this.windowBlurred = true; this.updateBgmPlayback() }
   private readonly onWindowFocus = (): void => { this.windowBlurred = false; this.updateBgmPlayback() }
+  // BGM-1: 広告終了通知(window.__onAdComplete)＝前面復帰とみなし、blur 固着を解除して BGM を再評価（ON なら再開）。
+  // 閉じた直後は document.hidden が未解消の端末があるため、即時＋少し遅延の二段で再評価する（memorymonsters と同方式）。
+  private readonly onAdComplete = (): void => {
+    this.windowBlurred = false
+    this.updateBgmPlayback()
+    window.setTimeout(() => { this.windowBlurred = false; this.updateBgmPlayback() }, 300)
+  }
+
+  // VER-1: Android アプリのバージョン表示は Flutter 注入の window.__APP_VERSION__
+  // （pubspec の versionName。例 1.0.5＝ビルドコード +N は含まない）を単一ソースにする。
+  // 未注入時のみ config の app_info.version をフォールバック。
+  private androidAppVersion(): string {
+    const injected = (window as Window & { __APP_VERSION__?: string }).__APP_VERSION__
+    return (injected && injected.trim()) || this.appConfig?.app_info?.version || ''
+  }
 
   private readonly updateScale = (): void => {
     applyStageScale(this)
@@ -255,6 +279,7 @@ export abstract class StandaloneCardGameApp extends LitElement {
 
   disconnectedCallback(): void {
     delete (window as unknown as Record<string, unknown>)[this.backGlobalName]
+    window.removeEventListener('popstate', this.onPopState)
     window.removeEventListener('resize', this.updateScale)
     window.visualViewport?.removeEventListener('resize', this.updateScale)
     window.removeEventListener(BGM_SETTING_CHANGED_EVENT, this.onBgmSettingChanged as EventListener)
@@ -265,6 +290,7 @@ export abstract class StandaloneCardGameApp extends LitElement {
     window.removeEventListener('keydown', this.onFirstUserInteraction)
     delete window.__onEntitlementsChanged
     delete window.__onBillingResult
+    delete (window as Window & { __onAdComplete?: () => void }).__onAdComplete
     this.teardownBgm()
     super.disconnectedCallback()
   }
@@ -328,6 +354,9 @@ export abstract class StandaloneCardGameApp extends LitElement {
   //   - ハブ内(embedded): go-home を上位へ投げてハブへ戻す（ハブ側がフェード遷移）。
   //   - スタンドアロン: このアプリ内のメニューへフワッと復帰（外の /games-apps へは戻さない）。
   private returnHome(): void {
+    // BG-3: ホーム戻りアニメ中に効果音を残さない。再生中 SFX を即停止し、かつフェード中(out+in≈2×)に
+    // 盤面タイマー(CPUターン等)/確定OK音が“新たに”鳴り込むのも抑止する。
+    stopAllEffects(SCENE_FADE_MS * 2)
     if (this.embedded) {
       this.dispatchEvent(new CustomEvent('go-home', { bubbles: true, composed: true }))
       return
@@ -338,6 +367,28 @@ export abstract class StandaloneCardGameApp extends LitElement {
       this.loadSettings()
       this.screen = 'menu'
     })
+  }
+
+  // ── BK-1: ブラウザ「戻る」(popstate) ガード ──────────────────
+  // ゲーム中にブラウザ戻る/Android 戻ると、Android システム戻ると同じ handleSystemBack()
+  // を呼び（各ゲームの終了確認ダイアログ等を再利用）、確認なしの素通り離脱を防ぐ。
+  // ハブ埋め込み(embedded)時はハブが history を所有するため無効。
+  private historyGuardArmed = false
+
+  private armHistoryGuard(): void {
+    if (this.embedded || this.historyGuardArmed) return
+    history.pushState({ cardGameBackGuard: true }, '')
+    this.historyGuardArmed = true
+  }
+
+  private readonly onPopState = (): void => {
+    // 戻るでセンチネル状態が pop された。
+    this.historyGuardArmed = false
+    const handled = this.handleSystemBack()
+    // まだメニュー以外（ゲーム/モーダル表示中）なら、戻るを引き続き捕捉するため張り直す。
+    if (handled || this.screen !== 'menu') {
+      this.armHistoryGuard()
+    }
   }
 
   private handleSystemBack(): boolean {
@@ -661,6 +712,10 @@ export abstract class StandaloneCardGameApp extends LitElement {
     this.screen = 'game'
     this.rulesDontShow = false
     this.showRules = localStorage.getItem(this.rulesHiddenKey) !== 'true'
+    // BG-3: 直前のホーム戻り抑止が残っていてもゲーム開始音は鳴らす（保険で即解除）。
+    clearEffectSuppression()
+    // BK-1: ゲーム突入時にブラウザ戻るガードを張る。
+    this.armHistoryGuard()
   }
 
   // ルール説明 OK：チェックされていれば次回以降非表示にして閉じる（盤面のまま）。
@@ -733,7 +788,7 @@ export abstract class StandaloneCardGameApp extends LitElement {
           .otherGamesUrl=${android ? buildOtherCardGamesUrl(this.language) : ''}
           .externalIconSrc=${android ? buildGameAssetUrl('common/images/external_link.svg') : ''}
           .externalNote=${android ? chrome.externalLinkNote : ''}
-          .version=${android ? (this.appConfig?.app_info?.version ?? '') : ''}
+          .version=${android ? this.androidAppVersion() : ''}
           @menu-back=${() => this.dispatchEvent(new CustomEvent('menu-back', { bubbles: true, composed: true }))}
           @menu-start=${() => this.onStartWithRules()}
           @menu-guide=${() => {
