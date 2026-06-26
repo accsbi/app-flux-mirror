@@ -1,4 +1,4 @@
-id,title,package_name,file_name,google_play_store_url,youtube_url,published,store_published,youtube_published,web_published
-90001,Simple Blackjack,com.game.blackjack,simpleblackjack,https://play.google.com/store/apps/details?id=com.game.simpleblackjack,,true,false,,
-90002,Simple Poker (Five-card draw),com.game.simple_poker,simple_poker,https://play.google.com/store/apps/details?id=com.game.simple_poker,,true,false,,
-90003,Blackjack Poker Casino War hub,com.game.playingcardshub,playingcardshub,https://play.google.com/store/apps/details?id=com.game.playingcardshub,https://www.youtube.com/watch?v=ZNJr2_5G9qA,true,false,true,
+id,title,package_name,file_name,google_play_store_url,youtube_url,published,store_published,youtube_published,web_published,note
+90001,Simple Blackjack,com.game.blackjack,simpleblackjack,https://play.google.com/store/apps/details?id=com.game.simpleblackjack,,true,false,,,existing-apps.ts
+90002,Simple Poker (Five-card draw),com.game.simple_poker,simple_poker,https://play.google.com/store/apps/details?id=com.game.simple_poker,,true,false,,,existing-apps.ts
+90003,Blackjack Poker Casino War hub,com.game.playingcardshub,playingcardshub,https://play.google.com/store/apps/details?id=com.game.playingcardshub,https://www.youtube.com/watch?v=ZNJr2_5G9qA,true,false,true,,existing-apps.ts
