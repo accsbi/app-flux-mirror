@@ -1,5 +1,6 @@
 import { LitElement, css, html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
+import { classicButtonStyles, classicBlueButtonStyles } from '../classic-button.styles'
 
 @customElement('remove-ads-dialog-panel')
 export class RemoveAdsDialogPanel extends LitElement {
@@ -58,7 +59,7 @@ export class RemoveAdsDialogPanel extends LitElement {
     return html`
       <section class="panel">
         ${showTopCloseButton
-          ? html`<button class="top-close-btn" @click=${this.close}>${this.closeLabel}</button>`
+          ? html`<button class="top-close-btn classic-btn" @click=${this.close}>${this.closeLabel}</button>`
           : null}
         <h3>${this.title}</h3>
         ${this.lines.map((line) => html`<p>${line}</p>`)}
@@ -66,15 +67,15 @@ export class RemoveAdsDialogPanel extends LitElement {
         ${statusLabel ? html`<p class="meta-line status">${statusLabel}</p>` : null}
         <div class="actions">
           ${this.showPurchase
-            ? html`<button class="action-btn purchase-btn" @click=${this.onPurchase} ?disabled=${this.purchased}>${this.purchaseLabel}</button>`
+            ? html`<button class="action-btn purchase-btn classic-btn" @click=${this.onPurchase} ?disabled=${this.purchased}>${this.purchaseLabel}</button>`
             : null}
           ${this.linkLabel
-            ? html`<button class="action-btn purchase-btn" @click=${this.onPurchase}>${this.linkLabel}</button>`
+            ? html`<button class="action-btn purchase-btn classic-btn" @click=${this.onPurchase}>${this.linkLabel}</button>`
             : null}
           ${this.showTerms
-            ? html`<button class="action-btn terms-btn" @click=${this.openTerms}>${this.termsLabel}</button>`
+            ? html`<button class="action-btn terms-btn classic-btn" @click=${this.openTerms}>${this.termsLabel}</button>`
             : null}
-          <button class="action-btn cancel-btn" @click=${this.close}>${this.cancelLabel}</button>
+          <button class="action-btn cancel-btn classic-btn-blue" @click=${this.close}>${this.cancelLabel}</button>
         </div>
       </section>
       ${this.showTerms && this.termsOpen
@@ -83,7 +84,7 @@ export class RemoveAdsDialogPanel extends LitElement {
               <div class="terms-modal" @click=${(event: Event) => event.stopPropagation()}>
                 <h4>${this.termsTitle}</h4>
                 <pre>${this.termsContent}</pre>
-                <button class="action-btn cancel-btn" @click=${this.closeTerms}>${this.termsCloseLabel}</button>
+                <button class="action-btn cancel-btn classic-btn-blue" @click=${this.closeTerms}>${this.termsCloseLabel}</button>
               </div>
             </section>
           `
@@ -91,7 +92,8 @@ export class RemoveAdsDialogPanel extends LitElement {
     `
   }
 
-  static styles = css`
+  // クラシック(金×緑)に統一。classic 系を配列末尾に置き、茶系(.action-btn の background)に勝たせる。
+  static styles = [css`
     /* Rule: Keep Remove Ads action buttons aligned with Game Select buttons for tap usability. */
     /* Baseline: height 72px, font-size 24px, vertical gap 24px. */
     :host {
@@ -219,5 +221,5 @@ export class RemoveAdsDialogPanel extends LitElement {
       line-height: 1.5;
       font-family: inherit;
     }
-  `
+  `, classicButtonStyles, classicBlueButtonStyles]
 }

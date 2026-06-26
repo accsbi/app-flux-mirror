@@ -29,5 +29,5 @@ export function shouldShowAdMockDialog(gameCount: number): boolean {
 }
 
 export function buildAdMockDialogMessage(gameCount: number): string {
-  return `\u5e83\u544a\u8868\u793a\n\u30b2\u30fc\u30e0\u30ab\u30a6\u30f3\u30c8 ${gameCount}`
+  return `広告表示\nゲームカウント ${gameCount}`
 }

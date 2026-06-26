@@ -83,8 +83,8 @@ export class SettingsPanel extends LitElement {
           <span>${this.languageLabel}</span>
           <select class="language-select" .value=${this.language} @change=${this.onLanguageChange} @input=${this.onLanguageChange}>
             <option value="en">English</option>
-            <option value="ja">${'\u65e5\u672c\u8a9e'}</option>
-            <option value="zh">${'\u4e2d\u6587'}</option>
+            <option value="ja">日本語</option>
+            <option value="zh">中文</option>
           </select>
         </label>
         <button class="panel-btn classic-btn-blue" @click=${() => this.emit('settings-close')}>${this.okLabel}</button>

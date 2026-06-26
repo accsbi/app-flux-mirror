@@ -60,6 +60,13 @@ export function buildAboutUrl(fileName: string, language: string): string {
   return `${PLAYING_CARDS_LIVE_BASE}/${language}/games-apps/${fileName}/`
 }
 
+// 有料アイテム(アプリ内課金)利用規約ページ＝SITE側に多言語で一元管理。Remove Ads ダイアログから
+// 外部リンクで開く。アプリごとに規約を持たず、サイト再デプロイ(GitHub)だけで全アプリに反映できる。
+// 「別のカードゲーム」と同方式（アプリ更新＝Google 再申請は不要）。例 /en/item_terms_of_use/
+export function buildTermsUrl(language: string): string {
+  return `${PLAYING_CARDS_LIVE_BASE}/${language}/item_terms_of_use/`
+}
+
 export const MEMORY_BATTLE_WEB_LINKS: WebPromotionLinks = {
   title: 'Classic Simple Memory Battle',
   storeUrl: 'https://play.google.com/store/apps/details?id=com.games.memorymonsters',

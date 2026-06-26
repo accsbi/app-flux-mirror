@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>应用内购买使用条款</title>
+  <style>
+:root{color-scheme:light}
+body{margin:0;font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic","Segoe UI",sans-serif;color:#fff;background:#000}
+.container{max-width:720px;margin:0 auto;padding:1.5rem 1.5rem 2.5rem}
+h1{font-size:1.7rem;margin-bottom:1.2rem;color:#fff}
+.intro{line-height:1.8;margin-bottom:1.8rem}
+.divider{border:none;border-top:1px solid #3a3a3f;margin:1.8rem 0}
+.section{margin-bottom:1.5rem}
+.section h2{font-size:1.1rem;margin-bottom:.6rem;color:#fff}
+.section p{line-height:1.8;margin:0}
+.close-row{display:flex;justify-content:flex-end;margin-top:2rem}
+.close-button{background:transparent;color:#fff;border:1px solid #3a3a3f;padding:.5rem 1.2rem;border-radius:999px;cursor:pointer;font-size:.95rem}
+.close-button:hover{background:rgba(255,255,255,.08)}
+@media (max-width:640px){.container{padding:1.2rem}}
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>有偿道具（应用内购买）使用条款</h1>
+    <p class="intro">本条款（以下简称“本条款”）规定了本应用内提供的有偿道具（以下简称“本道具”）的使用条件。用户使用本应用即视为同意本条款。</p>
+    <hr class="divider" />
+    <section class="section"><h2>第1条（关于有偿道具）</h2><p>本应用内提供的有偿道具为一次性购买的数字内容。购买后，用户获得在本应用内使用该道具的权利。有偿道具不保证永久运行或未来持续可用。</p></section>
+      <section class="section"><h2>第2条（使用环境）</h2><p>本道具基于购买时的应用及运行环境提供。因系统更新、设备更换、制造商或运营商规格变更等原因，可能导致本道具无法正常使用。对此开发者不承担任何责任。</p></section>
+      <section class="section"><h2>第3条（更新与持续提供）</h2><p>开发者不负有持续更新或功能改进本应用及本道具的义务。开发者可在不另行通知的情况下变更、暂停或终止本应用或本道具的提供。</p></section>
+      <section class="section"><h2>第4条（服务终止）</h2><p>因运营或技术原因，开发者可能终止本应用或本道具的提供。服务终止后，可能无法继续使用本道具。</p></section>
+      <section class="section"><h2>第5条（退款）</h2><p>由于数字内容的性质，购买后原则上不予退款。但以 Google Play 等平台规定的退款政策为准。</p></section>
+      <section class="section"><h2>第6条（免责声明）</h2><p>开发者对用户因使用本应用或本道具而产生的任何损失不承担责任。本应用及本道具按“现状”提供。</p></section>
+      <section class="section"><h2>第7条（条款变更）</h2><p>开发者可根据需要变更本条款。变更后的条款在本应用或相关网站发布时生效。</p></section>
+      <section class="section"><h2>第8条（适用法律）</h2><p>本条款适用并按日本法律解释。</p></section>
+      <div class="close-row">
+      <button type="button" class="close-button" data-close-window>关闭窗口</button>
+    </div>
+  </main>
+  <script>
+    document.querySelectorAll('[data-close-window]').forEach(function(b){b.addEventListener('click',function(){window.close()})});
+  </script>
+</body>
+</html>

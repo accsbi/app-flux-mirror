@@ -90,14 +90,12 @@ export class StandaloneGameMenu extends LitElement {
           <div class="menu-layout">
             <div class="menu-card">
               <header class="menu-header">
-                <div class="menu-topbar">
-                  ${hasBackButton
-        ? html`<button class="back-btn" @click=${() => this.emit('menu-back')}><span class="menu-btn-text back-btn-text">${this.backLabel}</span></button>`
-        : html`<span class="topbar-spacer"></span>`}
-                  <coin-balance-display class="menu-coin" hide-label .coin=${this.coin}></coin-balance-display>
-                </div>
+                ${hasBackButton
+        ? html`<div class="menu-topbar"><button class="back-btn" @click=${() => this.emit('menu-back')}><span class="menu-btn-text back-btn-text">${this.backLabel}</span></button></div>`
+        : null}
                 <div class="menu-title-row">
                   <h1>${this.title}</h1>
+                  <coin-balance-display class="menu-coin" hide-label .coin=${this.coin}></coin-balance-display>
                 </div>
               </header>
 
@@ -114,7 +112,7 @@ export class StandaloneGameMenu extends LitElement {
                 <button class="menu-btn" @click=${() => this.emit('menu-guide')}><span class="menu-btn-text">${this.guideLabel}</span></button>
                 <button class="menu-btn" @click=${() => this.emit('menu-settings')}><span class="menu-btn-text">${this.settingsLabel}</span></button>
                 ${hasExtraAction
-        ? html`<button class="menu-btn" @click=${() => this.emit('menu-extra')}><span class="menu-btn-text">${this.extraActionLabel}</span></button>`
+        ? html`<button class="menu-btn news-btn" @click=${() => this.emit('menu-extra')}>${extIcon}<span class="menu-btn-text">${this.extraActionLabel}</span></button>`
         : null}
                 ${hasOtherGames
         ? html`<button class="menu-btn news-btn" @click=${() => this.emit('menu-other-games')}>${extIcon}<span class="menu-btn-text">${this.otherGamesLabel}</span></button>`
@@ -191,10 +189,13 @@ export class StandaloneGameMenu extends LitElement {
       /* レスポンシブ：パーツ(header/hero/buttons)を縦方向の中央に寄せ、画面が高くても
          下に大きな余白を作らない。バージョンは枠(menu-card)内の右下に固定して中央寄せから外す。
          （menu-base の grid 配置を flex 中央寄せで上書き。全ゲーム共通＝再発防止の単一ソース） */
+      /* 中央寄せ(center)だと縦長端末で上下に大きな余白＋内側の隙間が狭くなる(=非レスポンシブ)。
+         space-between で内容を縦いっぱいに配分＝外側の上下余白を最小化し、端末が高いほど
+         タイトル↔メイン画像↔ボタン の隙間が広がる（小型端末はそのまま詰まってちょうど良い）。 */
       .menu-card {
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: space-between;
         position: relative;
       }
 
@@ -224,16 +225,19 @@ export class StandaloneGameMenu extends LitElement {
       }
 
       /* タイトルは全幅（コインと取り合わない＝長くても切れにくい・コインも切れない）。 */
+      /* タイトルとコインを同じ行に。タイトル左(可変)・コイン右端。短いタイトルでは右に余白が
+         できるが、そこにコインが収まり上段が空かずバランスする。 */
       .menu-title-row {
         display: flex;
         align-items: center;
+        justify-content: space-between;
+        gap: 12px;
         width: 100%;
       }
       .menu-title-row h1 {
-        width: 100%;
-        /* 長いタイトル（poker "Classic Simple Poker (Five-card draw)"）が
-           menu-base の white-space:nowrap で右に見切れる不具合の修正。
-           折返しを許可して全文を表示する（コインは別行なので押し出さない）。 */
+        flex: 1 1 auto;
+        min-width: 0;
+        /* 長いタイトル(最大30字)は折返しで全文表示。コインは別カラムなので押し出さない。 */
         white-space: normal;
         line-height: 1.15;
         overflow-wrap: anywhere;
@@ -328,7 +332,8 @@ export class StandaloneGameMenu extends LitElement {
          アイコンは暗色(#1a1a1a)なので暗い枠内では invert して見せる。 */
       .external-note {
         width: min(496px, 100%);
-        margin: 10px auto 0;
+        /* 下端(カード/グリッド背景)に接しないよう下余白を確保（バランス）。 */
+        margin: 10px auto 16px;
         display: flex;
         align-items: center;
         justify-content: center;

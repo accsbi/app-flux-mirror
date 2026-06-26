@@ -1,0 +1,663 @@
+{
+  "default_language": "en",
+  "app_info": {
+    "version": "1.0.0",
+    "news_url_template": "https://app-flux.com/{lang}/games-apps/memorymonsters/",
+    "play_store_url": "https://play.google.com/store/apps/details?id=com.games.memorymonsters",
+    "youtube_url": "https://www.youtube.com/watch?v=4Qjgvynijgs",
+    "store_state": "button"
+  },
+  "assets": {
+    "background": "common/images/background.webp",
+    "card_base_path": "common/cards",
+    "back_card": "common/cards/back_card.png",
+    "locked_stage_thumb": "memory-battle/character/unlocked.webp",
+    "bgm": "memory-battle/effects/main_bgm.ogg",
+    "card_open_sound": "memory-battle/effects/card_open.mp3",
+    "match_sound": "memory-battle/effects/match.mp3",
+    "submit_sound": "memory-battle/effects/submit.mp3",
+    "win_sound": "memory-battle/effects/win.mp3",
+    "lose_sound": "memory-battle/effects/lose.mp3",
+    "draw_sound": "memory-battle/effects/draw.mp3",
+    "match_banner": "common/messages/match.png",
+    "win_banner": "common/messages/win.png",
+    "lose_banner": "common/messages/lose.png",
+    "start_banner": "common/messages/start.png",
+    "wait_banner": "common/messages/wait.png"
+  },
+  "enemies": [
+    {
+      "stage": 1,
+      "pair_capture_chance_percent": 10,
+      "image": "memory-battle/character/stage_1.webp",
+      "languages": {
+        "ja": {
+          "name": "村人",
+          "profile": "戦闘経験のない一般人。最初の練習相手"
+        },
+        "en": {
+          "name": "Villager",
+          "profile": "A common villager with no combat experience. Your first practice opponent."
+        },
+        "zh": {
+          "name": "村民",
+          "profile": "没有战斗经验的普通村民。你的第一个练习对手。"
+        }
+      },
+      "betMultiplier": 1.2
+    },
+    {
+      "stage": 2,
+      "pair_capture_chance_percent": 20,
+      "image": "memory-battle/character/stage_2.webp",
+      "languages": {
+        "ja": {
+          "name": "若い女性",
+          "profile": "粗野で予測不可能な動きをする相手。"
+        },
+        "en": {
+          "name": "Tavern Drunk",
+          "profile": "A rough and unpredictable opponent whose movements are difficult to read."
+        },
+        "zh": {
+          "name": "酒馆醉汉",
+          "profile": "动作粗野、难以预测的对手。"
+        }
+      },
+      "betMultiplier": 1.4
+    },
+    {
+      "stage": 3,
+      "pair_capture_chance_percent": 30,
+      "image": "memory-battle/character/stage_3.webp",
+      "languages": {
+        "ja": {
+          "name": "盗賊",
+          "profile": "素早く、ずる賢い戦い方をする"
+        },
+        "en": {
+          "name": "Bandit",
+          "profile": "A swift and cunning fighter who relies on underhanded tactics."
+        },
+        "zh": {
+          "name": "盗贼",
+          "profile": "行动敏捷、擅长使用狡猾手段战斗的盗贼。"
+        }
+      },
+      "betMultiplier": 1.6
+    },
+    {
+      "stage": 4,
+      "pair_capture_chance_percent": 40,
+      "image": "memory-battle/character/stage_4.webp",
+      "languages": {
+        "ja": {
+          "name": "城門の衛兵",
+          "profile": "城を守る訓練された兵士"
+        },
+        "en": {
+          "name": "Gate Guard",
+          "profile": "A trained soldier assigned to guard the castle gate."
+        },
+        "zh": {
+          "name": "城门卫兵",
+          "profile": "负责守卫城门、训练有素的士兵。"
+        }
+      },
+      "betMultiplier": 1.8
+    },
+    {
+      "stage": 5,
+      "pair_capture_chance_percent": 50,
+      "image": "memory-battle/character/stage_5.webp",
+      "languages": {
+        "ja": {
+          "name": "宮廷魔術師",
+          "profile": "王宮に仕える知略と魔法の使い手"
+        },
+        "en": {
+          "name": "Court Sorcerer",
+          "profile": "A master of strategy and magic who serves in the royal court."
+        },
+        "zh": {
+          "name": "宫廷魔法师",
+          "profile": "侍奉王宫、精通谋略与魔法的高手。"
+        }
+      },
+      "betMultiplier": 2.0
+    },
+    {
+      "stage": 6,
+      "pair_capture_chance_percent": 60,
+      "image": "memory-battle/character/stage_6.webp",
+      "languages": {
+        "ja": {
+          "name": "騎士",
+          "profile": "鎧と剣を装備した正式な騎士"
+        },
+        "en": {
+          "name": "Royal Knight",
+          "profile": "A formally appointed knight equipped with armor and a sword."
+        },
+        "zh": {
+          "name": "皇家骑士",
+          "profile": "身穿铠甲、手持利剑的正式骑士。"
+        }
+      },
+      "betMultiplier": 2.2
+    },
+    {
+      "stage": 7,
+      "pair_capture_chance_percent": 70,
+      "image": "memory-battle/character/stage_7.webp",
+      "languages": {
+        "ja": {
+          "name": "騎士団長",
+          "profile": "騎士団を率いる熟練の指揮官"
+        },
+        "en": {
+          "name": "Knight Commander",
+          "profile": "A highly skilled commander who leads the kingdom's knights."
+        },
+        "zh": {
+          "name": "骑士团长",
+          "profile": "率领骑士团、经验丰富的指挥官。"
+        }
+      },
+      "betMultiplier": 2.4
+    },
+    {
+      "stage": 8,
+      "pair_capture_chance_percent": 80,
+      "image": "memory-battle/character/stage_8.webp",
+      "languages": {
+        "ja": {
+          "name": "公爵",
+          "profile": "王国の大領地を治める有力貴族"
+        },
+        "en": {
+          "name": "Duke",
+          "profile": "A powerful noble who governs a vast territory within the kingdom."
+        },
+        "zh": {
+          "name": "公爵",
+          "profile": "统治王国大片领地的强大贵族。"
+        }
+      },
+      "betMultiplier": 2.6
+    },
+    {
+      "stage": 9,
+      "pair_capture_chance_percent": 90,
+      "image": "memory-battle/character/stage_9.webp",
+      "languages": {
+        "ja": {
+          "name": "宮廷魔術師",
+          "profile": "王宮に仕える知略と魔法の使い手"
+        },
+        "en": {
+          "name": "Court Sorcerer",
+          "profile": "A master of strategy and magic who serves in the royal court."
+        },
+        "zh": {
+          "name": "宫廷魔法师",
+          "profile": "侍奉王宫、精通谋略与魔法的高手。"
+        }
+      },
+      "betMultiplier": 2.8
+    },
+    {
+      "stage": 10,
+      "pair_capture_chance_percent": 100,
+      "image": "memory-battle/character/stage_10.webp",
+      "languages": {
+        "ja": {
+          "name": "暗黒王",
+          "profile": "王国を支配する最終ボス級の君主。一切のとりこぼしもゆるさない。"
+        },
+        "en": {
+          "name": "Dark King",
+          "profile": "A final-boss-level ruler who dominates the kingdom. He will not forgive a single mistake."
+        },
+        "zh": {
+          "name": "黑暗之王",
+          "profile": "统治整个王国的最终首领级君主。绝不会放过任何一次失误。"
+        }
+      },
+      "betMultiplier": 3.0
+    }
+  ],
+  "languages": {
+    "en": {
+      "menu": {
+        "start": "START",
+        "overview_info": "Guide / Overview",
+        "settings": "Settings",
+        "remove_ads": "Remove Ads",
+        "news": "News / Updates (External)"
+      },
+      "settings": {
+        "sound_effect": "Effect",
+        "language": "Language",
+        "bgm": "BGM",
+        "sound_help_title": "Sound Help",
+        "sound_help_message": "If sound does not play, please check whether your device is in silent mode or muted.",
+        "sound_help_button_label": "?",
+        "clear_cache": "Clear Cache",
+        "clear_cache_confirm_title": "Clear Cache",
+        "clear_cache_confirm_message": "Clear cache now? Coins and stage progress will be kept.",
+        "help_icon_label": "?",
+        "sound_help_ok": "OK"
+      },
+      "common": {
+        "ok": "OK",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "back": "Back",
+        "yes": "Yes",
+        "no": "No"
+      },
+      "ads": {
+        "remove_ads_benefit_1_title": "About Removing Ads",
+        "remove_ads_benefit_1_desc": "To continue development and operation, we kindly ask for your understanding regarding ad display in this app.\n\nYou can also remove ads via in-app purchase.",
+        "remove_ads_benefit_2_title": "After Removing Ads",
+        "remove_ads_benefit_2_desc": "When ads are removed, there is no external ad connection, so offline play is available.\n\nExample: You can play in places with weak or no signal, such as on an airplane.",
+        "purchase_button": "Purchase",
+        "already_purchased": "Already Purchased",
+        "web_store_message": "Remove Ads is available only in the Android app.\nPlease download the app from Google Play and enjoy the app there.",
+        "web_store_button": "Open in Google Play",
+        "purchase_failed": "Purchase failed. Please try again.",
+        "purchase_error": "An error occurred during purchase. Please try again.",
+        "purchase_success_message": "Thank you for your purchase! Ads have been removed from the app."
+      },
+      "game": {
+        "title": "Classic Simple Memory Battle",
+        "stage_label": "STAGE {stage}",
+        "stage_cleared_label": "CLEAR",
+        "stage_select_title": "Please choose a stage",
+        "practice_stage_button": "Play solo for practice",
+        "practice_status_label": "Solo Practice Stage",
+        "practice_setup_title": "Solo Practice",
+        "practice_setup_message": "This is a solo practice stage you can play casually.\nChoose the number of cards and start the game.",
+        "practice_coin_note": "Note: Solo practice does not use COIN.",
+        "practice_card_count_label": "Card Count",
+        "practice_start_button": "Start Practice",
+        "practice_clear_title": "Practice is over. Good job!",
+        "practice_clear_message": "Would you like to practice once more? Or choose Return to Stage Select.",
+        "practice_result_summary": "Cleared {count} cards in {turns} turns.",
+        "practice_retry_button": "Retry Practice",
+        "quit_battle_button": "Give Up",
+        "quit_practice_button": "Stop",
+        "quit_battle_confirm_title": "Give up?",
+        "quit_practice_confirm_title": "Stop practice?",
+        "quit_battle_confirm_message": "Return to Stage Select?",
+        "quit_battle_confirm_cancel": "Cancel",
+        "stage_select_current": "Selected: Stage {stage}",
+        "stage_select_start": "START",
+        "stage_start_confirm_title": "Start Stage {stage}?",
+        "stage_start_confirm_message": "Begin the battle for Stage {stage}.",
+        "stage_start_confirm_ok": "Start",
+        "stage_start_confirm_cancel": "Cancel",
+        "enemy_status_format": "{name} (Stage {stage})",
+        "enemy_intro_title": "Stage {stage}",
+        "enemy_reward": "Reward: ×{mult}",
+        "start_battle": "BET & START",
+        "dealing_cards": "Dealing cards...",
+        "draw_battle_title": "Decide who goes first",
+        "draw_battle_message": "Choose either card.\n[A] is the strongest, and [2] is the weakest.",
+        "draw_battle_button": "DRAW",
+        "draw_battle_player_label": "YOU",
+        "draw_battle_cpu_label": "CPU",
+        "player_won_draw": "YOU win! Choose whether to go first or second.",
+        "cpu_won_draw_first": "CPU wins! It chose to go first. YOU go second.",
+        "cpu_won_draw_second": "CPU wins! It chose to go second. YOU go first.",
+        "choose_turn_title": "Choose turn order",
+        "choose_turn_message": "Choose which side acts first.",
+        "go_first": "Go First",
+        "go_second": "Go Second",
+        "turn_player": "It is YOU's turn.",
+        "turn_cpu": "It is CPU's turn.",
+        "turn_count": "YOU T{player} / CPU T{cpu}",
+        "player_score": "YOU {score}",
+        "cpu_score": "CPU {score}",
+        "player_match": "Match! YOU keep the turn.",
+        "cpu_match": "CPU made a match. CPU keeps the turn.",
+        "player_miss": "Mismatch. CPU's turn.",
+        "cpu_miss": "CPU missed. YOU's turn.",
+        "cpu_thinking": "CPU is choosing cards...",
+        "win_title": "YOU WIN",
+        "win_message": "Choose whether to move on to the next stage or return to Stage Select.",
+        "stage_clear_message": "Cleared.",
+        "reward_label": "Clear Reward: {coin} coin",
+        "total_coin_label": "Owned COIN: {coin}",
+        "next": "Go to the next stage",
+        "return_to_stage_select": "Stage Select",
+        "lose_title": "YOU LOSE",
+        "lose_message": "You lost. Choose Continue or Return to Menu.",
+        "continue_message": "Continue?",
+        "continue_button": "Continue",
+        "return_to_menu_button": "Back to Menu",
+        "leave_game_message": "Return to Menu?",
+        "draw_title": "DRAW",
+        "draw_message": "It is a draw. Replay the same stage.",
+        "retry_button": "RETRY",
+        "all_clear_title": "ALL CLEAR",
+        "all_clear_message": "You cleared every stage.",
+        "back_to_hub": "Return to Menu",
+        "resume_confirm_title": "Continue from your last progress?",
+        "resume_confirm_message": "Start from Stage 1, or continue from Stage {stage}?",
+        "resume_confirm_ok": "Continue from Stage {stage}",
+        "resume_confirm_cancel": "Start from Stage 1",
+        "back_card_alt": "back card",
+        "early_win_confirm_title": "YOU win (Cold Game)",
+        "early_lose_confirm_title": "YOU lose",
+        "early_battle_continue": "Continue",
+        "early_battle_finish": "Stop",
+        "early_battle_confirm_message": "This will not affect the result, but would you like to continue the game?",
+        "reward_help_label": "About rewards?",
+        "reward_help_title": "About rewards",
+        "reward_help_win": "Win: you gain BET × the stage multiplier in COIN.",
+        "reward_help_lose": "Lose: your BET is forfeited (0 COIN).",
+        "quick_start": "• Tap START, then pick a stage.\n• Draw a card to decide who goes first — the higher card chooses.\n• On your turn, flip two cards. A match keeps your turn going.\n• When all cards are gone, the side with more pairs wins.",
+        "bet_available_label": "COIN",
+        "feedback_button": "Feedback",
+        "feedback_title": "Feedback",
+        "feedback_placeholder": "Please enter your feedback",
+        "feedback_ok": "Send",
+        "feedback_cancel": "Cancel",
+        "feedback_validation_min": "Please enter at least 10 characters.",
+        "feedback_submit_failed": "Failed to send feedback. Please try again.",
+        "feedback_submit_success": "Thank you for your feedback."
+      },
+      "overview_info": {
+        "guide_content": "[ App Description ]\nClassic Simple Memory Battle is an easy memory-matching card game you can play on your own.\n\nFlip cards two at a time and find matching pairs. Warm up in solo practice, or face CPU rivals turn by turn in battle mode.\n\nNo sign-up and no online play. Just a quick, relaxing card game with a classic, vintage design. Cards are dealt at random.\n\n[ How to Play ]\n#### Steps\n\n1. From the menu, tap START.\n2. Pick a stage on the stage-select screen (you can replay cleared stages anytime).\n3. Check the rival info, then tap Start Battle.\n4. Draw a card to decide who goes first — the higher card wins the choice.\n5. Take turns flipping two cards. Find a match to keep your turn.\n6. When all cards are gone, the side with more pairs wins. Win to unlock the next stage and earn COIN.\n\n* Solo practice mode lets you play alone with 4, 8, 12, 16, or 20 cards.\n* To quit, tap HOME at the top left.\n\n#### Stage Rewards\n\n* Stages 1–5: 20–70 COIN\n* Stages 6–10: 90–300 COIN\n\n[ In-App Purchases ]\n* Ads help us keep making and running the app. Thank you for understanding.\n* A one-time purchase removes ads and lets you play offline (airplane mode, no-signal areas, and so on).\n* Note: You still need the internet to update the app or open outside links.\n\n[ Notes ]\n* No real money, prizes, or crypto are used. This app is not for gambling.\n* If the app feels slow, open Settings in the menu and clear the cache.\n* If problems continue, delete the app's data in your device settings for a full reset.\n\n[ Supported Languages ]\n* English / Japanese / Chinese (Simplified)\n- Note: Some words shown during play may be in English.\n\n[ Contact / Bug Report ]\n* To report a bug, use FEEDBACK on the game screen.\n* If you need a reply, please use the [Contact form](https://app-flux.com/en/contact/).\n\n[ Privacy Policy (External Link) ]\n* [Privacy policy link](https://app-flux.com/en/games-apps/privacy-policy/)"
+      }
+    },
+    "ja": {
+      "menu": {
+        "start": "START",
+        "overview_info": "ガイド / 概要",
+        "settings": "設定",
+        "remove_ads": "広告を削除",
+        "news": "ニュース / 更新情報 (外部リンク)"
+      },
+      "settings": {
+        "sound_effect": "効果音",
+        "language": "言語",
+        "bgm": "BGM",
+        "sound_help_title": "サウンドヘルプ",
+        "sound_help_message": "音が出ない場合は、端末がサイレントモードまたはミュートになっていないか確認してください。",
+        "sound_help_button_label": "?",
+        "clear_cache": "キャッシュをクリア",
+        "clear_cache_confirm_title": "キャッシュをクリア",
+        "clear_cache_confirm_message": "キャッシュをクリアしますか？ コインとステージ進行は保持されます。",
+        "help_icon_label": "?",
+        "sound_help_ok": "OK"
+      },
+      "common": {
+        "ok": "OK",
+        "cancel": "キャンセル",
+        "confirm": "確認",
+        "back": "戻る",
+        "yes": "はい",
+        "no": "いいえ"
+      },
+      "ads": {
+        "remove_ads_benefit_1_title": "広告の削除について",
+        "remove_ads_benefit_1_desc": "このアプリの開発と運営を続けるため、広告表示へのご理解をお願いいたします。\n\nアプリ内課金で広告を削除することもできます。",
+        "remove_ads_benefit_2_title": "広告を削除した後",
+        "remove_ads_benefit_2_desc": "広告を削除すると外部広告通信がなくなるため、オフラインでも遊べます。\n\n例: 飛行機の中など、電波が弱い場所や届かない場所でもプレイできます。",
+        "purchase_button": "購入する",
+        "already_purchased": "購入済み",
+        "purchase_failed": "購入に失敗しました。もう一度お試しください。",
+        "purchase_error": "購入中にエラーが発生しました。もう一度お試しください。",
+        "purchase_success_message": "ご購入ありがとうございます！広告が非表示になりました。"
+      },
+      "game": {
+        "title": "Classic Simple Memory Battle",
+        "stage_label": "ステージ {stage}",
+        "stage_cleared_label": "クリア",
+        "stage_select_title": "ステージを選択してください",
+        "practice_stage_button": "1人用(練習用)で遊ぶ",
+        "practice_status_label": "1人練習ステージ",
+        "practice_setup_title": "1人用(練習用)",
+        "practice_setup_message": "気軽に挑戦できる1人用の練習ステージです。\n枚数を選んでゲームを開始してください。",
+        "practice_coin_note": "注意：練習モードでは COIN を使いません。",
+        "practice_card_count_label": "枚数",
+        "practice_start_button": "練習スタート",
+        "practice_clear_title": "練習は、終わりです。お疲れさまでした！",
+        "practice_clear_message": "もう一度練習しますか？または、ステージ選択に戻るを選んでください。",
+        "practice_result_summary": "{count}枚を{turns}回でクリアしました。",
+        "practice_retry_button": "もう一度練習する",
+        "quit_battle_button": "降参",
+        "quit_practice_button": "止める",
+        "quit_battle_confirm_title": "降参しますか？",
+        "quit_practice_confirm_title": "練習を止めますか？",
+        "quit_battle_confirm_message": "ステージ選択に戻ります。よろしいですか？",
+        "quit_battle_confirm_cancel": "キャンセル",
+        "stage_select_current": "選択中: ステージ {stage}",
+        "stage_select_start": "スタート",
+        "stage_start_confirm_title": "ステージ{stage}を始めますか？",
+        "stage_start_confirm_message": "ステージ{stage}のバトルを始めます。",
+        "stage_start_confirm_ok": "始める",
+        "stage_start_confirm_cancel": "キャンセル",
+        "enemy_status_format": "{name} (ステージ {stage})",
+        "enemy_intro_title": "ステージ {stage}",
+        "enemy_reward": "報酬:×{mult}",
+        "start_battle": "BET & スタート",
+        "dealing_cards": "カードを配っています...",
+        "draw_battle_title": "先行・後攻を決めます",
+        "draw_battle_message": "どちらかのカードを選択してください。[A]が一番強く、[2]が一番弱いです。",
+        "draw_battle_button": "引く",
+        "draw_battle_player_label": "あなた",
+        "draw_battle_cpu_label": "CPU",
+        "player_won_draw": "あなたの勝ち！ 先行・後攻を決めてください。",
+        "cpu_won_draw_first": "CPUの勝ち！ 先行を選びました。あなたが後攻です。",
+        "cpu_won_draw_second": "CPUの勝ち！ 後攻を選びました。あなたが先攻です。",
+        "choose_turn_title": "先攻後攻を選ぶ",
+        "choose_turn_message": "どちらが先に行動するか選んでください。",
+        "go_first": "先攻にする",
+        "go_second": "後攻にする",
+        "turn_player": "あなたの番です。",
+        "turn_cpu": "CPUの番です。",
+        "turn_count": "あなた T{player} / CPU T{cpu}",
+        "player_score": "あなた {score}",
+        "cpu_score": "CPU {score}",
+        "player_match": "マッチ！ あなたのターンが続きます。",
+        "cpu_match": "CPU がマッチしました。CPU のターンが続きます。",
+        "player_miss": "ミスマッチ。CPU のターンです。",
+        "cpu_miss": "CPU がミスしました。あなたのターンです。",
+        "cpu_thinking": "CPU がカードを選んでいます...",
+        "win_title": "あなたの勝ち",
+        "win_message": "次のステージに進むか、ステージ選択に戻るかを選んでください。",
+        "stage_clear_message": "クリアしました。",
+        "reward_label": "クリア報酬: {coin} COIN",
+        "total_coin_label": "所持 COIN: {coin}",
+        "next": "次のステージに進む",
+        "return_to_stage_select": "ステージ選択に戻る",
+        "lose_title": "あなたの負け",
+        "lose_message": "あなたの負けです。残念です。コンティニューまたは、メニューに戻るを選択してください。",
+        "continue_message": "コンティニューしますか？",
+        "continue_button": "コンティニュー",
+        "return_to_menu_button": "メニューに戻る",
+        "leave_game_message": "メニューに戻りますか？",
+        "draw_title": "引き分け",
+        "draw_message": "引き分けです。同じステージを再戦します。",
+        "retry_button": "リトライ",
+        "all_clear_title": "全ステージクリア",
+        "all_clear_message": "すべてのステージをクリアしました。",
+        "back_to_hub": "メニューに戻る",
+        "resume_confirm_title": "前回の続きから始めますか？",
+        "resume_confirm_message": "ステージ1から始めますか？ それともステージ{stage}から続けますか？",
+        "resume_confirm_ok": "ステージ{stage}から続ける",
+        "resume_confirm_cancel": "ステージ1から始める",
+        "back_card_alt": "裏向きカード",
+        "early_win_confirm_title": "あなたの勝ちです（コールドゲーム）",
+        "early_lose_confirm_title": "あなたの負けです",
+        "early_battle_continue": "続ける",
+        "early_battle_finish": "やめる",
+        "early_battle_confirm_message": "勝敗に影響はありませんが、ゲームを続けますか？",
+        "reward_help_label": "報酬について？",
+        "reward_help_title": "報酬について",
+        "reward_help_win": "勝ち：BET額 × ステージ倍率の COIN を獲得します。",
+        "reward_help_lose": "負け：BET した COIN は没収されます（獲得0）。",
+        "quick_start": "• ステージまたは、1人用(練習用)を選択してください。\n• ステージが進むごとにCPUの記憶レベルが高く、強くなります。\n• CPU戦は、先に半分以上取れば、コールドゲーム(時短)で勝利です。続けることも可能です。\n• 詳しいルールはガイドから確認できます。",
+        "bet_available_label": "COIN",
+        "feedback_button": "フィードバック",
+        "feedback_title": "フィードバック",
+        "feedback_placeholder": "ご意見をご記入ください",
+        "feedback_ok": "送信",
+        "feedback_cancel": "キャンセル",
+        "feedback_validation_min": "10文字以上入力してください。",
+        "feedback_submit_failed": "送信に失敗しました。もう一度お試しください。",
+        "feedback_submit_success": "ご意見ありがとうございました。"
+      },
+      "overview_info": {
+        "guide_content": "[ アプリの概要 ]\nClassic Simple Memory Battle は、1人で気軽に遊べる、神経衰弱のトランプカードゲームです。\n\n1人用とCPU対戦が選択できます。神経衰弱が初心者でも簡単に楽しめます。\n\nさらに、通常の神経衰弱にゲーム内COINを使った、BET機能を追加しています。ゲーム開始前にCOINをBETし、勝利することで、COINを獲得できます。クラシックなデザインを採用、大人向けの神経衰弱をイメージして、開発をいたしました。\n\n[ 遊び方 ]\n#### 1人用(練習用)\n* 4枚、8枚、12枚、16枚、20枚から枚数を選び、シングルで遊べます。\n\n#### CPU対戦\n\n* ターン制の通常の神経衰弱です。交互に引き、ペアを当てた場合は、続けてもう一度引けます。すべてのカードがなくなり、獲得したペアが多いほうの勝です。\n* 注 : コールドゲーム(先に6ペア先取)を採用しています。ゲームを続けることもできますが、勝敗には影響しません。\n\n* ステージクリアごとに次のステージが解放されます。一度クリアしたステージは何度でも遊べます。\n* 先行・後攻を決めます。トランプの数値が大きいほうが選択権を得られます。([A]が一番強く、[2]が一番弱いです。)\n\n#### 勝敗と報酬\n\n* 勝ち：あなたのペア数がCPUより多い場合。BET × ステージ倍率のCOINを獲得します（小数切り捨て）。\n* 引き分け：ペア数が同じ場合。配当はなく、BETしたCOINが戻ります。\n* 負け：あなたのペア数がCPUより少ない場合。BETしたCOINは没収されます。\n\n#### ステージ倍率\n\n* ステージ1：×1.2\n* ステージ2：×1.4\n* ステージ3：×1.6\n* ステージ4：×1.8\n* ステージ5：×2.0\n* ステージ6：×2.2\n* ステージ7：×2.4\n* ステージ8：×2.6\n* ステージ9：×2.8\n* ステージ10：×3.0\n\n[ 課金アイテム ]\n* 開発・運営を継続するため、広告表示についてご理解いただけますようお願い申し上げます。\n* 課金されますと、広告の非表示やオフラインプレイ(機内モード、電波の届かない場所など)が可能になります。\n* 注 : アプリの更新や外部リンクを開くときは、インターネットが必要です。\n\n[ 注意事項 ]\n* 現金・賞品・暗号資産などは使いません。ギャンブル目的のアプリではありません。\n* 動作が重いときは、メニューの設定からキャッシュクリアをお試しください。\n* 不具合やクラッシュが続く場合は、端末の設定からアプリのストレージデータを削除して、完全リセットを行ってください。\n\n[ お問い合わせ / 不具合報告 ]\n* 不具合の報告は、ゲーム画面の FEEDBACK からお願いします。\n* 返信が必要なときは、[Contact form](https://app-flux.com/ja/contact/) からお願いします。\n\n[ プライバシーポリシー (外部リンク) ]\n* [Privacy policy link](https://app-flux.com/ja/games-apps/privacy-policy/)"
+      }
+    },
+    "zh": {
+      "menu": {
+        "start": "START",
+        "overview_info": "指南 / 概览",
+        "settings": "设置",
+        "remove_ads": "去除广告",
+        "news": "新闻 / 更新 (外部链接)"
+      },
+      "settings": {
+        "sound_effect": "音效",
+        "language": "语言",
+        "bgm": "BGM",
+        "sound_help_title": "声音帮助",
+        "sound_help_message": "如果没有声音，请检查设备是否处于静音模式或已静音。",
+        "sound_help_button_label": "?",
+        "clear_cache": "清除缓存",
+        "clear_cache_confirm_title": "清除缓存",
+        "clear_cache_confirm_message": "要清除缓存吗？ 金币和关卡进度会保留。",
+        "help_icon_label": "?",
+        "sound_help_ok": "OK"
+      },
+      "common": {
+        "ok": "OK",
+        "cancel": "取消",
+        "confirm": "确认",
+        "back": "返回",
+        "yes": "是",
+        "no": "否"
+      },
+      "ads": {
+        "remove_ads_benefit_1_title": "关于去除广告",
+        "remove_ads_benefit_1_desc": "为了持续开发和运营本应用，敬请理解本应用会显示广告。\n\n您也可以通过应用内购买去除广告。",
+        "remove_ads_benefit_2_title": "去除广告之后",
+        "remove_ads_benefit_2_desc": "去除广告后将不再进行外部广告通信，因此也可以离线游玩。\n\n例如: 在飞机上等信号较弱或没有信号的地方也可以游玩。",
+        "purchase_button": "购买",
+        "already_purchased": "已购买",
+        "purchase_failed": "购买失败，请重试。",
+        "purchase_error": "购买过程中发生错误，请重试。",
+        "purchase_success_message": "感谢您的购买！广告已从应用中移除。"
+      },
+      "game": {
+        "title": "Classic Simple Memory Battle",
+        "stage_label": "关卡 {stage}",
+        "stage_cleared_label": "已通关",
+        "stage_select_title": "请选择关卡",
+        "practice_stage_button": "以单人模式练习",
+        "practice_status_label": "单人练习关卡",
+        "practice_setup_title": "单人练习",
+        "practice_setup_message": "这是可以轻松挑战的单人练习关卡。\n请选择卡牌张数后开始游戏。",
+        "practice_coin_note": "注意：单人练习不使用 COIN。",
+        "practice_card_count_label": "张数",
+        "practice_start_button": "开始练习",
+        "practice_clear_title": "练习结束了，辛苦了！",
+        "practice_clear_message": "要再练习一次吗？或者请选择返回关卡选择。",
+        "practice_result_summary": "你在{turns}回合内完成了{count}张卡牌。",
+        "practice_retry_button": "再练习一次",
+        "quit_battle_button": "投降",
+        "quit_practice_button": "停止",
+        "quit_battle_confirm_title": "要投降吗？",
+        "quit_practice_confirm_title": "要停止练习吗？",
+        "quit_battle_confirm_message": "将返回关卡选择。确定吗？",
+        "quit_battle_confirm_cancel": "取消",
+        "stage_select_current": "当前选择：关卡 {stage}",
+        "stage_select_start": "开始",
+        "stage_start_confirm_title": "开始关卡 {stage} 吗？",
+        "stage_start_confirm_message": "即将开始关卡 {stage} 的对战。",
+        "stage_start_confirm_ok": "开始",
+        "stage_start_confirm_cancel": "取消",
+        "enemy_status_format": "{name} (关卡 {stage})",
+        "enemy_intro_title": "关卡 {stage}",
+        "enemy_reward": "奖励:×{mult}",
+        "start_battle": "下注 & 开始",
+        "dealing_cards": "正在发牌...",
+        "draw_battle_title": "决定先攻后攻",
+        "draw_battle_message": "请选择其中一张卡牌。\n[A] 最强，[2] 最弱。",
+        "draw_battle_button": "抽牌",
+        "draw_battle_player_label": "你",
+        "draw_battle_cpu_label": "CPU",
+        "player_won_draw": "你获胜！请选择先攻或后攻。",
+        "cpu_won_draw_first": "CPU 获胜！它选择了先攻。你后攻。",
+        "cpu_won_draw_second": "CPU 获胜！它选择了后攻。你先攻。",
+        "choose_turn_title": "选择先攻后攻",
+        "choose_turn_message": "请选择哪一方先行动。",
+        "go_first": "选择先攻",
+        "go_second": "选择后攻",
+        "turn_player": "轮到你了。",
+        "turn_cpu": "轮到 CPU 了。",
+        "turn_count": "你 T{player} / CPU T{cpu}",
+        "player_score": "你 {score}",
+        "cpu_score": "CPU {score}",
+        "player_match": "配对成功！你继续行动。",
+        "cpu_match": "CPU 配对成功。CPU 继续行动。",
+        "player_miss": "未配对成功。轮到 CPU。",
+        "cpu_miss": "CPU 失误了。轮到你。",
+        "cpu_thinking": "CPU 正在选牌...",
+        "win_title": "你获胜",
+        "win_message": "请选择前往下一关，或返回关卡选择。",
+        "stage_clear_message": "已通关。",
+        "reward_label": "通关奖励: {coin} COIN",
+        "total_coin_label": "持有 COIN: {coin}",
+        "next": "前往下一关",
+        "return_to_stage_select": "返回关卡选择",
+        "lose_title": "你失败",
+        "lose_message": "你输了，真可惜。请选择继续，或者返回菜单。",
+        "continue_message": "要继续吗？",
+        "continue_button": "继续",
+        "return_to_menu_button": "返回菜单",
+        "leave_game_message": "返回菜单？",
+        "draw_title": "平局",
+        "draw_message": "平局。再次挑战同一关卡。",
+        "retry_button": "再战",
+        "all_clear_title": "全部通关",
+        "all_clear_message": "你已经通关全部关卡。",
+        "back_to_hub": "返回菜单",
+        "resume_confirm_title": "要从上次进度继续吗？",
+        "resume_confirm_message": "要从关卡1开始，还是从关卡{stage}继续？",
+        "resume_confirm_ok": "从关卡{stage}继续",
+        "resume_confirm_cancel": "从关卡1开始",
+        "back_card_alt": "背面卡牌",
+        "early_win_confirm_title": "你获胜（提前结束）",
+        "early_lose_confirm_title": "你失败",
+        "early_battle_continue": "继续",
+        "early_battle_finish": "停止",
+        "early_battle_confirm_message": "这不会影响胜负结果，但还要继续游戏吗？",
+        "reward_help_label": "关于奖励？",
+        "reward_help_title": "关于奖励",
+        "reward_help_win": "获胜：获得 BET × 关卡倍率 的金币。",
+        "reward_help_lose": "失败：押注的金币将被没收（获得0）。",
+        "quick_start": "• 点击 START，然后选择关卡。\n• 抽牌决定先后手（点数大者可选择）。\n• 轮到你时翻开两张牌，配对成功可继续。\n• 所有牌消失后，配对更多的一方获胜。",
+        "bet_available_label": "COIN",
+        "feedback_button": "反馈",
+        "feedback_title": "反馈",
+        "feedback_placeholder": "请输入您的反馈",
+        "feedback_ok": "发送",
+        "feedback_cancel": "取消",
+        "feedback_validation_min": "请至少输入10个字符。",
+        "feedback_submit_failed": "发送失败，请重试。",
+        "feedback_submit_success": "感谢您的反馈。"
+      },
+      "overview_info": {
+        "guide_content": "[ 应用说明 ]\nClassic Simple Memory Battle 是一款可以独自轻松游玩、上手简单的翻牌配对（记忆）游戏。\n\n每次翻开两张牌，找出相同的一对。可在单人练习中热身，也可在对战模式中与 CPU 轮流对战。\n\n无需注册，也没有在线对战。这是一款外观经典、沉稳的纸牌游戏，很适合零碎时间游玩。所有牌均为随机。\n\n[ 玩法 ]\n#### 步骤\n\n1. 在菜单中点击 START。\n2. 在关卡选择画面选择关卡（已通关的关卡随时可再次挑战）。\n3. 查看对手信息后，点击「开始对战」。\n4. 抽牌决定先后手（点数大者获得选择权）。\n5. 轮流每次翻开两张牌，配对成功可继续行动。\n6. 所有牌消失后，配对更多的一方获胜。获胜后解锁下一关卡并获得 COIN。\n\n* 单人练习模式可从 4、8、12、16、20 张中选择，独自游玩。\n* 如需退出，请点击左上角 HOME。\n\n#### 关卡奖励\n\n* 关卡 1〜5：20〜70 COIN\n* 关卡 6〜10：90〜300 COIN\n\n[ 内购项目 ]\n* 广告能帮助我们持续制作和运营这款应用，感谢您的理解。\n* 一次购买即可去除广告，还能在离线时（飞行模式、无信号的地方等）游玩。\n* 注：更新应用或打开外部链接时，仍需要联网。\n\n[ 注意事项 ]\n* 不使用任何现金、奖品或加密资产。本应用并非用于赌博。\n* 如果运行变慢，请在菜单的设置中清除缓存。\n* 如果仍有问题，可在设备设置中删除该应用的数据，恢复到初始状态。\n\n[ 支持语言 ]\n* 英语 / 日语 / 中文（简体）\n- 注：游玩过程中的部分文字可能以英文显示。\n\n[ 联系我们 / 故障报告 ]\n* 报告故障，请使用游戏画面的 FEEDBACK。\n* 如需回复，请通过 [Contact form](https://app-flux.com/zh/contact/) 联系我们。\n\n[ 隐私政策（外部链接） ]\n* [Privacy policy link](https://app-flux.com/zh/games-apps/privacy-policy/)"
+      }
+    }
+  }
+}

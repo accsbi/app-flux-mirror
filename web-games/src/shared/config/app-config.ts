@@ -3,8 +3,6 @@ export type AppLanguage = 'en' | 'ja' | 'zh'
 export type AppConfigRoot = {
   app_info?: {
     version?: string
-    app_name?: string
-    news_url_template?: string
     play_store_url?: string
     youtube_url?: string
     store_state?: string

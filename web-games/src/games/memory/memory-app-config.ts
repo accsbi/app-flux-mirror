@@ -2,7 +2,6 @@ export type AppLanguage = 'en' | 'ja' | 'zh'
 
 export type MemoryAppInfo = {
   version?: string
-  news_url_template?: string
   play_store_url?: string
   youtube_url?: string
   store_state?: string

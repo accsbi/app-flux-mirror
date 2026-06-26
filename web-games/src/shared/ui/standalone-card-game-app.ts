@@ -23,7 +23,7 @@ import {
 import { buildGameAssetUrl } from '../infra/game-asset-url'
 import { buildFeatureImageUrl } from '../infra/game-feature-image'
 import { playSubmitSound, stopAllEffects, clearEffectSuppression } from '../infra/submit-sound'
-import { CARD_GAMES_HUB_WEB_LINKS, buildDetailUrl, buildOtherCardGamesUrl, buildLiveDataUrl, buildAboutUrl } from '../infra/web-store-links'
+import { CARD_GAMES_HUB_WEB_LINKS, buildDetailUrl, buildOtherCardGamesUrl, buildLiveDataUrl, buildAboutUrl, buildTermsUrl } from '../infra/web-store-links'
 import { isAndroidApp } from '../infra/web-ad-mock'
 import { getGameTitle } from '../infra/game-title'
 import { SceneFadeController, renderSceneFade, sceneFadeStyles, SCENE_FADE_MS } from './scene-fade'
@@ -820,6 +820,7 @@ export abstract class StandaloneCardGameApp extends LitElement {
               .termsTitle=${this.removeAdsUi?.terms_title || 'Terms of Service'}
               .termsCloseLabel=${this.removeAdsUi?.terms_close_label || 'Close'}
               .termsContent=${this.removeAdsUi?.terms_content || ''}
+              .termsLinkUrl=${buildTermsUrl(this.language)}
               .priceLabel=${this.removeAdsPrice}
               .statusLabel=${this.removeAdsStatusMessage}
               .purchased=${this.isAdsRemoved}

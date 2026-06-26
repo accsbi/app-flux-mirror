@@ -1,8 +1,6 @@
 {
   "default_language": "en",
   "app_info": {
-    "app_id": "005",
-    "app_name": "highlowgame",
     "version": "1.0.1",
     "play_store_url": "",
     "youtube_url": "",
@@ -30,7 +28,6 @@
       },
       "game": {
         "home": "Home",
-        "leave_game": "Return to menu?",
         "rules_ok": "OK",
         "rules_dont_show": "Don't show this again",
         "mode_title": "Select Mode",
@@ -74,7 +71,6 @@
       },
       "game": {
         "home": "ホーム",
-        "leave_game": "メニューに戻りますか?",
         "rules_ok": "OK",
         "rules_dont_show": "次回から表示しない",
         "mode_title": "モードを選ぶ",
@@ -87,7 +83,7 @@
       },
       "ads": {
         "remove_ads_benefit_1_title": "広告削除について",
-        "remove_ads_benefit_1_desc": "本アプリは、開発・運用を継続するため 広告表示へのご理解をお願いいたします。\n\nアプリ内課金により 広告を非表示 にすることもできます。1度の課金で広告が外れます。",
+        "remove_ads_benefit_1_desc": "本アプリは、開発・運用を継続するため 広告表示へのご理解をお願いいたします。\n\nアプリ内課金により 広告を非表示 にすることもできます。",
         "remove_ads_benefit_2_title": "広告削除後",
         "remove_ads_benefit_2_desc": "広告を非表示にすることにより、外部との接続(広告表示)がなく、オフラインプレイが可能になります。\n\n例：飛行機の中など、電波がない／弱い場所でも遊べます。",
         "purchase_button": "購入する",
@@ -118,7 +114,6 @@
       },
       "game": {
         "home": "主页",
-        "leave_game": "返回菜单吗？",
         "rules_ok": "确定",
         "rules_dont_show": "下次不再显示",
         "mode_title": "选择模式",

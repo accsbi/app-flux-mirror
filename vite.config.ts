@@ -6,7 +6,9 @@ import { readdirSync, statSync } from 'node:fs'
 // HTML エントリ（ルート / 言語別TOP / 詳細 / 仮メニュー）はプロジェクト配下を走査して
 // 自動収集する（増えても vite.config を手で直さなくてよい）。base:'/' でルート配信前提。
 const ROOT = __dirname
-const SKIP_DIRS = new Set(['node_modules', 'dist', 'catalog', 'public', 'scripts', '.git'])
+// ビルド入口は MPA の正規 HTML のみ。テスト記録(e2e_test)・ビルド出力(dist*)・出力先(catalog/public)・
+// ツール(scripts)は走査しない＝テストHTMLが dist に漏れる/出力が再入力される事故を防ぐ。
+const SKIP_DIRS = new Set(['node_modules', 'dist', 'dist-android', 'catalog', 'public', 'scripts', 'e2e_test', 'test-results', '.git'])
 
 function findHtml(dir: string, out: string[] = []): string[] {
   for (const name of readdirSync(dir)) {

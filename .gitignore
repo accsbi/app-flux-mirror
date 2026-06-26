@@ -12,3 +12,10 @@ dist-android/
 screenshots_log/
 dist-enpc/
 dist-subpath-test/
+
+# Playwright出力 / バグ由来dir
+test-results/
+undefined/
+
+# Windows NTFS ADS ゴミ
+*:Zone.Identifier

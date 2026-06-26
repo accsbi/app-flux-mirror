@@ -44,7 +44,9 @@ export const menuBaseStyles = css`
     /* 英語タイトル最長 "Classic Poker (Five-card draw)"(30字) が1行で収まるよう縮小。
        画面幅に応じて可変（狭い端末ほど小さく）。あふれる場合は ellipsis で省略し、
        タイトルが横にあふれてコイン表示を画面外へ押し出すのを防ぐ。 */
-    font-size: clamp(16px, 5.4vw, 26px);
+    /* タイトルはメニューの主役。ボタン文字(最大32)より大きく、豆粒にならない下限を確保。
+       狭端末でも下限24で読める。長いタイトルは nowrap+ellipsis で省略（コインは別行で押し出さない）。 */
+    font-size: clamp(24px, 6.5vw, 36px);
     font-weight: 700;
     line-height: 1.2;
     letter-spacing: 0.01em;
