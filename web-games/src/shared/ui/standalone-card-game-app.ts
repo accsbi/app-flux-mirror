@@ -38,7 +38,6 @@ import { renderSettingsModal } from './panels/settings-modal'
 import './panels/confirm-dialog-panel'
 import './panels/other-games-modal-panel'
 import type { OtherGameItem } from './panels/other-games-modal-panel'
-import { EXISTING_APPS } from '../data/existing-apps'
 import { type RemoveAdsUiConfigRoot, getRemoveAdsUiLanguage, loadRemoveAdsUiConfig } from '../config/remove-ads-ui-config'
 import { getAndroidBillingBridge, readRemoveAdsStateFromBridge } from '../infra/android-billing-bridge'
 import type { BillingResultPayload, RemoveAdsStatePayload } from '../types/android-bridge'
@@ -597,8 +596,10 @@ export abstract class StandaloneCardGameApp extends LitElement {
   // モーダルに渡す項目：現在のゲームを除外し、サイト公開(web_published)かつ非hidden の全カードゲームを動的に。
   // store_state=button → GOOGLE PLAY / comingsoon → Coming Soon 表示（hidden は出さない）。CSV を増やせば自動で増える。
   protected otherGameItems(): OtherGameItem[] {
-    // (1) CSV(card-games-list.json)由来の本サイトのカードゲーム。
-    const fromCsv = this.cardGames
+    // 一覧は card-games-list.json（ライブ取得）由来。本サイトのカードゲームに加え、
+    // 既存(別管理)アプリも build_content がこの JSON に載せる（catalog/existing_app/existing -list.csv 由来）。
+    // ＝アプリに焼き込まず、サイト再デプロイだけで「別のカードゲーム」に反映（アプリ再ビルド不要）。
+    return this.cardGames
       .filter((g) => g.file_name !== this.detailSlug && g.web_published && g.store_state !== 'hidden')
       .map((g) => ({
         title: g.title,
@@ -611,17 +612,6 @@ export abstract class StandaloneCardGameApp extends LitElement {
         storeUrl: g.store_state === 'button' ? g.google_play_store_url : '',
         comingSoon: g.store_state === 'comingsoon',
       }))
-    // (2) 既存(別管理)アプリ＝CSV非同期の固定ハードコード（src/shared/data/existing-apps.ts）。常時表示。
-    const fromExisting: OtherGameItem[] = EXISTING_APPS.map((a) => ({
-      title: a.title,
-      description: '',
-      featImageUrl: isAndroidApp()
-        ? buildLiveDataUrl(`site-assets/images/games-apps/${a.slug}/${a.slug}-feat.webp`)
-        : buildFeatureImageUrl(a.slug),
-      storeUrl: a.storeUrl,
-      comingSoon: false,
-    }))
-    return [...fromCsv, ...fromExisting]
   }
 
   protected texts() {
