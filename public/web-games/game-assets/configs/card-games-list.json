@@ -8,7 +8,7 @@
       "web_published": true,
       "google_description": {
         "en": "A simple Blackjack with a classic look. Easy to play with no complicated steps — just tap to enjoy.",
-        "ja": "クラシックなデザインのシンプルなブラックジャック。難しい操作はなく、タップするだけで気軽に遊べます。",
+        "ja": "シンプルなデザインブラックジャックです。難しい操作はなく、タップするだけで気軽に遊べます。",
         "zh": "经典风格的简单二十一点。无复杂操作，轻点即可畅玩。"
       }
     },
@@ -19,9 +19,9 @@
       "store_state": "button",
       "web_published": true,
       "google_description": {
-        "en": "A simple five-card draw Poker. Classic look and easy controls — no difficult operations.",
-        "ja": "シンプルな5カードドローのポーカー。クラシックなデザインで、難しい操作なしに遊べます。",
-        "zh": "简单的五张抽牌扑克。经典风格，操作简单，没有复杂步骤。"
+        "en": "A simple five-card draw poker game inspired by the casinos featured in nostalgic RPGs. Easy to play with no complicated steps — just tap to enjoy.",
+        "ja": "懐かしいRPGに登場した、カジノをイメージした、シンプルなファイブカードドローポーカーです。難しい操作なしに遊べます。",
+        "zh": "一款以怀旧RPG中登场的赌场为灵感制作的简单五张抽牌扑克游戏。经典外观，操作简单，无复杂操作。"
       }
     },
     {
@@ -32,7 +32,7 @@
       "web_published": true,
       "google_description": {
         "en": "Three classic card games (Blackjack, Poker, Casino War) in one app. Simple and easy to play.",
-        "ja": "3つのクラシックなカードゲーム（ブラックジャック・ポーカー・カジノウォー）が1つに。シンプルで簡単に遊べます。",
+        "ja": "ブラックジャック・ポーカー・カジノウォー）が1つに。シンプルで簡単に遊べます。",
         "zh": "三款经典纸牌游戏（二十一点、扑克、赌场战争）合一。简单易玩。"
       }
     },

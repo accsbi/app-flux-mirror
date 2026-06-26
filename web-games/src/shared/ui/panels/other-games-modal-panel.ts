@@ -63,10 +63,10 @@ export class OtherGamesModalPanel extends LitElement {
       font-size: 16px; font-weight: 700; cursor: pointer; z-index: 2;
     }
 
-    /* 一覧：縦スクロール（modal-card の高さに収める） */
+    /* 一覧：内側で高さ制限せず自然高にし、スクロールは modal-card 側（ガイド/概要と同じ作り）。
+       これで modal-card が max-height(=ほぼフル高)まで伸び、複数カードが見える＋全体スクロール。 */
     .games-list {
-      display: grid; gap: 16px;
-      overflow-y: auto; max-height: 62vh; padding-right: 4px;
+      display: grid; gap: 16px; padding-right: 4px;
     }
     /* 1ゲーム=1縦カード（画像大→タイトル→概略→GOOGLE PLAY を縦積み）。 */
     .game-card {
