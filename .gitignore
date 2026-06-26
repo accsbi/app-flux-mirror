@@ -1,21 +1,70 @@
-node_modules/
-dist/
-*.tar.gz
-.DS_Store
-*.log
+# ============================================================
+#  playing_cards .gitignore  (重複排除・統合済み)
+# ============================================================
 
-# scripts/ is its own nested git repo (and fully captured in the tarball backup)
-scripts/
+# --- Windows / WSL Zone Identifier files ---
+# *Zone.Identifier が "x:Zone.Identifier" / 素の "Zone.Identifier" も内包する。
+*Zone.Identifier
+*.Identifier
+
+# --- Android build artifacts ---
+**/android_index_*.html
+
+# --- Dependencies / build outputs (どの階層でも) ---
+**/node_modules/
+**/dist/
+**/build/
+**/.vite/
+
+# playing_cards 固有のビルド出力（**/dist/ では拾えない別名）
 dist-android/
-
-# ローカル検証エビデンス（deploy 不要・GitHub に載せない）
-screenshots_log/
 dist-enpc/
 dist-subpath-test/
 
-# Playwright出力 / バグ由来dir
-test-results/
+# scripts/ は独立した nested git repo（tarball backup に含む）
+scripts/
+
+# --- Env ---
+.env
+.env.*
+**/.env
+
+# --- Local tooling / caches / 検証エビデンス (リポジトリに入れない) ---
+.claude/settings.local.json
+.playwright-mcp/
+**/test-results/
+**/playwright-report/
+screenshots_log/
 undefined/
 
-# Windows NTFS ADS ゴミ
-*:Zone.Identifier
+# --- IDE / OS ---
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# --- Logs / temp / archives ---
+*.log
+*.tmp
+*.temp
+*.swp
+*.pyc
+*.tar.gz
+
+# --- Secrets / keystores (global) ---
+*.jks
+*.keystore
+key.properties
+keystore.properties
+
+# --- Media (大容量はコミットしない) ---
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+
+# --- Reserved / misc ---
+NUL
+**/NUL
+*.iml
