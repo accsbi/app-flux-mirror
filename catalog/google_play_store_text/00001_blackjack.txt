@@ -1,7 +1,7 @@
 ========== 日本語 / Japanese ==========
 
 [Title]
-Simple Blackjack (21)
+Classic Simple Blackjack (21)
 
 [Short description]
 クラシックなデザインのシンプルなブラックジャック（21）です。
@@ -36,7 +36,7 @@ Classic Simple Blackjack は、1人で気軽に楽しめるシンプルなブラ
 ========== English ==========
 
 [Title]
-Simple Blackjack (21)
+Classic Simple Blackjack (21)
 
 [Short description]
 A simple Blackjack (21) card game with a classic look.
@@ -73,7 +73,7 @@ No sign-up and no online play. Just a quick, relaxing card game with a classic, 
 ========== 中文 / Chinese (Simplified) ==========
 
 [Title]
-Simple Blackjack (21)
+Classic Simple Blackjack (21)
 
 [Short description]
 一款外观经典、简单的二十一点（Blackjack）纸牌游戏。

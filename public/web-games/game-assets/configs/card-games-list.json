@@ -2,8 +2,8 @@
   "games": [
     {
       "file_name": "blackjack",
-      "title": "Simple Blackjack (21)",
-      "google_play_store_url": "https://play.google.com/store/apps/details?id=com.game.simpleblackjack",
+      "title": "Classic Simple Blackjack (21)",
+      "google_play_store_url": "https://play.google.com/store/apps/details?id=com.appflux.cardgames.blackjack",
       "store_state": "hidden",
       "web_published": true,
       "google_description": {
@@ -14,8 +14,8 @@
     },
     {
       "file_name": "poker",
-      "title": "Simple Poker (Five-card draw)",
-      "google_play_store_url": "https://play.google.com/store/apps/details?id=com.game.simple_poker",
+      "title": "Classic Simple Poker (Five-card draw)",
+      "google_play_store_url": "https://play.google.com/store/apps/details?id=com.appflux.cardgames.poker",
       "store_state": "hidden",
       "web_published": true,
       "google_description": {
@@ -26,8 +26,8 @@
     },
     {
       "file_name": "casino-war",
-      "title": "Blackjack Poker Casino War hub",
-      "google_play_store_url": "https://play.google.com/store/apps/details?id=com.game.playingcardshub",
+      "title": "Classic Simple Casino War",
+      "google_play_store_url": "https://play.google.com/store/apps/details?id=com.appflux.cardgames.casinowar",
       "store_state": "hidden",
       "web_published": true,
       "google_description": {
