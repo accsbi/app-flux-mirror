@@ -1,76 +1,24 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Paid Items (In-App Purchases) Terms</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Noto+Serif+JP:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet" />
-  <style>:root{
-  --gold-light:#f4cf7a; --gold-main:#b77a28; --gold-dark:#4e2d09;
-  --green-light:#153523; --green-main:#0d2417; --green-dark:#07170f;
-  --cream:#ece3cf; --text:#dde6da;
-}
-*{box-sizing:border-box}
-body{
-  margin:0; color:var(--text);
-  font-family:"Noto Serif JP","Hiragino Mincho ProN","Yu Mincho",serif;
-  line-height:1.85;
-  background:
-    radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.04), transparent 55%),
-    linear-gradient(180deg, var(--green-light) 0%, var(--green-main) 40%, var(--green-dark) 100%);
-  background-attachment:fixed;
-}
-.container{max-width:900px;margin:0 auto;padding:1.5rem 1.25rem 3rem}
-.card{
-  background:rgba(7,20,13,.55);
-  border:2px solid var(--gold-main);
-  border-radius:14px;
-  box-shadow:0 4px 18px rgba(0,0,0,.45), inset 0 0 0 1px rgba(244,207,122,.12);
-  padding:2rem 1.6rem 2.4rem;
-}
-h1{
-  font-family:"Cinzel","Noto Serif JP",Georgia,serif;
-  color:var(--gold-light); text-align:center;
-  font-size:clamp(1.5rem,5vw,2.2rem); letter-spacing:.02em;
-  margin:.4rem 0 1.4rem; padding-bottom:1rem;
-  border-bottom:2px solid var(--gold-main);
-  text-shadow:0 1px 0 #3f2108;
-}
-.intro{color:var(--cream);margin:0 0 1.6rem;font-size:1.05rem}
-.divider{border:none;border-top:1px solid var(--gold-main);opacity:.55;margin:2rem 0}
-.section h2{
-  font-family:"Cinzel","Noto Serif JP",Georgia,serif;
-  color:var(--gold-light); font-size:1.3rem; letter-spacing:.01em;
-  margin:0 0 1rem;
-}
-.section p{margin:0}
-.close-row{display:flex;justify-content:flex-end;margin-top:2.4rem}
-.close-button{
-  font-family:"Cinzel","Noto Serif JP",Georgia,serif;
-  background:linear-gradient(180deg, var(--green-light), var(--green-dark));
-  color:var(--gold-light); border:2px solid var(--gold-main);
-  padding:.55rem 1.4rem; border-radius:999px; cursor:pointer; font-size:.95rem;
-  box-shadow:0 2px 0 #07140d, 0 4px 8px rgba(0,0,0,.4);
-}
-.close-button:hover{filter:brightness(1.12)}
-@media(max-width:640px){.card{padding:1.4rem 1.1rem}}</style>
-</head>
-<body>
-  <main class="container">
-    <div class="card">
-      <h1>Paid Items (In-App Purchases) Terms</h1>
-      <p class="intro">These terms (the &quot;Terms&quot;) define the conditions for using paid items (the &quot;Items&quot;) provided within the App. By using the App, the user is deemed to have agreed to these Terms.</p>
-      <hr class="divider" />
-      <section class="section"><h2>Article 1 (About Paid Items)</h2><p>Paid items offered within the App are one-time purchase digital content. By purchasing an item, the user obtains the right to use the item within the App. Paid items do not guarantee permanent operation or future availability.</p></section><hr class="divider" /><section class="section"><h2>Article 2 (Usage Environment)</h2><p>Items are provided based on the App and operating environment at the time of purchase. Items may stop functioning properly due to OS updates, device changes, or changes by manufacturers or carriers. The developer assumes no responsibility for these issues.</p></section><hr class="divider" /><section class="section"><h2>Article 3 (Updates and Continued Provision)</h2><p>The developer is not obligated to provide continuous updates or improvements for the App or Items. The developer may change, suspend, or terminate the provision of the App or Items without notice.</p></section><hr class="divider" /><section class="section"><h2>Article 4 (Service Termination)</h2><p>The developer may terminate the provision of the App or Items for operational or technical reasons. After termination, items may no longer be usable.</p></section><hr class="divider" /><section class="section"><h2>Article 5 (Refunds)</h2><p>Due to the nature of digital content, refunds are generally not provided after purchase. However, the refund policies of platforms such as the Google Play Store take precedence.</p></section><hr class="divider" /><section class="section"><h2>Article 6 (Disclaimer)</h2><p>The developer is not responsible for any damages incurred by users from using the App or Items. The App and Items are provided on an &quot;as-is&quot; basis.</p></section><hr class="divider" /><section class="section"><h2>Article 7 (Changes to the Terms)</h2><p>The developer may change these Terms as necessary. The revised Terms take effect when posted in the App or on related websites.</p></section><hr class="divider" /><section class="section"><h2>Article 8 (Governing Law)</h2><p>These Terms are governed by and construed in accordance with the laws of Japan.</p></section>
-      <div class="close-row">
-        <button type="button" class="close-button" data-close-window>Close Window</button>
-      </div>
-    </div>
-  </main>
-  <script>
-    document.querySelectorAll('[data-close-window]').forEach(function(b){b.addEventListener('click',function(){window.close()})});
-  </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terms - Classic Card Games Collection</title>
+    <style>
+      /* critical: 最初のペイントからキャンバス色を確定（白フラッシュ防止） */
+      html, body { background: #ece3d0; color: #241c12; margin: 0;
+        font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho',
+          'Noto Serif SC', 'Times New Roman', serif; }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Noto+Serif+JP:wght@400;500;600;700&display=swap"
+    />
+  </head>
+  <body>
+    <ccg-static-page lang="en" page="item_terms_of_use"></ccg-static-page>
+    <script type="module" src="../../src/main-static.ts"></script>
+  </body>
 </html>
