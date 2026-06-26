@@ -23,7 +23,7 @@ import {
 import { buildGameAssetUrl } from '../infra/game-asset-url'
 import { buildFeatureImageUrl } from '../infra/game-feature-image'
 import { playSubmitSound, stopAllEffects, clearEffectSuppression } from '../infra/submit-sound'
-import { CARD_GAMES_HUB_WEB_LINKS, buildDetailUrl, buildOtherCardGamesUrl, buildLiveDataUrl, buildAboutUrl, buildTermsUrl } from '../infra/web-store-links'
+import { CARD_GAMES_HUB_WEB_LINKS, buildDetailUrl, buildOtherCardGamesUrl, buildLiveDataUrl, buildAboutUrl } from '../infra/web-store-links'
 import { isAndroidApp } from '../infra/web-ad-mock'
 import { getGameTitle } from '../infra/game-title'
 import { SceneFadeController, renderSceneFade, sceneFadeStyles, SCENE_FADE_MS } from './scene-fade'
@@ -141,6 +141,11 @@ export abstract class StandaloneCardGameApp extends LitElement {
     google_description?: Record<string, string>
   }> = []
 
+  // 規約データ（terms-of-use.json・多言語）。「別のカードゲーム」と同方式でライブ取得し、
+  // Remove Ads ダイアログのアプリ内モーダルに表示（外部遷移なし・モーダル内スクロール）。
+  @state()
+  protected termsData: Record<string, { title: string; body: string }> | null = null
+
   // START 時のルール説明（チュートリアル）ダイアログ。high-low と同一挙動：
   // 初回は表示、チェックで次回以降は <slug>_rules_hidden に保存して非表示。
   @state()
@@ -164,6 +169,7 @@ export abstract class StandaloneCardGameApp extends LitElement {
     this.loadSettings()
     void this.loadConfig()
     void this.loadCardGamesList()
+    void this.loadTermsOfUse()
     // 課金(Remove Ads): UI 文言を読み込み、既存エンタイトルメント/価格をブリッジから取り込み、Flutter 通知を購読。
     void loadRemoveAdsUiConfig().then(c => { this.removeAdsUiConfig = c })
     this.syncRemoveAdsStateFromBridge()
@@ -568,6 +574,25 @@ export abstract class StandaloneCardGameApp extends LitElement {
     }
   }
 
+  // 規約 JSON（terms-of-use.json）をライブ取得（Android）→失敗時バンドル。card-games-list と同方式。
+  // 取得した本文を Remove Ads ダイアログのアプリ内モーダルに表示する（外部遷移しない）。
+  private async loadTermsOfUse(): Promise<void> {
+    const urls = [
+      isAndroidApp() ? buildLiveDataUrl('web-games/game-assets/configs/terms-of-use.json') : '',
+      buildGameAssetUrl('configs/terms-of-use.json'),
+    ].filter(Boolean)
+    for (const url of urls) {
+      try {
+        const res = await fetch(url, { cache: 'no-store' })
+        if (!res.ok) continue
+        const data = (await res.json()) as Record<string, { title: string; body: string }>
+        if (data && typeof data === 'object') { this.termsData = data; return }
+      } catch {
+        // フォールバックへ。全滅時は config(remove_ads_ui) の terms_content にフォールバック。
+      }
+    }
+  }
+
   // モーダルに渡す項目：現在のゲームを除外し、サイト公開(web_published)かつ非hidden の全カードゲームを動的に。
   // store_state=button → GOOGLE PLAY / comingsoon → Coming Soon 表示（hidden は出さない）。CSV を増やせば自動で増える。
   protected otherGameItems(): OtherGameItem[] {
@@ -817,10 +842,9 @@ export abstract class StandaloneCardGameApp extends LitElement {
               .cancelLabel=${this.removeAdsUi?.cancel_label || 'Cancel'}
               .showTerms=${true}
               .termsLabel=${this.removeAdsUi?.terms_label || 'Terms'}
-              .termsTitle=${this.removeAdsUi?.terms_title || 'Terms of Service'}
+              .termsTitle=${this.termsData?.[this.language]?.title || this.removeAdsUi?.terms_title || 'Terms of Service'}
               .termsCloseLabel=${this.removeAdsUi?.terms_close_label || 'Close'}
-              .termsContent=${this.removeAdsUi?.terms_content || ''}
-              .termsLinkUrl=${buildTermsUrl(this.language)}
+              .termsContent=${this.termsData?.[this.language]?.body || this.removeAdsUi?.terms_content || ''}
               .priceLabel=${this.removeAdsPrice}
               .statusLabel=${this.removeAdsStatusMessage}
               .purchased=${this.isAdsRemoved}
