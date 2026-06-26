@@ -775,7 +775,7 @@ export class PokerGameTable extends LitElement {
     if (!this.isSoundEnabled) {
       return
     }
-    const audio = new Audio(this.assetUrl(`effects/${name}.mp3`))
+    const audio = new Audio(this.assetUrl(`poker/effects/${name}.mp3`))
     this.currentResultAudio = audio
     // 共有レジストリにも登録（ホーム戻り時 stopAllEffects で一括停止できるように）。
     registerEffectAudio(audio)
@@ -807,7 +807,7 @@ export class PokerGameTable extends LitElement {
       return
     }
     // 再生/追跡/一括停止は共有 submit-sound に集約（ホーム戻り時 stopAllEffects で止まる）。
-    playTrackedEffect(this.assetUrl(`effects/${name}.mp3`))
+    playTrackedEffect(this.assetUrl(`poker/effects/${name}.mp3`))
   }
 
   private clearDealRevealTimers(): void {

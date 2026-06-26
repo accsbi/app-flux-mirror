@@ -55,27 +55,9 @@ for (const entry of readdirSync('dist-android')) {
 }
 cpSync('dist-android', dest, { recursive: true })
 
-// 3) 他ゲームの asset を剪定（このゲーム＋common＋このゲーム config のみ残す）
-console.log('[3/4] prune other games assets')
-for (const g of ALL_GAMES.filter((x) => x !== game)) {
-  // 他ゲームのゲーム本体 asset は丸ごと不要。
-  rmSync(join(dest, 'web-games/game-assets', g), { recursive: true, force: true })
-  // 他ゲームの site-assets は「別のカードゲーム」一覧のサムネ用に feat 画像(<g>-feat.webp)だけ残し、
-  // 残り（icon / info1-6 / play-store_512 等）は剪定して APK を軽く保つ。
-  const gaDir = join(dest, 'site-assets/images/games-apps', g)
-  if (existsSync(gaDir)) {
-    for (const f of readdirSync(gaDir)) {
-      if (f !== `${g}-feat.webp`) rmSync(join(gaDir, f), { recursive: true, force: true })
-    }
-  }
-}
-// このゲームの config と全ゲーム共通 config は残す（card-games-list.json＝別のカードゲーム一覧、
-// remove_ads_ui.json＝課金UI）。他ゲームの *_app_config.json だけ剪定する。
-const KEEP_CONFIGS = new Set(['remove_ads_ui.json', 'card-games-list.json'])
-const cfgDir = join(dest, 'web-games/game-assets/configs')
-for (const f of readdirSync(cfgDir)) {
-  if (!f.includes(game) && !KEEP_CONFIGS.has(f)) rmSync(join(cfgDir, f))
-}
+// 3)（剪定は廃止）build:android が allowlist 方式で「そのゲームに必要な asset だけ」を
+//    dist-android に出すため、旧来の「他ゲームを後から1個ずつ消す blacklist 剪定」は撤去。
+//    dist-android をそのまま assets/ へ入れれば最小構成。新ゲーム追加でもこの script は不変。
 
 // Android assets は再帰的に取り込まれるため pubspec への列挙は不要。
 console.log(`synced ${game} → android/app/src/main/assets/ (www 廃止・平坦化済). Win 側で flutter run / Android Studio を実行。`)

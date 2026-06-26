@@ -795,7 +795,7 @@ export class CasinoWarGameTable extends LitElement {
       return
     }
     // 再生/追跡/一括停止は共有 submit-sound に集約（ホーム戻り時 stopAllEffects で止まる）。
-    playTrackedEffect(this.assetUrl(`effects/${name}.mp3`))
+    playTrackedEffect(this.assetUrl(`casino-war/effects/${name}.mp3`))
   }
 
   private clearRevealTimers(): void {
