@@ -2,9 +2,9 @@
   "games": [
     {
       "file_name": "blackjack",
-      "title": "Classic Simple Blackjack (21)",
+      "title": "Simple Blackjack (21)",
       "google_play_store_url": "https://play.google.com/store/apps/details?id=com.game.simpleblackjack",
-      "store_state": "button",
+      "store_state": "hidden",
       "web_published": true,
       "google_description": {
         "ja": "クラシックなデザインのシンプルなブラックジャック（21）です。",
@@ -14,9 +14,9 @@
     },
     {
       "file_name": "poker",
-      "title": "Classic Simple Poker (Five-card draw)",
+      "title": "Simple Poker (Five-card draw)",
       "google_play_store_url": "https://play.google.com/store/apps/details?id=com.game.simple_poker",
-      "store_state": "button",
+      "store_state": "hidden",
       "web_published": true,
       "google_description": {
         "ja": "クラシックなデザインのシンプルなファイブカードドローポーカーです。",
@@ -26,9 +26,9 @@
     },
     {
       "file_name": "casino-war",
-      "title": "Classic Simple Casino War",
+      "title": "Blackjack Poker Casino War hub",
       "google_play_store_url": "https://play.google.com/store/apps/details?id=com.game.playingcardshub",
-      "store_state": "button",
+      "store_state": "hidden",
       "web_published": true,
       "google_description": {
         "ja": "クラシックなデザインのシンプルなカジノウォーです。",
