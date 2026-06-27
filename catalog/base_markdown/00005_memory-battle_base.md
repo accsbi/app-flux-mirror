@@ -82,11 +82,11 @@
 ### [ お問い合わせ / 不具合報告 ] {guide_overview_app}
 
 * 不具合の報告は、ゲーム画面の FEEDBACK からお願いします。
-* 返信が必要なときは、[Contact form](https://app-flux.com/ja/contact/) からお願いします。
+* 返信が必要なときは、[Contact form](https://app-flux-mirror.pages.dev/ja/contact/) からお願いします。
 
 ### [ プライバシーポリシー (外部リンク) ] {guide_overview_app}
 
-* [Privacy policy link](https://app-flux.com/ja/games-apps/privacy-policy/)
+* [Privacy policy link](https://app-flux-mirror.pages.dev/ja/privacy-policy/)
 
 
 ## [en]
@@ -156,11 +156,11 @@ No sign-up and no online play. Just a quick, relaxing card game with a classic, 
 ### [ Contact / Bug Report ] {guide_overview_app}
 
 * To report a bug, use FEEDBACK on the game screen.
-* If you need a reply, please use the [Contact form](https://app-flux.com/en/contact/).
+* If you need a reply, please use the [Contact form](https://app-flux-mirror.pages.dev/en/contact/).
 
 ### [ Privacy Policy (External Link) ] {guide_overview_app}
 
-* [Privacy policy link](https://app-flux.com/en/games-apps/privacy-policy/)
+* [Privacy policy link](https://app-flux-mirror.pages.dev/en/privacy-policy/)
 
 
 ## [zh]
@@ -230,8 +230,8 @@ No sign-up and no online play. Just a quick, relaxing card game with a classic, 
 ### [ 联系我们 / 故障报告 ] {guide_overview_app}
 
 * 报告故障，请使用游戏画面的 FEEDBACK。
-* 如需回复，请通过 [Contact form](https://app-flux.com/zh/contact/) 联系我们。
+* 如需回复，请通过 [Contact form](https://app-flux-mirror.pages.dev/zh/contact/) 联系我们。
 
 ### [ 隐私政策（外部链接） ] {guide_overview_app}
 
-* [Privacy policy link](https://app-flux.com/zh/games-apps/privacy-policy/)
+* [Privacy policy link](https://app-flux-mirror.pages.dev/zh/privacy-policy/)

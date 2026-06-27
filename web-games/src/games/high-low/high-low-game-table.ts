@@ -1,3 +1,7 @@
+// ── 2026-06-27 修正サマリ（詳細＝docs/HIGH-LOW-MIGRATION-MISTAKES.md・各箇所に inline コメント）──
+//  ・終了画面: 2ボタン(もう一度遊ぶ/ホーム)を同一寸法に統一(.go-actions .btn 固定height136px)＋豆粒解消。盤面 .btn-hl 92→88px(8倍数)。
+//  ・広告/オフライン: トリガを endGame(per-game)→ nextTurn(=Next Turn 押下ごと)に移動。7ターン毎に広告/機内モードは native がブロック
+//    （per-game だと「機内モードで永遠に遊べる」不具合。web は notifyNativeGameEnd で AppFluxHost へ通知するだけ＝所在は native）。
 import { LitElement, css, html } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
 import type { AppLanguage } from '../../shared/config/app-config'
@@ -52,10 +56,12 @@ const HL_WIN_MULTIPLIER = 2
 const HL_DRAW_MULTIPLIER = 1
 const HL_LOSE_MULTIPLIER = 0
 
-// 広告の出し方（基点はどちらも「Next Turn PLAYER」タップ時）:
-//   ・WEB ブラウザのみ … 全カードゲーム共通カウンタ(WEB_AD_COUNT_KEY)に加算し、7 ごとにモック表示。ネット確認なし。
-//   ・Android … PLAYER 攻撃ターンごとに notifyNativeGameEnd() で native へ通知するだけ。
-//               7回カウント・課金・ネット確認・実広告表示は全て native（Web コピーで上書きされない）。
+// 広告の出し方（1ゲーム終了=endGame で判定。web-ad-mock の設計に従う）:
+//   ・WEB ブラウザ … 共通カウンタ(WEB_AD_COUNT_KEY)+1、7 ごとにモック(ad-mock-dialog)。ネット確認なし（実広告なし）。
+//   ・Android … notifyNativeGameEnd() で native へ game-end を通知するだけ。
+//               **7回カウント・課金・ネットワーク確認・実広告・オフライン警告は全て native(AppFluxHost)** が行う＝単一所在。
+//               オフライン時 native が __onOfflineAdBlocked() を呼ぶ → onOfflineAdBlocked で統一警告。
+//   ※ web 側でネット判定/広告ゲートを再実装しない（誤所在＝バグの元）。
 
 @customElement('high-low-game-table')
 export class HighLowGameTable extends LitElement {
@@ -157,7 +163,7 @@ export class HighLowGameTable extends LitElement {
   // START 直後は SELECT BET のみ。広告は出さない（開始前に広告が割り込まないようにする）。
   private beginStartFlow(): void {
     // 広告はゲーム開始前には出さない（START 直後に広告が割り込むのを回避）。
-    // 広告/native 通知は POKER と同じく「1ゲーム終了後」に行う（endGame → showAdMockIfNeeded）。
+    // 広告/native 通知は「Next Turn 押下＝1プレイ」ごと（nextTurn → showAdMockIfNeeded・7回ごと）。
     this.coin = ensurePlayableSharedCoin()
     // メニュー→スタート→クイックスタート の後、まずモード選択。NEXT で SELECT BET へ。
     this.modeSelectOpen = true
@@ -286,6 +292,10 @@ export class HighLowGameTable extends LitElement {
 
   private nextTurn() {
     if (this.G.busy) return
+    // High & Low の広告/ネット確認は「**Next Turn 押下＝1プレイ**」ごと（web-ad-mock 設計＝元 highandlow の
+    // 攻めターン単位）。7 回ごとに広告、機内モードはここで native がブロック（＝1ゲーム終了まで待たない）。
+    // ＝オフラインで遊び続けられない（endGame 単位だと7ゲーム=数百ターンも遊べてしまう不具合だった）。
+    this.showAdMockIfNeeded()
     this.playEffect('card_open')
     this.opened = false
     this.G.players.p1.role = this.G.players.p1.role === 'attack' ? 'defend' : 'attack'
@@ -294,30 +304,27 @@ export class HighLowGameTable extends LitElement {
     this.G.declaration = this.G.result = null
     const { p1, p2 } = this.G.players
     if (p1.deck.length === 0 && p2.deck.length === 0) { this.endGame(); return }
-    // 広告は 1 ゲーム = 1 回（開始時 beginStartFlow で処理）に統一したため、ターン途中では出さない。
     this.dealTurn()
   }
 
   private endGame() {
     this.G.phase = 'gameover'
     this.settleBet()
-    this.showAdMockIfNeeded() // 広告は1ゲーム終了後に表示（開始前には出さない）
     this.requestUpdate()
   }
 
   // 1ゲーム終了時の広告処理（CASINO WAR/POKER と同方式）。開始前には呼ばない。
   private showAdMockIfNeeded(): void {
     if (isAndroidApp()) {
-      // Android: 1ゲーム終了を native へ通知（7回ごとの実広告/課金/ネット確認は native 側）。
+      // Android: 1ゲーム終了を native へ通知するだけ（web-ad-mock 設計＝単一所在は native）。
+      // 7回カウント・課金判定・**ネットワーク確認**・実広告・オフライン警告(__onOfflineAdBlocked)は
+      // すべて native(AppFluxHost game-end ハンドラ)が行う。web 側でネット判定しない（誤所在の回避）。
       notifyNativeGameEnd()
       return
     }
-    // WEB ブラウザのみ: 共通カウンタを +1 し、7 ごとに広告モックを表示。ネット確認なし。
+    // WEB ブラウザ: 共通カウンタ +1、7 ごとにモック表示（web は実広告なし＝ネット確認しない）。
     const { count, show } = countGameForAd(WEB_AD_COUNT_KEY)
-    if (show) {
-      this.adMockCount = count
-      this.adMockOpen = true
-    }
+    if (show) { this.adMockCount = count; this.adMockOpen = true }
   }
 
   // 最終勝敗の精算（勝ち×2 / 引き分け×1=返還 / 負け×0=没収）。二重精算しない。
@@ -523,18 +530,22 @@ export class HighLowGameTable extends LitElement {
         ? `-${this.currentBet} COIN`
         : `±0 COIN (BET refunded)`
     return html`<div class="gameover-screen">
-      <div class="winner-txt">${winner}</div>
-      <div class="final-payout">${payoutLabel}</div>
-      <div class="final-scores">
-        <div class="final-row ${isP1 ? 'winner-row' : ''}">
-          <span class="ptag p1">${p1.name}</span><span class="final-count">${p1.acquired.length} cards</span>
-        </div>
-        <div class="final-row ${isP2 ? 'winner-row' : ''}">
-          <span class="ptag p2">${p2.name}</span><span class="final-count">${p2.acquired.length} cards</span>
+      <div class="go-top">
+        <div class="winner-txt">${winner}</div>
+        <div class="final-payout">${payoutLabel}</div>
+        <div class="final-scores">
+          <div class="final-row ${isP1 ? 'winner-row' : ''}">
+            <span class="ptag p1">${p1.name}</span><span class="final-count">${p1.acquired.length} cards</span>
+          </div>
+          <div class="final-row ${isP2 ? 'winner-row' : ''}">
+            <span class="ptag p2">${p2.name}</span><span class="final-count">${p2.acquired.length} cards</span>
+          </div>
         </div>
       </div>
-      <button class="btn btn-start full-w" @click=${() => this.restartGame()}>${this.chrome.playAgain}</button>
-      <button class="btn btn-ghost full-w" @click=${() => { this.sound(); this.confirmHome = true }}>${this.chrome.home}</button>
+      <div class="go-actions">
+        <button class="btn btn-start full-w" @click=${() => this.restartGame()}>${this.chrome.playAgain}</button>
+        <button class="btn btn-ghost full-w" @click=${() => { this.sound(); this.confirmHome = true }}>${this.chrome.home}</button>
+      </div>
     </div>`
   }
 
@@ -835,7 +846,7 @@ export class HighLowGameTable extends LitElement {
     .btn:disabled { opacity:.35; pointer-events:none; }
     .full-w { width:100%; }
     /* HIGH/LOW は横長の長方形。両端まで広げて左右半分ずつ占める（論理ステージ基準の px）。 */
-    .btn-hl { flex:1 1 0 !important; min-width:0 !important; height:92px !important; border-radius:16px !important;
+    .btn-hl { flex:1 1 0 !important; min-width:0 !important; height:88px !important; border-radius:16px !important;
       padding:0 !important; font-size:32px !important; font-weight:900 !important; }
     /* HIGH=明るい赤系(12) / LOW=ターコイズ系(42)。選択時(declared)は同系色で発光。 */
     .btn-high { background:linear-gradient(180deg,#d63b32,#8d1712); }
@@ -853,17 +864,24 @@ export class HighLowGameTable extends LitElement {
     .btn-start { background:linear-gradient(180deg,#a06a34,#5e3818); }
     .btn-ghost { background:transparent; color:rgba(242,246,247,.72); border-color:rgba(255,255,255,.22); font-size:16px; }
 
-    /* gameover */
-    .gameover-screen { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:16px; }
-    .gameover-title { font-size:28px; font-weight:800; color:#ffd730; }
-    .winner-txt { font-size:24px; font-weight:800; color:#c8ff8a; text-align:center; }
-    .final-payout { font-size:20px; font-weight:800; color:#ffd730; text-align:center; }
-    .final-scores { display:flex; flex-direction:column; gap:8px; width:100%; max-width:320px; }
-    .final-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 14px; border-radius:12px;
+    /* gameover ── WebView 実機(縦長)で豆粒/上下空きにしない: 高さを space-evenly で使い切り、
+       文字とボタンを拡大（操作ボタン縦幅 ≥88px on-screen ＝ stage 136px×scale0.66）。 */
+    .gameover-screen { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:space-evenly; gap:24px; padding:48px 24px; box-sizing:border-box; }
+    .go-top { display:flex; flex-direction:column; align-items:center; gap:24px; width:100%; }
+    .go-actions { display:flex; flex-direction:column; align-items:stretch; gap:24px; width:100%; max-width:480px; }
+    /* 終了画面の操作ボタンは2つ(もう一度遊ぶ／ホーム)を完全に同一寸法へ統一する。
+       Android WebView では flex ボタンの min-height が効かず ghost 側が潰れて豆粒化したため、
+       固定 height で確定させる（min-height 併記）。8の倍数・on-screen ≥88px(=136×scale0.66≒90px)。 */
+    .go-actions .btn { height:136px; min-height:136px; font-size:32px; font-weight:800; box-sizing:border-box; }
+    .gameover-title { font-size:32px; font-weight:800; color:#ffd730; }
+    .winner-txt { font-size:48px; font-weight:800; color:#c8ff8a; text-align:center; line-height:1.1; }
+    .final-payout { font-size:32px; font-weight:800; color:#ffd730; text-align:center; }
+    .final-scores { display:flex; flex-direction:column; gap:16px; width:100%; max-width:480px; }
+    .final-row { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:24px; border-radius:16px;
       background:rgba(10,23,25,.6); border:1px solid rgba(255,255,255,.12); }
     .final-row.winner-row { border-color:#ffd730; background:rgba(255,215,48,.1); }
-    .final-count { font-size:20px; font-weight:800; color:#ffd730; }
-    .ptag { display:inline-block; padding:2px 12px; border-radius:999px; font-weight:700; color:#f2f6f7; border:1px solid rgba(255,255,255,.25); }
+    .final-count { font-size:32px; font-weight:800; color:#ffd730; }
+    .ptag { display:inline-block; padding:8px 24px; border-radius:999px; font-weight:700; font-size:24px; color:#f2f6f7; border:1px solid rgba(255,255,255,.25); }
     .ptag.p1 { background:linear-gradient(180deg,#70233a,#35101d); }
     .ptag.p2 { background:linear-gradient(180deg,#343e7c,#181d4a); }
 

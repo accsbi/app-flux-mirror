@@ -23,19 +23,20 @@ type RuntimeHighLowConfigWindow = Window & {
 }
 
 function resolveHighLowConfigUrl(): string {
-  const runtimeWindow = window as RuntimeHighLowConfigWindow
-  if (runtimeWindow.__ANDROID_APP__) {
-    return './assets/configs/high-low_app_config.json'
-  }
   if (window.location.pathname.startsWith('/highlowgame/')) {
     return '/highlowgame/public/assets/configs/high-low_app_config.json'
   }
+  // WEB(base '/') / Android(base './' + appassets WebViewAssetLoader) 共通の base 相対スキーム
+  // （共有 buildGameAssetUrl と同一）。dist 構成は web-games/game-assets/ なので Android でも
+  //   ./web-games/game-assets/... = /assets/web-games/game-assets/... に解決される。
+  // 旧 Android 専用 './assets/configs/...' は /assets/assets/... の二重 assets で 404 だった（削除）。
   return new URL(`${import.meta.env.BASE_URL}web-games/game-assets/configs/high-low_app_config.json`, window.location.href).toString()
 }
 
 export function loadHighLowConfig(): Promise<HLConfig> {
   if (configPromise) return configPromise
-  // Android WebView は file:// fetch 不可のため、ビルド時にインライン化された埋め込み config を優先。
+  // 埋め込み config があれば優先（旧 app-flux の inline 方式）。新 Android は appassets(WebViewAssetLoader)
+  // 経由の https fetch が使えるため未設定＝下の fetch で web と同じく取得する。
   const embedded = (window as RuntimeHighLowConfigWindow).__HIGHLOW_APP_CONFIG_JSON__
   if (embedded) {
     configPromise = Promise.resolve(embedded)

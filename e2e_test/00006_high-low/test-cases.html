@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>High &amp; Low — テストケース仕様書（00006_high-low）</title>
+<style>
+  :root { color-scheme: dark; }
+  body { font-family: system-ui, "Noto Sans JP", sans-serif; background:#0d1215; color:#e7eef0; margin:0; padding:24px; line-height:1.6; }
+  h1 { font-size:20px; border-bottom:2px solid #d4af37; padding-bottom:8px; }
+  h2 { font-size:16px; color:#d4af37; margin-top:28px; }
+  p.note { color:#9fb0b5; font-size:13px; }
+  table { border-collapse:collapse; width:100%; margin:12px 0 24px; font-size:13px; }
+  th, td { border:1px solid #2a3a40; padding:6px 8px; vertical-align:top; text-align:left; }
+  th { background:#16232a; color:#d4af37; position:sticky; top:0; }
+  td.no { white-space:nowrap; font-weight:bold; color:#9fd; }
+  .j { font-weight:bold; }
+  .j-pend { color:#e0b020; }      /* 未実施 */
+  .j-ok   { color:#5fd35f; }      /* OK */
+  .j-ng   { color:#ff6b6b; }      /* NG */
+  .j-na   { color:#888; }         /* 対象外 */
+  code { background:#16232a; padding:1px 5px; border-radius:4px; color:#9fd; }
+  .legend span { margin-right:16px; }
+</style>
+</head>
+<body>
+<h1>High &amp; Low — テストケース仕様書（00006_high-low / com.game.highandlow）</h1>
+<p class="note">
+  ルール §0「テストケース先行」に基づき<strong>実装前に期待結果を確定</strong>。確証（実機/エミュ render）は
+  <strong>実装後（最後）</strong>に実施し、結果を <code>e2e_test/00006_high-low/test-log.html</code> へ時系列追記＋
+  <code>img/*.jpg</code>（軽量・ライトボックス）で証跡を残す。<strong>ミスを OK と書かない</strong>。
+</p>
+<p class="note">
+  テンプレ＝<code>00004_old-maid</code>。手本＝旧 app-flux <code>highandlow</code>。対象入口＝
+  <code>web-games/android/high-low.html</code>（Android）/ Flutter ホスト <code>00006_high-low</code>。
+</p>
+<p class="legend note">判定:
+  <span class="j j-pend">未実施</span>
+  <span class="j j-ok">OK</span>
+  <span class="j j-ng">NG</span>
+  <span class="j j-na">対象外</span>
+</p>
+
+<h2>A. 起動・WebView ホスト・テーマ（移行で直す不具合）</h2>
+<table>
+<tr><th>NO</th><th>対象画面</th><th>前提</th><th>操作</th><th>期待結果</th><th>判定</th><th>証跡</th></tr>
+<tr><td class="no">A-01</td><td>アプリ起動</td><td>debug APK を Android8(API26) 実機/エミュへ install</td><td>ランチャーからアプリ起動</td><td>クラッシュなく WebView に High&amp;Low メニューが表示。白画面/ANR なし。minSdk=26 で install 可。</td><td class="j j-pend">未実施</td><td></td></tr>
+<tr><td class="no">A-02</td><td>ステータスバー</td><td>Android8 / Android13+ 両方</td><td>起動直後のステータスバーを目視</td><td><strong>水色バーにならない</strong>＝黒背景＋白アイコン（時計が見える）。旧 highandlow の「Android8で水色」不具合が再発しない。</td><td class="j j-pend">未実施</td><td></td></tr>
+<tr><td class="no">A-03</td><td>recents（最近のアプリ）</td><td>—</td><td>タスク切替（□）を開く</td><td>ヘッダー帯が濃色(0xFF091418)で<strong>アプリ名「Classic Simple High &amp; Low」が表示</strong>される（旧「タイトルがない」不具合の再発なし）。</td><td class="j j-pend">未実施</td><td></td></tr>
+<tr><td class="no">A-04</td><td>SafeArea</td><td>ノッチ/ジェスチャーナビ端末</td><td>盤面の上下端を目視</td><td>WebView がステータスバー/ナビバー内側へ inset。隙間や見切れ・重なりなし。</td><td class="j j-pend">未実施</td><td></td></tr>
+<tr><td class="no">A-05</td><td>ランチャーアイコン</td><td>—</td><td>ホーム/ドロワーのアイコンを目視</td><td>High&amp;Low の adaptive アイコン（カード＋felt 背景）。円/squircle マスクで文字・バナーが欠けない。old-maid アイコンが残っていない。</td><td class="j j-pend">未実施</td><td></td></tr>
+</table>
+
+<h2>B. メニュー（Android 入口・共通化）</h2>
+<table>
+<tr><th>NO</th><th>対象画面</th><th>前提</th><th>操作</th><th>期待結果</th><th>判定</th><th>証跡</th></tr>
+<tr><td class="no">B-01</td><td>メニュー描画</td><td><code>__ANDROID_APP__=true</code> 注入済</td><td>メニュー表示</td><td>Android 専用項目（Remove Ads / 別のカードゲーム）が出る。WEB 専用の戻る/ニュース等は Android 出し分けに従う。</td><td class="j j-pend">未実施</td><td></td></tr>
+<tr><td class="no">B-02</td><td>多言語</td><td>en/ja/zh</td><td>設定で言語切替</td><td>メニュー文言が config 由来で全言語表示。ハードコード英語の出っぱなしがない。</td><td class="j j-pend">未実施</td><td></td></tr>
+<tr><td class="no">B-03</td><td>ガイド/概要</td><td>—</td><td>メニュー→ガイドを開く／ゲーム内ガイドを開く</td><td>両者が<strong>同一ソース</strong>（config <code>high_low_guide_content</code>）で一致。重複・差異なし。</td><td class="j j-pend">未実施</td><td></td></tr>
+<tr><td class="no">B-04</td><td>Ver 表示</td><td>—</td><td>メニューの「Ver :」を確認</td><td><code>package_info_plus</code> の versionName（pubspec 2.0.0）が表示＝単一ソース。</td><td class="j j-pend">未実施</td><td></td></tr>
+<tr><td class="no">B-05</td><td>別のカードゲーム/ストアリンク</td><td>—</td><td>外部リンクをタップ</td><td>WebView 内遷移せず外部ブラウザ/Play で開く。アプリは残り戻れる（離脱しない）。</td><td class="j j-pend">未実施</td><td></td></tr>
+</table>
+
+<h2>C. ゲーム基本動作（ロジック詳細は §1.3 対象外）</h2>
+<table>
+<tr><th>NO</th><th>対象画面</th><th>前提</th><th>操作</th><th>期待結果</th><th>判定</th><th>証跡</th></tr>
+<tr><td class="no">C-01</td><td>ゲーム開始</td><td>—</td><td>START→BET 設定→開始</td><td>盤面が崩れず表示。カード/COIN/BET/結果バナーが config・共通アセットで描画。</td><td class="j j-pend">未実施</td><td></td></tr>
+<tr><td class="no">C-02</td><td>HIGH/LOW 操作</td><td>ゲーム中</td><td>HIGH / LOW を選択</td><td>判定・結果バナー（BINGO/MISS/TIE 等）が表示。多言語で出る。致命的 JS エラーなし。</td><td class="j j-pend">未実施</td><td></td></tr>
+<tr><td class="no">C-03</td><td>COIN 残高/補充</td><td>COIN=0</td><td>0 で開始しようとする</td><td>共通の補充導線（広告/設定リセット）に従う。直書きではなく共通実装。</td><td class="j j-pend">未実施</td><td></td></tr>
+</table>
+
+<h2>D. 広告（AdMob・本番ID＋テストデバイス）</h2>
+<table>
+<tr><th>NO</th><th>対象画面</th><th>前提</th><th>操作</th><th>期待結果</th><th>判定</th><th>証跡</th></tr>
+<tr><td class="no">D-01</td><td>インタースティシャル</td><td>オンライン・テストデバイス登録済</td><td>AD point（web 判定）に到達</td><td>本番ユニット <code>ca-app-pub-7478772823447569/1169741894</code> で<strong>テスト広告</strong>が表示（Googleのテスト用IDは使わない）。終了後 <code>__onAdComplete</code> で続行。</td><td class="j j-pend">未実施</td><td></td></tr>
+<tr><td class="no">D-02</td><td>未ロード時</td><td>広告ロード前に AD point</td><td>AD point 到達</td><td><code>_pendingAdComplete</code> に保持→ロード完了で即表示。ロード失敗時も onComplete が必ず1回（ゲーム止まらない）。</td><td class="j j-pend">未実施</td><td></td></tr>
+<tr><td class="no">D-03</td><td>オフライン</td><td>機内モード</td><td>AD point 到達</td><td>広告を出さず <code>__onOfflineAdBlocked</code>＝オフラインで遊び続けさせない（スタートへ戻す）。</td><td class="j j-pend">未実施</td><td></td></tr>
+<tr><td class="no">D-04</td><td>App ID 整合</td><td>—</td><td>Manifest 確認</td><td>AdMob APPLICATION_ID＝<code>ca-app-pub-7478772823447569~5328478756</code>（旧 highandlow と同一）。</td><td class="j j-pend">未実施</td><td></td></tr>
+</table>
+
+<h2>E. 課金（Remove Ads・払い戻し救済）</h2>
+<table>
+<tr><th>NO</th><th>対象画面</th><th>前提</th><th>操作</th><th>期待結果</th><th>判定</th><th>証跡</th></tr>
+<tr><td class="no">E-01</td><td>価格取得</td><td>Play Console に <code>remove_ads</code> 公開</td><td>メニューの Remove Ads を開く</td><td>Google Play から取得した価格が表示（直書きでない）。</td><td class="j j-pend">未実施</td><td></td></tr>
+<tr><td class="no">E-02</td><td>購入</td><td>テストアカウント</td><td>Remove Ads を購入</td><td>購入後 <code>removeAds=true</code> を web へ反映＝以後広告なし。<code>completePurchase</code> 実行。</td><td class="j j-pend">未実施</td><td></td></tr>
+<tr><td class="no">E-03</td><td>復元</td><td>購入済で再起動</td><td>アプリ再起動</td><td><code>restorePurchases</code> で removeAds 復元＝広告なし継続。</td><td class="j j-pend">未実施</td><td></td></tr>
+<tr><td class="no">E-04</td><td><strong>DEBUG consume 救済</strong></td><td>kDebugMode・購入残存</td><td>DevTools で <code>window.AndroidBilling.debugConsumeRemoveAds()</code></td><td>払い戻し時「資格情報を削除」忘れの救済として <code>remove_ads</code> を consume→未購入へ戻り再購入(再テスト)可。<strong>release では no-op</strong>（ルール §0b 必須）。</td><td class="j j-pend">未実施</td><td></td></tr>
+</table>
+
+<h2>F. システムバック・UI 寸法（§2 観点・8pxグリッド）</h2>
+<table>
+<tr><th>NO</th><th>対象画面</th><th>前提</th><th>操作</th><th>期待結果</th><th>判定</th><th>証跡</th></tr>
+<tr><td class="no">F-01</td><td>戻る（モーダル中）</td><td>設定/ガイド等を開いている</td><td>システムバック（←）</td><td><code>__HIGHANDLOW_APP__.onAndroidBack()</code> が true＝モーダル閉じ/メニューへ。アプリは終了しない。</td><td class="j j-pend">未実施</td><td></td></tr>
+<tr><td class="no">F-02</td><td>戻る（メニュー最上段）</td><td>メニュートップ</td><td>システムバック</td><td>onAndroidBack=false＝<code>SystemNavigator.pop()</code> でアプリ終了。</td><td class="j j-pend">未実施</td><td></td></tr>
+<tr><td class="no">F-03</td><td>重なり</td><td>各モーダル表示</td><td>ヘッダー/フッター/カード/メッセージ/モーダルを目視</td><td>前後関係が正しく<strong>重ならない</strong>。豆粒・見切れなし。</td><td class="j j-pend">未実施</td><td></td></tr>
+<tr><td class="no">F-04</td><td>タップ領域/グリッド</td><td>WebView 実機基準</td><td>操作ボタンの寸法を確認</td><td>操作ボタン縦幅 <strong>≥88px</strong>、寸法は<strong>8の倍数</strong>。半端値なし。AI 自身が render を目視判定。</td><td class="j j-pend">未実施</td><td></td></tr>
+</table>
+
+<h2>G. UI寸法・統一 詳細監査（docs/UI_TEST_CASES.md 準拠・WebView実機基準）</h2>
+<p class="note">手本＝<code>docs/UI_TEST_CASES.md</code>（PH04「終了は<strong>共有リプレイダイアログ</strong>・独自オーバーレイを作らない」/ LAY01「ガクン無し」/ LAY02「縮小スケールで収まる」）＋
+<code>ui-8-multiple-and-tap-size</code>（操作ボタン on-screen ≥88px＝stage 136px、寸法すべて8の倍数）。
+old-maid は終了画面を共有 <code>confirm-dialog-panel</code> で出し2ボタン同一(<code>.confirm-btn</code> 72px/24px・72=8×9)＝統一済。high-low は独自 <code>renderGameover</code> で2ボタンが別スタイル化していた＝本監査で統一。</p>
+<table>
+<tr><th>NO</th><th>対象</th><th>関連ID</th><th>期待結果</th><th>監査結果（コード実測）</th><th>判定</th></tr>
+<tr><td class="no">G-01</td><td>終了画面 操作2ボタン（もう一度遊ぶ／ホーム）の<strong>寸法統一</strong></td><td>PH04・RES02</td><td>2ボタンが完全同一寸法・同一フォント（豆粒/ちぐはぐ禁止）</td><td><strong>修正後 OK</strong>＝<code>.go-actions .btn { height:136px; min-height:136px; font-size:32px; font-weight:800 }</code> を btn-start/btn-ghost <strong>両方</strong>に適用。旧: ghost のみ font 24px＋透明で潰れ＝NG だった。</td><td class="j ok">OK（修正）</td></tr>
+<tr><td class="no">G-02</td><td>終了ボタン縦幅 ≥88px on-screen</td><td>F-04</td><td>stage 136px × scale0.66 ≒ 90px ≥88</td><td><strong>OK</strong>＝360×800 実測 316×<strong>91px</strong>。固定 height で WebView の min-height 不適用事故を回避。</td><td class="j ok">OK</td></tr>
+<tr><td class="no">G-03</td><td>終了画面の上下空き（豆粒化）</td><td>LAY02</td><td>高さを使い切る（中央寄せで上下が無駄に空かない）</td><td><strong>OK</strong>＝<code>justify-content:space-evenly</code>＋go-top/go-actions 2グループ。gameover-screen 348×642 を使い切り。</td><td class="j ok">OK</td></tr>
+<tr><td class="no">G-04</td><td>終了画面 全寸法の8の倍数</td><td>F-04</td><td>height/font/gap/padding/radius すべて8の倍数</td><td><strong>OK</strong>＝136/32/48/24/16/8 を全数監査し違反0（gap24・padding48 24・winner48・payout32・count32・ptag8 24/24・row pad24 radius16）。</td><td class="j ok">OK</td></tr>
+<tr><td class="no">G-05</td><td>盤面 HIGH/LOW ボタン高さの8の倍数</td><td>F-04</td><td>8の倍数・以前修正済サイズを過拡大しない</td><td><strong>修正後 OK</strong>＝<code>.btn-hl height</code> 92px(=半端・8非倍数)→<strong>88px</strong>(=8×11)。縮小側＝再拡大せず違反解消。on-screen 88×0.66≒58px。</td><td class="j ok">OK（修正）</td></tr>
+<tr><td class="no">G-06</td><td>多言語で2ボタンの崩れ/見切れ</td><td>L10N02</td><td>en/ja/zh で同寸・はみ出し無し</td><td><strong>OK</strong>＝固定 height＋font 32px で言語非依存。ja「もう一度遊ぶ／ホーム」zh「再玩一次／首页」en「Play Again／Home」いずれも1行・枠内。</td><td class="j ok">OK</td></tr>
+<tr><td class="no">G-07</td><td>old-maid（テンプレ元）の終了2ボタン</td><td>PH04・F-04</td><td>共有ダイアログで統一・8の倍数</td><td><strong>OK（既存準拠）</strong>＝<code>confirm-dialog-panel</code> の <code>.confirm-btn</code> min-height72(=8×9)/font24・grid 1fr 1fr で2ボタン同一。独自オーバーレイ無し＝high-low が逸脱していた側。</td><td class="j ok">OK</td></tr>
+</table>
+<p class="note"><strong>未実施（実機目視）</strong>：G-01〜06 はコード/ブラウザ実測での一次判定。<strong>WebView 実機での最終目視はユーザーが実施</strong>（ブラウザと WebView で min-height 等の差が出るため、固定 height で確定済）。実機判定は <code>test-log.html</code> に追記する。</p>
+
+<p class="note">
+  ※ ゲーム内部の勝敗ロジック詳細は対象外（§1.3）。確証は実装後に実機/エミュで実施し
+  <code>test-log.html</code> に判定根拠（URL・表示文字・実フェッチ先・エラー・pageerror件数）を残す。
+</p>
+</body>
+</html>

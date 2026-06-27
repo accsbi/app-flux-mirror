@@ -1,0 +1,121 @@
+import { defineConfig } from 'vite'
+import type { Connect, PluginOption } from 'vite'
+import { resolve, relative } from 'node:path'
+import { readdirSync, statSync, existsSync } from 'node:fs'
+
+// Classic Card Games Collection — Lit + Vite の MPA。
+// HTML エントリ（ルート / 言語別TOP / 詳細 / 仮メニュー）はプロジェクト配下を走査して
+// 自動収集する（増えても vite.config を手で直さなくてよい）。base:'/' でルート配信前提。
+const ROOT = __dirname
+// ビルド入口は MPA の正規 HTML のみ。テスト記録(e2e_test)・ビルド出力(dist*)・出力先(catalog/public)・
+// ツール(scripts)は走査しない＝テストHTMLが dist に漏れる/出力が再入力される事故を防ぐ。
+const SKIP_DIRS = new Set(['node_modules', 'dist', 'dist-android', 'catalog', 'public', 'scripts', 'e2e_test', 'test-results', '.git'])
+
+function findHtml(dir: string, out: string[] = []): string[] {
+  for (const name of readdirSync(dir)) {
+    if (SKIP_DIRS.has(name)) continue
+    const full = resolve(dir, name)
+    if (statSync(full).isDirectory()) findHtml(full, out)
+    else if (name.endsWith('.html')) out.push(full)
+  }
+  return out
+}
+
+const input = Object.fromEntries(
+  findHtml(ROOT).map((file) => [
+    // ロールアップの入口キー = ルートからの相対パス（.html 抜き）。一意になる。
+    relative(ROOT, file).replace(/\.html$/, '').replace(/[/\\]/g, '__'),
+    file,
+  ]),
+)
+
+// 末尾スラッシュ正規化（dev / preview 両対応）。
+// 例: /en/privacy-policy/index.html がある場合、
+//   /en/privacy-policy/  → そのまま 200（Vite が index.html を解決）
+//   /en/privacy-policy   → 既定では html フォールバックが /foo.html しか試さず、
+//                          見つからず SPA フォールバックでルート index.html（/en/ へ refresh）を返す＝表示されない。
+// そこで「ディレクトリ(index.html 持ち)宛のスラッシュなしアクセス」を末尾スラッシュ URL へ
+// 301 リダイレクトし、どちらの URL でも必ず表示できるようにする。
+function trailingSlashRedirect(serveDir: string): Connect.NextHandleFunction {
+  return (req, res, next) => {
+    const url = req.url || '/'
+    const [pathname, query = ''] = url.split('?')
+    // すでにスラッシュ終わり／拡張子付き（ファイル要求）／Vite 内部リクエストは対象外。
+    if (
+      pathname.endsWith('/') ||
+      pathname.startsWith('/@') ||
+      pathname.startsWith('/node_modules') ||
+      /\.[^/]+$/.test(pathname)
+    ) {
+      return next()
+    }
+    const indexFile = resolve(serveDir, '.' + decodeURIComponent(pathname), 'index.html')
+    if (existsSync(indexFile)) {
+      res.statusCode = 301
+      res.setHeader('Location', pathname + '/' + (query ? '?' + query : ''))
+      res.end()
+      return
+    }
+    next()
+  }
+}
+
+// レガシー URL フォールバック（旧アプリに残った /{lang}/games-apps/... を救済）。
+// 一部アプリに /en/games-apps/privacy-policy 等の古い URL が残っており、ユーザーが叩く恐れがある。
+// 中間の "games-apps" セグメントを取り除いて現行の URL へ 301 する。言語(en/ja/zh…)はそのまま維持。
+//   /{lang}/games-apps/privacy-policy(/)  → /{lang}/privacy-policy/
+//   /{lang}/games-apps(/)                 → /{lang}/
+function legacyGamesAppsRedirect(serveDir: string): Connect.NextHandleFunction {
+  return (req, res, next) => {
+    const url = req.url || '/'
+    const [pathname, query = ''] = url.split('?')
+    const m = pathname.match(/^\/([^/]+)\/games-apps(\/.*)?$/)
+    if (!m) return next()
+    const lang = m[1]
+    const rest = m[2] || '/' // 例: '/privacy-policy' / '/privacy-policy/' / '/'
+    let target = `/${lang}${rest}`
+    // 末尾スラッシュなしでも、現行のディレクトリ(index.html 持ち)なら正規 URL に揃える。
+    if (!target.endsWith('/')) {
+      const indexFile = resolve(serveDir, '.' + decodeURIComponent(target), 'index.html')
+      if (existsSync(indexFile)) target += '/'
+    }
+    res.statusCode = 301
+    res.setHeader('Location', target + (query ? '?' + query : ''))
+    res.end()
+  }
+}
+
+function trailingSlashPlugin(): PluginOption {
+  return {
+    name: 'trailing-slash-redirect',
+    configureServer(server) {
+      // pre フック（return せず直接 use）＝ Vite 内部の html/SPA フォールバックより前に実行。
+      // games-apps レガシー救済を先に登録（games-apps を剥がしてから末尾スラッシュ正規化）。
+      server.middlewares.use(legacyGamesAppsRedirect(ROOT))
+      server.middlewares.use(trailingSlashRedirect(ROOT))
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(legacyGamesAppsRedirect(resolve(ROOT, 'dist')))
+      server.middlewares.use(trailingSlashRedirect(resolve(ROOT, 'dist')))
+    },
+  }
+}
+
+export default defineConfig({
+  // ルート配信前提。BASE_URL が '/' になり、実行時 fetch('/data/…') が
+  // どの言語ページ(/en/ 等)や仮メニュー(/web-games/…)からでも site root に正しく解決される。
+  // 将来サブパス配信する場合は base を '/subpath/' にすれば withBase() がそれを尊重する。
+  base: '/',
+  plugins: [trailingSlashPlugin()],
+  build: {
+    target: 'es2019',
+    outDir: 'dist',
+    emptyOutDir: true,
+    rollupOptions: { input },
+  },
+  server: {
+    host: '127.0.0.1',
+    port: 5190,
+    strictPort: true,
+  },
+})

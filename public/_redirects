@@ -1,0 +1,17 @@
+# Cloudflare Pages リダイレクト（build で dist/_redirects に出力され Cloudflare が解釈）。
+# 本番 app-flux.com 用。dev/preview は vite.config.ts のミドルウェアが同じ挙動を担う。
+#
+# 旧アプリに残った /{lang}/games-apps/... のレガシー URL を現行構造へ 301。
+# :lang は 1 セグメント（en / ja / zh …）にマッチ。言語はそのまま維持する。
+#
+# 重要: /{lang}/games-apps/{game}/（blackjack 等）は **現行の実在詳細ページ**。
+#       ここでは privacy-policy と素のハブだけを明示マッチさせ、ワイルドカード(*)で
+#       games-apps 全体を剥がさない＝詳細ページを壊さない。
+
+# プライバシーポリシー（旧 games-apps 配下 → 現行の言語直下）
+/:lang/games-apps/privacy-policy/   /:lang/privacy-policy/   301
+/:lang/games-apps/privacy-policy    /:lang/privacy-policy/   301
+
+# 素のハブ（index.html を持たない）→ 言語トップ
+/:lang/games-apps/                  /:lang/                  301
+/:lang/games-apps                   /:lang/                  301

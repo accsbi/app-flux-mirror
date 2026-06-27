@@ -1,3 +1,8 @@
+// ── 2026-06-27 修正サマリ（詳細＝docs/HIGH-LOW-MIGRATION-MISTAKES.md・各箇所に inline コメント）──
+//  ・VER: __APP_VERSION__(pubspec)のみ＝yaml 同期。config.app_info.version へフォールバックしない(§1c)。
+//  ・規約: 外部ライブ terms-of-use.json のみ(loadTermsOfUse)。AAB 同梱へフォールバックしない。未取得は「ネット必要」状態表示。
+//  ・Remove Ads 閉じ不能の真因: lit テンプレートのタグ内に HTMLコメントを入れて @remove-ads-close を破壊していた→除去。
+//  ※根本: 本ファイルは 700+行の独自殻。正しくは old-maid 同様 StandaloneCardGameApp 継承(≈30行)。MISTAKES §0/§9 参照。
 import { LitElement, css, html, type PropertyValues } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
 import type { AppLanguage } from '../../shared/config/app-config'
@@ -15,7 +20,7 @@ import { buildFeatureImageUrl } from '../../shared/infra/game-feature-image'
 import { getGameTitle } from '../../shared/infra/game-title'
 import { buildGameAssetUrl } from '../../shared/infra/game-asset-url'
 import { playTrackedEffect, stopAllEffects, clearEffectSuppression } from '../../shared/infra/submit-sound'
-import { HIGH_LOW_WEB_LINKS, buildNewsUrl, buildDetailUrl, buildOtherCardGamesUrl } from '../../shared/infra/web-store-links'
+import { HIGH_LOW_WEB_LINKS, buildNewsUrl, buildDetailUrl, buildOtherCardGamesUrl, buildAboutUrl, buildLiveDataUrl } from '../../shared/infra/web-store-links'
 import { isAndroidApp } from '../../shared/infra/web-ad-mock'
 import {
   type RemoveAdsUiConfigRoot,
@@ -33,6 +38,10 @@ import '../../shared/ui/menu/standalone-game-menu'
 import { renderSettingsModal } from '../../shared/ui/panels/settings-modal'
 import '../../shared/ui/panels/guide-overview-panel'
 import '../../shared/ui/panels/confirm-dialog-panel'
+// お知らせ・別のカードゲームのモーダルは共通部品を再利用（old-maid=standalone-card-game-app と同一）。
+import '../../shared/ui/panels/news-info-modal-panel'
+import '../../shared/ui/panels/other-games-modal-panel'
+import type { OtherGameItem } from '../../shared/ui/panels/other-games-modal-panel'
 import { clearLocalStoragePreservingProgress } from '../../shared/infra/storage-utils'
 import { applyInitialDefaultLanguage, markInitialSetupCompleted, shouldShowInitialSetup } from '../../shared/infra/initial-setup'
 
@@ -68,6 +77,19 @@ export class HighLowStandaloneApp extends LitElement {
   // 課金状態。price はストア（Google Play）から取得した表示価格（ブリッジ getRemoveAdsState 由来）。
   @state() private isAdsRemoved = false
   @state() private removeAdsPrice = ''
+  // お知らせ・更新情報 / 別のカードゲーム のアプリ内モーダル（共通版と同方式）。
+  @state() private isNewsOpen = false
+  @state() private isOtherGamesOpen = false
+  // card-games-list.json（games-list.csv 由来）。別のカードゲーム一覧に使う。
+  @state() private cardGames: Array<{
+    file_name: string; title: string; google_play_store_url: string
+    store_state: string; web_published: boolean
+    google_description?: Record<string, string>
+  }> = []
+
+  // 規約（terms-of-use.json）＝全アプリ共通の外部ライブ。ローカル(remove_ads_ui の terms_content)固定にしない
+  // （AAB 同梱固定だと出荷後に直せない＝ユーザー指摘）。共有 StandaloneCardGameApp.loadTermsOfUse と同一。
+  @state() private termsData: Record<string, { title: string; body: string }> | null = null
 
   // HOME 復帰のフワッとフェード（kaitensushimaster と同じ演出・全ゲーム統一）
   private readonly sceneFade = new SceneFadeController(this)
@@ -89,6 +111,9 @@ export class HighLowStandaloneApp extends LitElement {
     this.evaluateInitialSetup()
     void loadHighLowConfig().then(c => { this.config = c })
     void loadRemoveAdsUiConfig().then(c => { this.removeAdsUiConfig = c })
+    // 「別のカードゲーム」一覧（Android=ライブ→失敗時バンドル / WEB=同一オリジン）。共通版と同方式。
+    void this.loadCardGamesList()
+    void this.loadTermsOfUse()
     // 課金: 既存エンタイトルメント/価格をブリッジから取り込み、Flutter からの通知を購読。
     this.syncRemoveAdsStateFromBridge()
     window.__onEntitlementsChanged = this.onEntitlementsChanged
@@ -178,6 +203,8 @@ export class HighLowStandaloneApp extends LitElement {
     if (this.showCacheConfirm) { this.playSubmit(); this.showCacheConfirm = false; return true }
     if (this.isSoundHelpOpen) { this.playSubmit(); this.isSoundHelpOpen = false; return true }
     if (this.isRemoveAdsOpen) { this.closeRemoveAds(); return true }
+    if (this.isNewsOpen) { this.playSubmit(); this.isNewsOpen = false; return true }
+    if (this.isOtherGamesOpen) { this.playSubmit(); this.isOtherGamesOpen = false; return true }
     if (this.showRules) { this.playSubmit(); this.showRules = false; return true }
     if (this.screen === 'settings') { this.closeSettings(); return true }
     if (this.screen === 'guide') { this.playSubmit(); this.screen = 'menu'; return true }
@@ -191,6 +218,77 @@ export class HighLowStandaloneApp extends LitElement {
       return true
     }
     return false
+  }
+
+  // 「お知らせ・更新情報」: 2ボタン式モーダル（最新版を確認/このアプリについて）。共通版 onNews と同方式。
+  private onNews(): void { this.playSubmit(); this.isNewsOpen = true }
+  private closeNews(): void { this.playSubmit(); this.isNewsOpen = false }
+  // 「別のカードゲーム」: アプリ内モーダルで一覧（Android のみメニューに表示）。共通版 onOtherGames と同方式。
+  private onOtherGames(): void { this.playSubmit(); this.isOtherGamesOpen = true }
+  private closeOtherGames(): void { this.playSubmit(); this.isOtherGamesOpen = false }
+
+  // 一覧 JSON（card-games-list.json）を読む。Android=ライブ(app-flux-mirror)→失敗時バンドル / WEB=同一オリジン。
+  // 共通版 loadCardGamesList と同一ロジック。全滅時は一覧空でモーダルは開く（致命的でない）。
+  private async loadCardGamesList(): Promise<void> {
+    const urls = [
+      isAndroidApp() ? buildLiveDataUrl('web-games/game-assets/configs/card-games-list.json') : '',
+      buildGameAssetUrl('configs/card-games-list.json'),
+    ].filter(Boolean)
+    for (const url of urls) {
+      try {
+        const res = await fetch(url, { cache: 'no-store' })
+        if (!res.ok) continue
+        const data = (await res.json()) as { games?: typeof this.cardGames }
+        if (Array.isArray(data.games)) { this.cardGames = data.games; return }
+      } catch {
+        // 次(フォールバック)へ。
+      }
+    }
+  }
+
+  // 規約 JSON（terms-of-use.json）を **外部ライブのみ**取得。
+  //   Android = app-flux-mirror（外部・全アプリ共通・再デプロイで即反映）。
+  //   WEB     = 同一オリジン(buildGameAssetUrl)＝本番サイトそのもの＝最新。
+  // **AAB 同梱(appassets)へはフォールバックしない**（同梱の古いコピーを出すと出荷後に差し替え不能＝禁止）。
+  // 取得失敗（機内モード等）時は termsData=null のまま＝規約ボタン自体を出さない（オフラインで購入もできない）。
+  private async loadTermsOfUse(): Promise<void> {
+    const url = isAndroidApp()
+      ? buildLiveDataUrl('web-games/game-assets/configs/terms-of-use.json') // 外部ライブのみ
+      : buildGameAssetUrl('configs/terms-of-use.json')                      // WEB=同一オリジン=本番サイト
+    try {
+      const res = await fetch(url, { cache: 'no-store' })
+      if (!res.ok) return
+      const data = (await res.json()) as Record<string, { title: string; body: string }>
+      if (data && typeof data === 'object') this.termsData = data
+    } catch {
+      // 外部ライブ取得失敗＝規約は出さない（同梱へフォールバックしない）。
+    }
+  }
+
+  // 規約は外部ライブ(termsData)が唯一の正。未取得(オフライン)時は「ネット環境が必要」の**状態表示**を出す
+  // （＝規約の代替や同梱の古い規約ではない。ユーザー要望の警告。文言は config の共有 chrome 由来）。
+  private get termsTitleOrOfflineNotice(): string {
+    const t = this.termsData?.[this.language]?.title
+    return t && t.trim() ? t : this.chrome.offlineAdTitle       // 'ネットワーク接続が必要です'
+  }
+  private get termsBodyOrOfflineNotice(): string {
+    const b = this.termsData?.[this.language]?.body
+    return b && b.trim() ? b : this.chrome.externalLinkNote     // 'インターネット環境が必要です'
+  }
+
+  // モーダルに渡す項目：現在のゲーム(high-low)を除外し、web_published かつ非hidden を動的に。共通版 otherGameItems と同一。
+  private otherGameItems(): OtherGameItem[] {
+    return this.cardGames
+      .filter((g) => g.file_name !== 'high-low' && g.web_published && g.store_state !== 'hidden')
+      .map((g) => ({
+        title: g.title,
+        description: g.google_description?.[this.language] ?? g.google_description?.en ?? '',
+        featImageUrl: isAndroidApp()
+          ? buildLiveDataUrl(`site-assets/images/games-apps/${g.file_name}/${g.file_name}-feat.webp`)
+          : buildFeatureImageUrl(g.file_name),
+        storeUrl: g.store_state === 'button' ? g.google_play_store_url : '',
+        comingSoon: g.store_state === 'comingsoon',
+      }))
   }
 
   // ── BGM（唯一の正は bgm-setting.ts。アセットは共通 common/bgm/ に集約=DEFAULT_BGM_COMMON_RELATIVE）─────────
@@ -250,6 +348,12 @@ export class HighLowStandaloneApp extends LitElement {
   private s(key: string, fb = '') { return hlGet(this.config, this.language, 'settings', key, fb) }
   private o(key: string, fb = '') { return hlGet(this.config, this.language, 'overview_info', key, fb) }
   private g(key: string, fb = '') { return hlGet(this.config, this.language, 'game', key, fb) }
+  // VER-1: メニューの VER は Flutter 注入の window.__APP_VERSION__（pubspec の versionName）**のみ**＝yaml と同期。
+  // config.app_info.version へフォールバックしない（フォールバック禁止＝§1c）。未注入なら空（＝表面化）。
+  private androidAppVersion(): string {
+    const injected = (window as Window & { __APP_VERSION__?: string }).__APP_VERSION__
+    return (injected ?? '').trim()
+  }
   // START 説明は game.quick_start（base MD の `### [ クイックスタート ] {quick_start_app}` 由来）のみ。
   // 直書きフォールバック禁止：未生成ならエラー（このモーダルは設定ロード後にのみ表示される）。
   private get startRulesText(): string {
@@ -529,7 +633,7 @@ export class HighLowStandaloneApp extends LitElement {
           .youtubeBadgeAlt=${HIGH_LOW_WEB_LINKS.youtubeBadgeAlt}
           .newsLabel=${isAndroidApp() ? this.chrome.newsShort : this.chrome.news}
           .newsUrl=${buildDetailUrl('high-low', this.language)}
-          .version=${isAndroidApp() ? (this.config.app_info?.version ?? '') : ''}
+          .version=${isAndroidApp() ? this.androidAppVersion() : ''}
           .extraActionLabel=${isAndroidApp() ? this.chrome.removeAds : ''}
           .otherGamesLabel=${isAndroidApp() ? this.chrome.otherCardGames : ''}
           .otherGamesUrl=${isAndroidApp() ? buildOtherCardGamesUrl(this.language) : ''}
@@ -540,6 +644,8 @@ export class HighLowStandaloneApp extends LitElement {
           @menu-guide=${() => { this.playSubmit(); this.screen = 'guide' }}
           @menu-settings=${() => { this.playSubmit(); this.screen = 'settings' }}
           @menu-extra=${this.openRemoveAds}
+          @menu-news=${() => this.onNews()}
+          @menu-other-games=${() => this.onOtherGames()}
         ></standalone-game-menu>
 
         ${this.isRemoveAdsOpen ? html`
@@ -555,15 +661,40 @@ export class HighLowStandaloneApp extends LitElement {
               .cancelLabel=${this.removeAdsUi?.cancel_label || 'Cancel'}
               .showTerms=${true}
               .termsLabel=${this.removeAdsUi?.terms_label || 'Terms'}
-              .termsTitle=${this.removeAdsUi?.terms_title || 'Terms of Service'}
+              .termsTitle=${this.termsTitleOrOfflineNotice}
               .termsCloseLabel=${this.removeAdsUi?.terms_close_label || 'Close'}
-              .termsContent=${this.removeAdsUi?.terms_content || ''}
+              .termsContent=${this.termsBodyOrOfflineNotice}
               .priceLabel=${this.removeAdsPrice}
               .statusLabel=${this.removeAdsStatusMessage}
               .purchased=${this.isAdsRemoved}
               @remove-ads-purchase=${this.onRemoveAdsPurchase}
               @remove-ads-close=${this.closeRemoveAds}
             ></remove-ads-dialog-panel>
+          </section></main>` : null}
+
+        ${this.isNewsOpen ? html`
+          <main class="modal-shell"><section class="modal-card">
+            <news-info-modal-panel
+              .title=${this.chrome.newsModalTitle}
+              .checkLatestLabel=${this.chrome.checkLatest}
+              .aboutLabel=${this.chrome.aboutThisApp}
+              .backLabel=${this.chrome.back}
+              .storeUrl=${this.config?.app_info?.play_store_url ?? ''}
+              .aboutUrl=${buildAboutUrl('high-low', this.language)}
+              @news-info-close=${() => this.closeNews()}
+            ></news-info-modal-panel>
+          </section></main>` : null}
+
+        ${this.isOtherGamesOpen ? html`
+          <main class="modal-shell"><section class="modal-card">
+            <other-games-modal-panel
+              .title=${this.chrome.otherCardGames}
+              .games=${this.otherGameItems()}
+              .playLabel=${'Google Play'}
+              .comingSoonLabel=${this.chrome.comingSoon}
+              .okLabel=${this.chrome.back}
+              @other-games-close=${() => this.closeOtherGames()}
+            ></other-games-modal-panel>
           </section></main>` : null}
 
         ${this.screen === 'guide' ? html`
