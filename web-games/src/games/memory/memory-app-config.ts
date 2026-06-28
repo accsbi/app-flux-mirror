@@ -86,10 +86,8 @@ type RuntimeMemoryConfigWindow = Window & {
 }
 
 function resolveMemoryAppConfigUrl(): string {
-  const runtimeWindow = window as RuntimeMemoryConfigWindow
-  if (runtimeWindow.__ANDROID_APP__) {
-    return './assets/configs/memory-battle_app_config.json'
-  }
+  // WEB(base '/') / Android(base './' + appassets WebViewAssetLoader) 共通の base 相対スキーム（high-low と同一）。
+  // 旧 Android 専用 './assets/configs/...' は /assets/assets/... の二重 assets で 404 だった（削除）。WEB でも 404→blank になっていた。
   return new URL(`${import.meta.env.BASE_URL}web-games/game-assets/configs/memory-battle_app_config.json`, window.location.href).toString()
 }
 

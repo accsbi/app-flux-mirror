@@ -394,10 +394,8 @@ export class MemoryBattleGameTable extends LitElement {
   }
 
   private assetUrl(relativePath: string): string {
-    const runtimeWindow = window as Window & { __ANDROID_APP__?: boolean }
-    if (runtimeWindow.__ANDROID_APP__) {
-      return `./assets/${relativePath}`
-    }
+    // WEB/Android 共通の base 相対スキーム（high-low と同一）。
+    // 旧 Android 専用 './assets/...' は /assets/assets/... の二重 assets で 404 だった（削除）。WEB でも 404 になっていた。
     return new URL(`${import.meta.env.BASE_URL}web-games/game-assets/${relativePath}`, window.location.href).toString()
   }
 
