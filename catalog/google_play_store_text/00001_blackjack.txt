@@ -1,7 +1,7 @@
 ========== 日本語 / Japanese ==========
 
 [Title]
-Classic Simple Blackjack (21)
+クラシック ブラックジャック トランプゲーム
 
 [Short description]
 クラシックなデザインのシンプルなブラックジャック（21）です。
@@ -73,7 +73,7 @@ No sign-up and no online play. Just a quick, relaxing card game with a classic, 
 ========== 中文 / Chinese (Simplified) ==========
 
 [Title]
-Classic Simple Blackjack (21)
+经典二十一点 单机纸牌游戏
 
 [Short description]
 一款外观经典、简单的二十一点（Blackjack）纸牌游戏。

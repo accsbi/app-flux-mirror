@@ -47,3 +47,30 @@ old_backupに格納してからはじめてください。
 終わったら 
 cd ~/wsl_pj/playing_cards/scripts
 build_content.py を実行してください
+
+zh
+zh-TW 繁体字 
+zh-HK 繁体字 広東語
+
+<en-US>
+英語のテキスト
+</en-US>
+<ja-JP>
+日本語のテキスト
+</ja-JP>
+<zh-CN>
+中国（本土）のテキスト
+</zh-CN>
+<zh-TW>
+繁体字のテキスト
+</zh-TW>
+<zh-HK>
+広東語(繁体字)のテキスト
+</zh-HK>
+
+tag
+[en]
+[ja]
+[zh]
+[zh-TW]
+[zh-HK]

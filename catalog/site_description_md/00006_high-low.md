@@ -136,7 +136,7 @@ No sign-up and no online play. Just a quick, relaxing card game with a classic, 
 
 ### [ 应用说明 ]
 
-Classic Simple High & Low 是一款与 CPU 对战、上手简单的纸牌游戏。
+高低纸牌游戏 是一款与 CPU 对战、上手简单的小游戏。
 
 双方各持 26 张牌，争夺场上的两张牌。每回合，一方宣告 HIGH 或 LOW，猜自己的牌比对方更大还是更小。
 

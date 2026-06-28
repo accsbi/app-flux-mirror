@@ -3,6 +3,7 @@ import { customElement, property } from 'lit/decorators.js'
 import type { GameEntry, Lang } from '../data/games-catalog'
 import { getTranslation } from '../i18n/translations'
 import { utilities } from '../styles/utilities'
+import { classicButton } from '../styles/classic-button'
 
 // 1ゲームのカード。app-flux games-apps.astro のカード構造/CSS を移植。
 // 注目画像 → Mobile/Web バッジ → タイトル → 3行説明 → Details(準備中) →
@@ -12,7 +13,7 @@ export class CcgGameCard extends LitElement {
   @property({ attribute: false }) game!: GameEntry
   @property({ type: String }) lang: Lang = 'en'
 
-  static styles = [utilities, css`
+  static styles = [utilities, classicButton, css`
     :host {
       display: flex;
       flex-direction: column;
@@ -173,82 +174,7 @@ export class CcgGameCard extends LitElement {
       line-height: 1.4;
       color: var(--text-soft);
     }
-    /* 主 CTA: 金の多重額縁＋濃紺フェルトのクラシック押し込みボタン。
-       幅はカードいっぱい。文字は金のグラデーション（background-clip: text）。 */
-    .web-link-btn {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      width: 100%;
-      min-height: 58px;
-      padding: 12px 22px;
-      box-sizing: border-box;
-      border: 2px solid var(--gold-deep);
-      border-radius: var(--radius-pill);
-      text-decoration: none;
-      background: radial-gradient(
-          ellipse at 50% 20%,
-          rgba(255, 255, 255, 0.07),
-          transparent 48%
-        ),
-        repeating-linear-gradient(
-          115deg,
-          rgba(255, 255, 255, 0.02) 0,
-          rgba(255, 255, 255, 0.02) 1px,
-          transparent 1px,
-          transparent 5px
-        ),
-        linear-gradient(180deg, #1b3358 0%, #0a1c33 35%, #06101d 100%);
-      /* 金 → 濃紺 → 金 の入れ子フレーム＋上下の艶 */
-      box-shadow: 0 3px 0 #05101c, 0 7px 12px rgba(0, 0, 0, 0.42),
-        inset 0 0 0 2px var(--gold), inset 0 0 0 4px #142336,
-        inset 0 0 0 6px var(--gold-deep),
-        inset 0 8px 10px rgba(255, 255, 255, 0.05),
-        inset 0 -10px 16px rgba(0, 0, 0, 0.4);
-      transition: transform 150ms ease, filter 150ms ease;
-    }
-    .web-link-btn__icon {
-      position: relative;
-      z-index: 2;
-      font-size: 1.1rem;
-      line-height: 1;
-      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
-    }
-    .web-link-btn__text {
-      position: relative;
-      z-index: 2;
-      font-family: var(--font-display);
-      font-size: clamp(15px, 3.6vw, 19px);
-      font-weight: 700;
-      line-height: 1.2;
-      letter-spacing: 0.04em;
-      white-space: nowrap;
-      color: transparent;
-      background: linear-gradient(
-        180deg,
-        #fff0ad 0%,
-        #e2b95d 30%,
-        #a96820 63%,
-        #f0ce75 100%
-      );
-      background-clip: text;
-      -webkit-background-clip: text;
-      filter: drop-shadow(0 2px 0 #3f2108);
-    }
-    .web-link-btn:hover {
-      filter: brightness(1.1);
-      transform: translateY(-2px);
-    }
-    .web-link-btn:active {
-      filter: brightness(0.92);
-      transform: translateY(2px);
-    }
-    .web-link-btn:focus-visible {
-      outline: 3px solid var(--gold-bright);
-      outline-offset: 4px;
-    }
+    /* 主 CTA（金の多重額縁＋濃紺フェルト）＝ classicButton 共有スタイル（../styles/classic-button）。 */
   `]
 
   render() {

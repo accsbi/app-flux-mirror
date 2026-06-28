@@ -1,7 +1,7 @@
 ========== 日本語 / Japanese ==========
 
 [Title]
-Classic Simple Memory Battle
+クラシック 神経衰弱 トランプゲーム
 
 [Short description]
 クラシックデザインのシンプルな神経衰弱です。
@@ -75,7 +75,7 @@ No sign-up and no online play. Just a quick, relaxing card game with a classic, 
 ========== 中文 / Chinese (Simplified) ==========
 
 [Title]
-Classic Simple Memory Battle
+经典翻牌配对 记忆纸牌游戏
 
 [Short description]
 一款外观经典、简单的翻牌配对（记忆）游戏。可单人练习，也可在对战模式中挑战 CPU。

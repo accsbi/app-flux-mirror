@@ -3,6 +3,10 @@
 
 ## [ja] {Google / APP}
 
+### [ アプリタイトル ] {google_description}
+
+クラシック ハイ アンド ロー トランプゲーム
+
 ### [ 概略 ] {google_description}
 
 クラシックデザインのハイ＆ローです。
@@ -90,14 +94,18 @@ Simple High & Low は、CPU と1対1で対戦するカードゲームです。52
 ### [ お問い合わせ / 不具合報告 ] {guide_overview_app}
 
 * 不具合の報告は、ゲーム画面の FEEDBACK からお願いします。
-* 返信が必要なときは、[Contact form](https://app-flux-mirror.pages.dev/ja/contact/) からお願いします。
+* 返信が必要なときは、[Contact form](https://app-flux.com/ja/contact/) からお願いします。
 
 ### [ プライバシーポリシー (外部リンク) ] {guide_overview_app}
 
-* [Privacy policy link](https://app-flux-mirror.pages.dev/ja/privacy-policy/)
+* [Privacy policy link](https://app-flux.com/ja/privacy-policy/)
 
 
 ## [en] {Google / APP}
+
+### [ App Title ] {google_description}
+
+Classic Simple High & Low
 
 ### [ Overview ] {google_description}
 
@@ -175,14 +183,18 @@ No sign-up and no online play. Just a quick, relaxing card game with a classic, 
 ### [ Contact / Bug Report ] {guide_overview_app}
 
 * To report a bug, use FEEDBACK on the game screen.
-* If you need a reply, please use the [Contact form](https://app-flux-mirror.pages.dev/en/contact/).
+* If you need a reply, please use the [Contact form](https://app-flux.com/en/contact/).
 
 ### [ Privacy Policy (External Link) ] {guide_overview_app}
 
-* [Privacy policy link](https://app-flux-mirror.pages.dev/en/privacy-policy/)
+* [Privacy policy link](https://app-flux.com/en/privacy-policy/)
 
 
 ## [zh] {Google / APP}
+
+### [ 应用标题 ] {google_description}
+
+经典高低牌 单机纸牌游戏
 
 ### [ 概述 ] {google_description}
 
@@ -190,7 +202,7 @@ No sign-up and no online play. Just a quick, relaxing card game with a classic, 
 
 ### [ 应用说明 ] {all}
 
-**Classic Simple High & Low** 是一款与 CPU 对战、上手简单的纸牌游戏。
+**高低纸牌游戏** 是一款与 CPU 对战、上手简单的小游戏。
 
 双方各持 26 张牌，争夺场上的两张牌。每回合，一方宣告 HIGH 或 LOW，猜自己的牌比对方更大还是更小。
 
@@ -260,8 +272,186 @@ No sign-up and no online play. Just a quick, relaxing card game with a classic, 
 ### [ 联系我们 / 故障报告 ] {guide_overview_app}
 
 * 报告故障，请使用游戏画面的 FEEDBACK。
-* 如需回复，请通过 [Contact form](https://app-flux-mirror.pages.dev/zh/contact/) 联系我们。
+* 如需回复，请通过 [Contact form](https://app-flux.com/zh/contact/) 联系我们。
 
 ### [ 隐私政策（外部链接） ] {guide_overview_app}
 
-* [Privacy policy link](https://app-flux-mirror.pages.dev/zh/privacy-policy/)
+* [Privacy policy link](https://app-flux.com/zh/privacy-policy/)
+
+
+## [zh-TW] {Google / APP}
+
+### [ 應用程式標題 ] {google_description}
+
+經典高低牌 單機紙牌遊戲
+
+### [ 概述 ] {google_description}
+
+一款外觀經典、簡單的高低牌（High & Low）。與 CPU 一對一對戰。
+
+### [ 應用程式說明 ] {all}
+
+**高低紙牌遊戲** 是一款與 CPU 對戰、容易上手的小遊戲。
+
+雙方各持 26 張牌，爭奪場上的兩張牌。每回合，一方宣告 HIGH 或 LOW，猜自己的牌比對方更大還是更小。
+
+無需註冊，也沒有線上對戰。這是一款外觀經典、沉穩的紙牌遊戲，很適合利用零碎時間遊玩。所有牌皆為隨機發放。
+
+### [ 應用程式特色 ] {google_description / site_description}
+
+* 專為直式畫面遊玩設計，單手握持手機也方便操作。
+* 即使在小螢幕手機上，也調整得清晰易讀、易於操作。
+* 支援 Android 8 以上，較舊的 Android 裝置也能流暢運行。
+* 已精簡並最佳化特殊演出與特效，輕巧又流暢。
+
+### [ 快速上手 ] {quick_start_app}
+
+* 每回合，一方為 Attack（進攻），另一方為 Defend（防守），角色每回合互換。
+* 進攻時，點 HIGH 或 LOW，猜自己的牌更大還是更小。
+* 猜中（BINGO）可獲得兩張牌；猜錯（MISS）兩張牌都作廢。
+* 牌堆用完時，牌數較多的一方獲勝。
+
+### [ 玩法 ] {guide_overview_app / site_description}
+
+#### 步驟
+
+1. 使用不含 Joker 的 52 張牌，每位玩家各持 26 張開始。
+2. 進攻方蓋下一張牌，並宣告 HIGH 或 LOW。
+3. 與防守方的正面牌比較，猜中（BINGO）則進攻方獲得兩張牌。
+4. 猜錯（MISS）時，場上的兩張牌成為棄牌。
+5. 強度相同為平手——不發生任何變化，兩張牌都作廢。
+6. 進攻與防守每回合互換。雙方牌堆都用完時，牌數較多的一方獲勝。
+
+* 如需退出，請點選左上角 HOME。
+
+#### 牌的大小
+
+* 2 最弱，A 最強。
+* 順序：2 < 3 < 4 < 5 < 6 < 7 < 8 < 9 < 10 < J < Q < K < A。
+
+#### COIN 增減
+
+* BINGO：+10
+* TIE：0
+* MISS：-10
+* WIN BONUS：+100（在整局遊戲獲勝時加算）
+
+#### 簡單提示
+
+* 開局以 8 為中間值：小牌（2–7）宣告 HIGH，大牌（9–A）宣告 LOW。
+* 到了後期，關鍵在於你能否記住已經出過的牌。
+
+### [ 內購項目 ] {google_description / guide_overview_app / site_description}
+
+* 廣告能協助我們持續製作與營運這款應用程式，感謝您的理解。
+* 一次購買即可移除廣告，還能在離線時（飛航模式、無訊號的地方等）遊玩。
+* 注：更新應用程式或開啟外部連結時，仍需要連網。
+
+### [ 注意事項 ] {google_description / guide_overview_app / site_description}
+
+* 不使用任何現金、獎品或加密資產。本應用程式並非用於賭博。
+* 如果運行變慢，請在選單的設定中清除快取。
+* 如果仍有問題，可在裝置設定中刪除這款應用程式的資料，恢復到初始狀態。
+
+### [ 支援語言 ] {google_description / site_description}
+
+* 英語 / 日語 / 中文（簡體）
+- 注：遊玩過程中的部分文字可能以英文顯示。
+
+### [ 聯絡我們 / 故障回報 ] {guide_overview_app}
+
+* 回報故障，請使用遊戲畫面的 FEEDBACK。
+* 如需回覆，請透過 [Contact form](https://app-flux.com/zh/contact/) 與我們聯絡。
+
+### [ 隱私權政策（外部連結） ] {guide_overview_app}
+
+* [Privacy policy link](https://app-flux.com/zh/privacy-policy/)
+
+
+## [zh-HK] {Google / APP}
+
+### [ 應用程式標題 ] {google_description}
+
+經典高低牌 單機紙牌遊戲
+
+### [ 概述 ] {google_description}
+
+一款外觀經典、玩法簡單嘅高低牌（High & Low），同電腦一對一對戰。
+
+### [ 應用程式說明 ] {all}
+
+**高低紙牌遊戲** 係一款同電腦對戰、好易上手嘅小遊戲。
+
+雙方各拎 26 張牌，爭場上嗰兩張牌。每個回合，一方會叫 HIGH 或者 LOW，估自己張牌係大過定細過對方。
+
+唔使註冊，亦冇網上對戰。呢款紙牌遊戲外觀經典、沉穩，好啱用零碎時間嚟玩。啲牌全部都係隨機派。
+
+### [ 應用程式特色 ] {google_description / site_description}
+
+* 專為直向畫面而設計，單手揸住部手機都易操作。
+* 就算喺細螢幕手機上面，都調校到清晰易睇、易操作。
+* 支援 Android 8 或以上，舊嘅 Android 裝置一樣可以順暢咁玩。
+* 已經精簡同優化咗特殊演出同特效，輕巧又流暢。
+
+### [ 快速上手 ] {quick_start_app}
+
+* 每個回合，一方做 Attack（進攻），另一方做 Defend（防守），角色逐回合互換。
+* 進攻嗰陣，撳 HIGH 或者 LOW，估自己張牌大啲定細啲。
+* 估中（BINGO）可以攞走兩張牌；估錯（MISS）兩張牌都會作廢。
+* 牌疊用晒嗰陣，邊一方牌多就贏。
+
+### [ 玩法 ] {guide_overview_app / site_description}
+
+#### 步驟
+
+1. 用唔包含 Joker 嘅 52 張牌，每位玩家各拎 26 張開始。
+2. 進攻方冚低一張牌，再叫 HIGH 或者 LOW。
+3. 同防守方嘅正面牌比較，估中（BINGO）就由進攻方攞走兩張牌。
+4. 估錯（MISS）嗰陣，場上兩張牌會變成棄牌。
+5. 強度一樣就平手——咩都唔會發生，兩張牌都作廢。
+6. 進攻同防守逐回合互換。兩邊牌疊都用晒嗰陣，牌多嗰方就贏。
+
+* 想唔玩，撳左上角 HOME 就得。
+
+#### 牌嘅大細
+
+* 2 最細，A 最大。
+* 順序：2 < 3 < 4 < 5 < 6 < 7 < 8 < 9 < 10 < J < Q < K < A。
+
+#### COIN 增減
+
+* BINGO：+10
+* TIE：0
+* MISS：-10
+* WIN BONUS：+100（贏咗成局先會加）
+
+#### 簡單貼士
+
+* 開局用 8 做中間值：細牌（2–7）就叫 HIGH，大牌（9–A）就叫 LOW。
+* 去到後期，關鍵就係你記唔記得邊啲牌已經出咗。
+
+### [ 內購項目 ] {google_description / guide_overview_app / site_description}
+
+* 廣告可以幫我哋繼續製作同營運呢款應用程式，多謝你嘅體諒。
+* 課金一次就可以移除廣告，仲可以喺離線（飛行模式、冇訊號嘅地方等等）嗰陣玩。
+* 注：更新應用程式或者開外部連結嗰陣，一樣要連網。
+
+### [ 注意事項 ] {google_description / guide_overview_app / site_description}
+
+* 唔會用到任何現金、獎品或者加密資產。呢款應用程式唔係用嚟賭博。
+* 如果運行慢咗，可以喺選單嘅設定度清除快取。
+* 如果仲有問題，可以喺裝置設定度刪除呢款應用程式嘅資料，回復到最初狀態。
+
+### [ 支援語言 ] {google_description / site_description}
+
+* 英文 / 日文 / 中文（簡體）
+- 注：玩嗰陣有啲文字可能會用英文顯示。
+
+### [ 聯絡我哋 / 故障回報 ] {guide_overview_app}
+
+* 報告故障，請用遊戲畫面嘅 FEEDBACK。
+* 如果需要回覆，請透過 [Contact form](https://app-flux.com/zh/contact/) 搵我哋。
+
+### [ 私隱政策（外部連結） ] {guide_overview_app}
+
+* [Privacy policy link](https://app-flux.com/zh/privacy-policy/)

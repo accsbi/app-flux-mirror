@@ -1,7 +1,7 @@
 ========== 日本語 / Japanese ==========
 
 [Title]
-Classic Simple Old Maid
+クラシック ババ抜き トランプゲーム
 
 [Short description]
 CPU3人と順位を競う、クラシックデザインのシンプルなババ抜きトランプカードゲームです。
@@ -83,7 +83,7 @@ This simple Old Maid was designed with a classic look, conceived and developed a
 ========== 中文 / Chinese (Simplified) ==========
 
 [Title]
-Classic Simple Old Maid
+经典抽鬼牌 单机纸牌游戏
 
 [Short description]
 一款采用经典设计的简单抽鬼牌纸牌游戏，与3名电脑玩家争夺排名。

@@ -182,14 +182,14 @@ export class CcgSiteHeader extends LitElement {
         <div class="nav-bottom">
           <nav class="nav-links">
             <a class=${this.current === '' ? 'active' : ''} href=${home}>${t.nav.home}</a>
+            <a class=${this.current === 'blog' ? 'active' : ''} href=${`/${this.lang}/blog/`}
+              >${t.nav.blog}</a
+            >
             <a class=${this.current === 'about' ? 'active' : ''} href=${`/${this.lang}/about/`}
               >${t.nav.about}</a
             >
             <a class=${this.current === 'contact' ? 'active' : ''} href=${`/${this.lang}/contact/`}
               >${t.nav.contact}</a
-            >
-            <a class=${this.current === 'blog' ? 'active' : ''} href=${`/${this.lang}/blog/`}
-              >${t.nav.blog}</a
             >
           </nav>
           <div class="langs">

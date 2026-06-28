@@ -47,7 +47,7 @@ export function buildOtherCardGamesUrl(language: string): string {
 // Cloudflare Pages の公開URL（ルート配信 base:'/'）。未デプロイ/オフライン時は fetch 失敗→
 // バンドルにフォールバックする。
 // ※ ゲーム一覧そのものはハードコードしない（中身は card-games-list.json＝games-list.csv 由来）。
-export const PLAYING_CARDS_LIVE_BASE = 'https://app-flux-mirror.pages.dev'
+export const PLAYING_CARDS_LIVE_BASE = 'https://app-flux.com'
 
 /** ライブデータ(JSON/画像)の絶対URLを組む。例 buildLiveDataUrl('web-games/game-assets/configs/card-games-list.json') */
 export function buildLiveDataUrl(relPath: string): string {

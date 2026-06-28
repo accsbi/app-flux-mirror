@@ -37,7 +37,7 @@ cd ~/wsl_pj/playing_cards
 python3 scripts/build_content.py              # base_markdown/csv → config 再生成
 git add -A && git commit -m "content: update" && git push   # → Cloudflare 自動デプロイ（数分）
 ```
-- 確認：`https://app-flux-mirror.pages.dev/web-games/game-assets/configs/card-games-list.json` が更新されているか。
+- 確認：`https://app-flux.com/web-games/game-assets/configs/card-games-list.json` が更新されているか。
 
 ## まとめ（一言）
 - **画面で確認したいだけ** → ① `npm run dev`。

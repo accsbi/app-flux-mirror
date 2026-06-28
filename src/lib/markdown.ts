@@ -99,6 +99,12 @@ function renderLine(raw: string): TemplateResult | typeof nothing {
   if (t.length === 0) return nothing
   if (/^([-*_])\1{2,}$/.test(t)) return html`<hr class="md-hr" />`
 
+  // 画像のみの行: ![alt](url) → <img>（本文中の図版）。
+  const img = /^!\[([^\]]*)\]\(([^)]+)\)$/.exec(t)
+  if (img) {
+    return html`<img class="md-img" src=${img[2].trim()} alt=${img[1]} loading="lazy" />`
+  }
+
   const heading = /^(#{1,6})\s+(.*)$/.exec(t)
   if (heading) {
     const level = Math.min(heading[1].length, 4)
@@ -123,6 +129,7 @@ export function renderMarkdown(body: string): unknown[] {
 /** カード/見出し用の平文化（インライン markdown と改行を除去）。 */
 export function mdToPlain(body: string): string {
   return body
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '') // 画像 ![alt](url) は平文から除去
     .split('\n')
     .map((l) => l.replace(/^#{1,6}\s+/, '').replace(/^[-*・]\s*/, '').replace(/^\d+[.)]\s+/, ''))
     .join(' ')

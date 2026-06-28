@@ -1,7 +1,7 @@
 ========== 日本語 / Japanese ==========
 
 [Title]
-Classic Simple Casino War
+クラシック カジノウォー トランプゲーム
 
 [Short description]
 クラシックなデザインのシンプルなカジノウォーです。
@@ -74,7 +74,7 @@ No sign-up and no online play. Just a quick, relaxing card game with a classic, 
 ========== 中文 / Chinese (Simplified) ==========
 
 [Title]
-Classic Simple Casino War
+经典赌场战争 单机纸牌游戏
 
 [Short description]
 一款外观经典、简单的 Casino War。在快速的一对一对决中，点数大的牌获胜。

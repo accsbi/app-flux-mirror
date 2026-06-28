@@ -1,0 +1,278 @@
+// src/i18n/translations.ts
+//
+// UI 文言の唯一の正（single source of truth）。en/ja/zh。
+// 説明文（ゲーム内容）は catalog/site_description_md/<id>_<slug>.md 側。ここには UI ラベルのみ。
+// app-flux frontend/src/i18n/translations.ts の構造を踏襲。
+
+import type { Lang } from '../data/games-catalog'
+
+export const SITE_TITLE = 'Classic Card Games Collection'
+
+export interface Translation {
+  nav: { home: string; about: string; contact: string; blog: string }
+  hero: { eyebrow: string; title: string; body: string }
+  catalog: {
+    genreHeading: string
+    details: string
+    badgeMobile: string
+    badgeWeb: string
+    playInBrowser: string
+    browserGame: string
+    comingSoon: string
+  }
+  detail: {
+    home: string
+    screenshots: string
+    getOnGooglePlay: string
+    watchOnYoutube: string
+    downloadTitle: string
+    notFound: string
+  }
+  /** About / Contact / Blog の静的ページ。タイトルは nav を流用。 */
+  pages: {
+    eyebrow: string
+    preparing: string
+  }
+  /** About ページ本文（app-flux 由来。EC は除外しアプリ開発のみ）。 */
+  about: {
+    businessTitle: string
+    appDevName: string
+    appDevBody: string[]
+    googlePlayLabel: string
+    companyTitle: string
+    company: { label: string; value: string }[]
+    contactTitle: string
+    contactNote: string
+    contactLink: string
+  }
+  /** Blog（軽いサイト紹介記事）。 */
+  blog: {
+    postDate: string
+    postTitle: string
+    postBody: string[]
+  }
+  /** 仮メニュー（standalone-game-menu の見た目を踏襲）。フェーズ1は非機能。 */
+  menu: {
+    start: string
+    guideOverview: string
+    settings: string
+    news: string
+    back: string
+    coin: string
+    wip: string
+  }
+}
+
+export const translations: Record<Lang, Translation> = {
+  en: {
+    nav: { home: 'Home', about: 'About', contact: 'Contact', blog: 'Blog' },
+    hero: {
+      eyebrow: 'Card Games',
+      title: SITE_TITLE,
+      body: 'A collection of simple, classic playing-card games. Available on Google Play, with browser-playable versions on the way.',
+    },
+    catalog: {
+      genreHeading: 'Playing Cards Games',
+      details: 'Details',
+      badgeMobile: 'Mobile',
+      badgeWeb: 'Web',
+      playInBrowser: 'Playable in PC & mobile browsers.',
+      browserGame: 'Browser Game',
+      comingSoon: 'Coming Soon',
+    },
+    menu: {
+      start: 'START',
+      guideOverview: 'Guide / Overview',
+      settings: 'Settings',
+      news: 'News / Updates (External)',
+      back: 'Back',
+      coin: 'COIN',
+      wip: 'Preview menu — buttons are not active yet.',
+    },
+    detail: {
+      home: 'Home',
+      screenshots: 'Screenshots',
+      getOnGooglePlay: 'Get it on Google Play',
+      watchOnYoutube: 'Watch on YouTube',
+      downloadTitle: 'Download & Play',
+      notFound: 'Game not found.',
+    },
+    pages: {
+      eyebrow: 'Classic Card Games Collection',
+      preparing: 'This page is under preparation.',
+    },
+    about: {
+      businessTitle: 'Business',
+      appDevName: 'Mobile App Development',
+      appDevBody: [
+        'We plan, develop, and operate mobile apps.',
+        'For the Google Play Store, we focus on simple, easy-to-use apps, handy everyday tools, and entertainment titles.',
+        'We build with an emphasis on smooth performance and clear, intuitive UI.',
+      ],
+      googlePlayLabel: 'Google Play Developer Page',
+      companyTitle: 'Company Information',
+      company: [
+        { label: 'Company Name', value: 'BRANDO,K.K.' },
+        { label: 'English Name', value: 'BRANDO,K.K.' },
+        { label: 'Established', value: 'October 28, 2015' },
+        { label: 'Corporate Number', value: '2010901030968' },
+      ],
+      contactTitle: 'Contact',
+      contactNote:
+        'For questions about our apps or app development, please reach us through the inquiry form. We review each message and reply in order.',
+      contactLink: 'Contact Us',
+    },
+    blog: {
+      postDate: 'June 28, 2026',
+      postTitle: 'Welcome to Classic Card Games Collection',
+      postBody: [
+        'Classic Card Games Collection brings together simple, timeless playing-card games in one place.',
+        'The rules stay light and the table stays clean, so you can sit down and play in seconds — Blackjack, Poker, Casino War, Old Maid, Memory Battle, and High & Low.',
+        'Every title is available on Google Play, and browser-playable versions are on the way, so you can enjoy them on PC or mobile without installing anything.',
+        'We care about smooth performance and a classic look inspired by a real card table. We hope you enjoy the collection.',
+      ],
+    },
+  },
+  ja: {
+    nav: { home: 'ホーム', about: 'About', contact: 'お問い合わせ', blog: 'ブログ' },
+    hero: {
+      eyebrow: 'カードゲーム',
+      title: SITE_TITLE,
+      body: 'シンプルで定番のトランプゲーム集。Google Play で配信中。ブラウザで遊べる版も準備中です。',
+    },
+    catalog: {
+      genreHeading: 'トランプゲーム',
+      details: '詳細',
+      badgeMobile: 'モバイル',
+      badgeWeb: 'Web',
+      playInBrowser: 'PC・スマホのブラウザで遊べます。',
+      browserGame: 'ブラウザゲーム',
+      comingSoon: '準備中',
+    },
+    menu: {
+      start: 'スタート',
+      guideOverview: 'ガイド / 概要',
+      settings: '設定',
+      news: 'ニュース / 更新情報（外部リンク）',
+      back: '戻る',
+      coin: 'COIN',
+      wip: 'プレビュー用メニューです。ボタンはまだ動作しません。',
+    },
+    detail: {
+      home: 'ホーム',
+      screenshots: 'スクリーンショット',
+      getOnGooglePlay: 'Google Play で入手',
+      watchOnYoutube: 'YouTube で見る',
+      downloadTitle: 'ダウンロード',
+      notFound: 'ゲームが見つかりません。',
+    },
+    pages: {
+      eyebrow: 'Classic Card Games Collection',
+      preparing: 'このページは準備中です。',
+    },
+    about: {
+      businessTitle: '事業内容',
+      appDevName: 'モバイルアプリ開発',
+      appDevBody: [
+        'モバイルアプリの企画・開発・運営を行っています。',
+        'Google Play ストア向けに、シンプルで使いやすいアプリ、日常を少し便利にするツール、エンターテインメント系のアプリを提供しています。',
+        '軽快な動作と分かりやすい UI を重視して開発しています。',
+      ],
+      googlePlayLabel: 'Google Play 開発者ページを見る',
+      companyTitle: '会社情報',
+      company: [
+        { label: '会社名', value: '株式会社ブランドー' },
+        { label: '英文表記', value: 'BRANDO,K.K.' },
+        { label: '設立', value: '2015年10月28日' },
+        { label: '法人番号', value: '2010901030968' },
+      ],
+      contactTitle: 'お問い合わせ',
+      contactNote:
+        'アプリやアプリ開発に関するご質問は、こちらの問い合わせフォームよりご連絡ください。内容を確認のうえ、順次ご返信いたします。',
+      contactLink: 'お問い合わせ',
+    },
+    blog: {
+      postDate: '2026年6月28日',
+      postTitle: 'Classic Card Games Collection へようこそ',
+      postBody: [
+        'Classic Card Games Collection は、シンプルで定番のトランプゲームを一つにまとめたサイトです。',
+        'ルールは軽く、盤面はすっきり。ブラックジャック、ポーカー、カジノウォー、ババ抜き、神経衰弱、ハイ＆ローを、座ってすぐに遊べます。',
+        '各ゲームは Google Play で配信中。PC・スマホのブラウザで遊べる版も準備中で、インストール不要で楽しめます。',
+        '軽快な動作と、本物のカード卓のようなクラシックな見た目を大切にしています。どうぞお楽しみください。',
+      ],
+    },
+  },
+  zh: {
+    nav: { home: '首页', about: '关于', contact: '联系我们', blog: '博客' },
+    hero: {
+      eyebrow: '纸牌游戏',
+      title: SITE_TITLE,
+      body: '简单经典的纸牌游戏合集。已在 Google Play 上线，可在浏览器游玩的版本也即将推出。',
+    },
+    catalog: {
+      genreHeading: '纸牌游戏',
+      details: '详情',
+      badgeMobile: '移动端',
+      badgeWeb: 'Web',
+      playInBrowser: '可在电脑和手机浏览器中游玩。',
+      browserGame: '浏览器游戏',
+      comingSoon: '敬请期待',
+    },
+    menu: {
+      start: '开始',
+      guideOverview: '指南 / 概要',
+      settings: '设置',
+      news: '新闻 / 更新（外部链接）',
+      back: '返回',
+      coin: 'COIN',
+      wip: '预览菜单 —— 按钮尚未启用。',
+    },
+    detail: {
+      home: '首页',
+      screenshots: '截图',
+      getOnGooglePlay: '在 Google Play 获取',
+      watchOnYoutube: '在 YouTube 观看',
+      downloadTitle: '下载',
+      notFound: '未找到游戏。',
+    },
+    pages: {
+      eyebrow: 'Classic Card Games Collection',
+      preparing: '此页面正在准备中。',
+    },
+    about: {
+      businessTitle: '业务内容',
+      appDevName: '移动应用开发',
+      appDevBody: [
+        '我们从事移动应用的策划、开发与运营。',
+        '面向 Google Play 商店，主要提供简单易用的应用、便利日常的工具类应用，以及具有娱乐性的应用。',
+        '在开发中注重流畅的运行体验与清晰易懂的界面设计。',
+      ],
+      googlePlayLabel: '查看 Google Play 开发者页面',
+      companyTitle: '公司信息',
+      company: [
+        { label: '公司名称', value: 'BRANDO,K.K.' },
+        { label: '英文名称', value: 'BRANDO,K.K.' },
+        { label: '成立时间', value: '2015年10月28日' },
+        { label: '法人编号', value: '2010901030968' },
+      ],
+      contactTitle: '联系我们',
+      contactNote:
+        '如果您对我们的应用或应用开发有任何疑问，欢迎通过此联系表单与我们联系。我们会确认内容后按顺序回复。',
+      contactLink: '联系我们',
+    },
+    blog: {
+      postDate: '2026年6月28日',
+      postTitle: '欢迎来到 Classic Card Games Collection',
+      postBody: [
+        'Classic Card Games Collection 将简单又经典的纸牌游戏汇集于一处。',
+        '规则轻巧、桌面清爽，让你坐下即玩：二十一点、扑克、赌场战争、抽鬼牌、记忆翻牌，以及 High & Low。',
+        '各款游戏均已在 Google Play 上线，可在浏览器游玩的版本也即将推出，无需安装即可在电脑或手机上畅玩。',
+        '我们注重流畅的运行体验，以及仿真实纸牌桌的经典外观。祝你玩得愉快。',
+      ],
+    },
+  },
+}
+
+export function getTranslation(lang: Lang): Translation {
+  return translations[lang] ?? translations.en
+}

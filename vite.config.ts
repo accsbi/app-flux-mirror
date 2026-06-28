@@ -67,6 +67,17 @@ function trailingSlashRedirect(serveDir: string): Connect.NextHandleFunction {
 //   /{lang}/games-apps/privacy-policy(/)  → /{lang}/privacy-policy/  （games-apps 配下に実体無し＆直下に実在）
 //   /{lang}/games-apps/blackjack(/) 等    → 触らない（実在の詳細ページ）
 // 言語(en/ja/zh…)はそのまま維持。
+// 旧 app-flux の個別アプリ slug → それぞれの Google Play ストアへ 301（詳細ページは作らない方針）。
+// public/_redirects（本番）と同じ対応表に保つこと。言語非依存（同じストアURL）。
+const LEGACY_APPFLUX_STORE: Record<string, string> = {
+  blackjack_3in1: 'https://play.google.com/store/apps/details?id=com.game.playingcardshub',
+  simple_poker: 'https://play.google.com/store/apps/details?id=com.game.simple_poker',
+  simpleblackjack: 'https://play.google.com/store/apps/details?id=com.game.simpleblackjack',
+  numtaplangquiz: 'https://play.google.com/store/apps/details?id=com.numberquiz.app',
+  flagsoftheworld: 'https://play.google.com/store/apps/details?id=com.app.flagsoftheworld',
+  kaitensushimaster: 'https://play.google.com/store/apps/details?id=com.game.kaitensushimaster',
+}
+
 function legacyGamesAppsRedirect(serveDir: string): Connect.NextHandleFunction {
   const indexExists = (p: string) =>
     existsSync(resolve(serveDir, '.' + decodeURIComponent(p), 'index.html'))
@@ -86,6 +97,9 @@ function legacyGamesAppsRedirect(serveDir: string): Connect.NextHandleFunction {
     if (rest === '') return redirect(res, `/${lang}/`, query)
     // 2) games-apps 配下が実在ページなら触らない（＝詳細ページ /games-apps/blackjack/ 等を壊さない）
     if (indexExists(`/${lang}/games-apps${rest}`)) return next()
+    // 2.5) 旧 app-flux の個別アプリ slug → 各 Google Play ストアへ 301（外部URL・queryは付けない）。
+    const storeUrl = LEGACY_APPFLUX_STORE[rest.replace(/^\//, '')]
+    if (storeUrl) { res.statusCode = 301; res.setHeader('Location', storeUrl); res.end(); return }
     // 3) games-apps を剥がした現行ページが実在するなら 301、無ければ触らず通常処理へ。
     const target = `/${lang}${rest}`
     if (indexExists(target)) return redirect(res, target + '/', query)
