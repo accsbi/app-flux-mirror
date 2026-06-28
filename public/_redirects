@@ -9,6 +9,10 @@
 #       ここでは privacy-policy と素のハブだけを明示マッチさせ、ワイルドカード(*)で
 #       games-apps 全体を剥がさない＝詳細ページを壊さない。
 
+# app-ads.txt は仕様上ドメイン直下 /app-ads.txt が唯一の正規配置（public/app-ads.txt が dist 直下へ）。
+# 言語付き旧 URL /{lang}/app-ads.txt は正規へ 301（クローラはルートのみ参照・人間/レガシー救済用）。
+/:lang/app-ads.txt   /app-ads.txt   301
+
 # プライバシーポリシー（旧 games-apps 配下 → 現行の言語直下）
 /:lang/games-apps/privacy-policy/   /:lang/privacy-policy/   301
 /:lang/games-apps/privacy-policy    /:lang/privacy-policy/   301

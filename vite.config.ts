@@ -119,16 +119,31 @@ function legacyGamesAppsRedirect(serveDir: string): Connect.NextHandleFunction {
   }
 }
 
+// app-ads.txt は仕様上ドメイン直下 /app-ads.txt が唯一の正規（public/app-ads.txt）。
+// 言語付き旧 URL /{lang}/app-ads.txt は正規へ 301（本番 _redirects と同一挙動）。
+const appAdsRedirect: Connect.NextHandleFunction = (req, res, next) => {
+  const pathname = (req.url || '/').split('?')[0]
+  if (/^\/[^/]+\/app-ads\.txt$/.test(pathname)) {
+    res.statusCode = 301
+    res.setHeader('Location', '/app-ads.txt')
+    res.end()
+    return
+  }
+  next()
+}
+
 function trailingSlashPlugin(): PluginOption {
   return {
     name: 'trailing-slash-redirect',
     configureServer(server) {
       // pre フック（return せず直接 use）＝ Vite 内部の html/SPA フォールバックより前に実行。
       // games-apps レガシー救済を先に登録（games-apps を剥がしてから末尾スラッシュ正規化）。
+      server.middlewares.use(appAdsRedirect)
       server.middlewares.use(legacyGamesAppsRedirect(ROOT))
       server.middlewares.use(trailingSlashRedirect(ROOT))
     },
     configurePreviewServer(server) {
+      server.middlewares.use(appAdsRedirect)
       server.middlewares.use(legacyGamesAppsRedirect(resolve(ROOT, 'dist')))
       server.middlewares.use(trailingSlashRedirect(resolve(ROOT, 'dist')))
     },
