@@ -574,22 +574,20 @@ export abstract class StandaloneCardGameApp extends LitElement {
     }
   }
 
-  // 規約 JSON（terms-of-use.json）をライブ取得（Android）→失敗時バンドル。card-games-list と同方式。
-  // 取得した本文を Remove Ads ダイアログのアプリ内モーダルに表示する（外部遷移しない）。
+  // 規約 JSON（terms-of-use.json）を **外部ライブのみ**取得。Android=app-flux ライブ / WEB=同一オリジン(本番サイト)。
+  // **AAB 同梱(appassets)へはフォールバックしない**（同梱の古い規約を出すと出荷後に差し替え不能＝禁止）。
+  // 取得失敗（オフライン等）時は termsData=null のまま＝規約本文の代わりに「ネット必要」通知を出す。
   private async loadTermsOfUse(): Promise<void> {
-    const urls = [
-      isAndroidApp() ? buildLiveDataUrl('web-games/game-assets/configs/terms-of-use.json') : '',
-      buildGameAssetUrl('configs/terms-of-use.json'),
-    ].filter(Boolean)
-    for (const url of urls) {
-      try {
-        const res = await fetch(url, { cache: 'no-store' })
-        if (!res.ok) continue
-        const data = (await res.json()) as Record<string, { title: string; body: string }>
-        if (data && typeof data === 'object') { this.termsData = data; return }
-      } catch {
-        // フォールバックへ。全滅時は config(remove_ads_ui) の terms_content にフォールバック。
-      }
+    const url = isAndroidApp()
+      ? buildLiveDataUrl('web-games/game-assets/configs/terms-of-use.json')
+      : buildGameAssetUrl('configs/terms-of-use.json')
+    try {
+      const res = await fetch(url, { cache: 'no-store' })
+      if (!res.ok) return
+      const data = (await res.json()) as Record<string, { title: string; body: string }>
+      if (data && typeof data === 'object') this.termsData = data
+    } catch {
+      // 外部ライブ取得失敗＝規約は同梱へフォールバックしない（オフライン通知を出す）。
     }
   }
 
@@ -845,9 +843,9 @@ export abstract class StandaloneCardGameApp extends LitElement {
               .cancelLabel=${this.removeAdsUi?.cancel_label || 'Cancel'}
               .showTerms=${true}
               .termsLabel=${this.removeAdsUi?.terms_label || 'Terms'}
-              .termsTitle=${this.termsData?.[this.language]?.title || this.removeAdsUi?.terms_title || 'Terms of Service'}
+              .termsTitle=${this.termsData?.[this.language]?.title || chrome.offlineAdTitle}
               .termsCloseLabel=${this.removeAdsUi?.terms_close_label || 'Close'}
-              .termsContent=${this.termsData?.[this.language]?.body || this.removeAdsUi?.terms_content || ''}
+              .termsContent=${this.termsData?.[this.language]?.body || chrome.externalLinkNote}
               .priceLabel=${this.removeAdsPrice}
               .statusLabel=${this.removeAdsStatusMessage}
               .purchased=${this.isAdsRemoved}

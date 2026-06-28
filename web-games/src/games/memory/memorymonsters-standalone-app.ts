@@ -118,6 +118,10 @@ export class MemoryMonstersStandaloneApp extends LitElement {
     google_description?: Record<string, string>
   }> = []
 
+  // 規約は外部ライブ terms-of-use.json のみ（同梱フォールバック禁止）。未取得=オフライン通知を出す。high-low と同方式。
+  @state()
+  private termsData: Record<string, { title: string; body: string }> | null = null
+
   connectedCallback(): void {
     super.connectedCallback()
     { const t = getGameTitle('memory-battle'); if (t) document.title = t }
@@ -127,6 +131,8 @@ export class MemoryMonstersStandaloneApp extends LitElement {
     void this.loadConfig()
     // 「別のカードゲーム」一覧（Android=ライブ→失敗時バンドル / WEB=同一オリジン）。high-low と同方式。
     void this.loadCardGamesList()
+    // 規約（terms-of-use.json）＝外部ライブのみ。同梱フォールバックしない（high-low と同方式）。
+    void this.loadTermsOfUse()
     this.updateScale()
     window.addEventListener('resize', this.updateScale)
     window.visualViewport?.addEventListener('resize', this.updateScale)
@@ -431,6 +437,33 @@ export class MemoryMonstersStandaloneApp extends LitElement {
     }
   }
 
+  // 規約 JSON（terms-of-use.json）を **外部ライブのみ**取得。Android=app-flux ライブ / WEB=同一オリジン(本番サイト)。
+  // **AAB 同梱(appassets)へはフォールバックしない**（同梱の古いコピーを出すと出荷後に差し替え不能＝禁止）。
+  // 取得失敗（オフライン等）時は termsData=null のまま＝規約本文の代わりに「ネット必要」通知を出す（同梱の古い規約は出さない）。
+  private async loadTermsOfUse(): Promise<void> {
+    const url = this.isAndroidApp()
+      ? buildLiveDataUrl('web-games/game-assets/configs/terms-of-use.json')
+      : buildGameAssetUrl('configs/terms-of-use.json')
+    try {
+      const res = await fetch(url, { cache: 'no-store' })
+      if (!res.ok) return
+      const data = (await res.json()) as Record<string, { title: string; body: string }>
+      if (data && typeof data === 'object') this.termsData = data
+    } catch {
+      // 外部ライブ取得失敗＝規約は同梱へフォールバックしない（オフライン通知を出す）。
+    }
+  }
+
+  // 規約は外部ライブ(termsData)が唯一の正。未取得(オフライン)時は共有 chrome の「ネット必要」文言を出す（同梱の古い規約ではない）。
+  private get termsTitleOrOfflineNotice(): string {
+    const t = this.termsData?.[this.language]?.title
+    return t && t.trim() ? t : getSharedChromeText(this.language).offlineAdTitle
+  }
+  private get termsBodyOrOfflineNotice(): string {
+    const b = this.termsData?.[this.language]?.body
+    return b && b.trim() ? b : getSharedChromeText(this.language).externalLinkNote
+  }
+
   // モーダルに渡す項目：現在のゲーム(memory-battle)を除外し、web_published かつ非hidden を動的に。high-low otherGameItems と同一。
   private otherGameItems(): OtherGameItem[] {
     return this.cardGames
@@ -664,9 +697,9 @@ export class MemoryMonstersStandaloneApp extends LitElement {
       removeAdsPurchaseLabel: getLocalizedString(ads, 'purchase_button') || removeAdsUi?.purchase_label || 'Purchase',
       removeAdsCancelLabel: removeAdsUi?.cancel_label || 'Cancel',
       removeAdsTermsLabel: removeAdsUi?.terms_label || 'Terms',
-      removeAdsTermsTitle: removeAdsUi?.terms_title || 'Terms of Service',
+      removeAdsTermsTitle: this.termsTitleOrOfflineNotice,
       removeAdsTermsCloseLabel: removeAdsUi?.terms_close_label || 'Close',
-      removeAdsTermsContent: removeAdsUi?.terms_content || '',
+      removeAdsTermsContent: this.termsBodyOrOfflineNotice,
       removeAdsAlreadyPurchased: getLocalizedString(ads, 'already_purchased') || 'Already Purchased',
       removeAdsPurchaseFailedMessage: getLocalizedString(ads, 'purchase_failed') || 'Purchase failed. Please try again.',
       removeAdsPurchaseErrorMessage: getLocalizedString(ads, 'purchase_error') || 'An error occurred during purchase. Please try again.',

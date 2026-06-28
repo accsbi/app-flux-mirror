@@ -29,7 +29,6 @@ function androidAllowlistAssets() {
     `web-games/game-assets/configs/${game}_app_config.json`,
     'web-games/game-assets/configs/remove_ads_ui.json',
     'web-games/game-assets/configs/card-games-list.json', // 「別のカードゲーム」一覧（ライブ取得のバンドル fallback）
-    'web-games/game-assets/configs/terms-of-use.json',    // 規約（in-app モーダル・ライブ取得の fallback）
     `site-assets/images/games-apps/${game}/${game}-feat.webp`, // ヒーロー画像（このゲームの feat 1枚のみ）
     '_headers',
   ]
