@@ -12,6 +12,10 @@
 /:lang/games-apps/privacy-policy/   /:lang/privacy-policy/   301
 /:lang/games-apps/privacy-policy    /:lang/privacy-policy/   301
 
+# 利用規約（item_terms_of_use）（旧 games-apps 配下 → 現行の言語直下）
+/:lang/games-apps/item_terms_of_use/   /:lang/item_terms_of_use/   301
+/:lang/games-apps/item_terms_of_use    /:lang/item_terms_of_use/   301
+
 # 素のハブ（index.html を持たない）→ 言語トップ
 /:lang/games-apps/                  /:lang/                  301
 /:lang/games-apps                   /:lang/                  301
@@ -31,3 +35,18 @@
 /:lang/games-apps/flagsoftheworld    https://play.google.com/store/apps/details?id=com.app.flagsoftheworld      301
 /:lang/games-apps/kaitensushimaster/ https://play.google.com/store/apps/details?id=com.game.kaitensushimaster  301
 /:lang/games-apps/kaitensushimaster  https://play.google.com/store/apps/details?id=com.game.kaitensushimaster  301
+
+# さらに古い構造 /{lang}/mobile-app/{slug}（games-apps 以前）。同じく各 Google Play ストアへ 301。
+# mobile-app 配下に実ページは無い（全て旧URL）。games-apps と同じ slug→store 対応を対称に持つ。
+/:lang/mobile-app/blackjack_3in1/    https://play.google.com/store/apps/details?id=com.game.playingcardshub    301
+/:lang/mobile-app/blackjack_3in1     https://play.google.com/store/apps/details?id=com.game.playingcardshub    301
+/:lang/mobile-app/simple_poker/      https://play.google.com/store/apps/details?id=com.game.simple_poker        301
+/:lang/mobile-app/simple_poker       https://play.google.com/store/apps/details?id=com.game.simple_poker        301
+/:lang/mobile-app/simpleblackjack/   https://play.google.com/store/apps/details?id=com.game.simpleblackjack     301
+/:lang/mobile-app/simpleblackjack    https://play.google.com/store/apps/details?id=com.game.simpleblackjack     301
+/:lang/mobile-app/numtaplangquiz/    https://play.google.com/store/apps/details?id=com.numberquiz.app           301
+/:lang/mobile-app/numtaplangquiz     https://play.google.com/store/apps/details?id=com.numberquiz.app           301
+/:lang/mobile-app/flagsoftheworld/   https://play.google.com/store/apps/details?id=com.app.flagsoftheworld      301
+/:lang/mobile-app/flagsoftheworld    https://play.google.com/store/apps/details?id=com.app.flagsoftheworld      301
+/:lang/mobile-app/kaitensushimaster/ https://play.google.com/store/apps/details?id=com.game.kaitensushimaster  301
+/:lang/mobile-app/kaitensushimaster  https://play.google.com/store/apps/details?id=com.game.kaitensushimaster  301

@@ -89,6 +89,14 @@ function legacyGamesAppsRedirect(serveDir: string): Connect.NextHandleFunction {
   return (req, res, next) => {
     const url = req.url || '/'
     const [pathname, query = ''] = url.split('?')
+    // さらに古い構造 /{lang}/mobile-app/{slug}（games-apps 以前）→ 既知 slug は各 Play ストアへ 301。
+    // mobile-app 配下に実ページは無いので、未知 slug は触らず通常処理（→404）に流す。
+    const mob = pathname.match(/^\/([^/]+)\/mobile-app\/([^/]+)\/?$/)
+    if (mob) {
+      const storeUrl = LEGACY_APPFLUX_STORE[mob[2]]
+      if (storeUrl) { res.statusCode = 301; res.setHeader('Location', storeUrl); res.end(); return }
+      return next()
+    }
     const m = pathname.match(/^\/([^/]+)\/games-apps(\/.*)?$/)
     if (!m) return next()
     const lang = m[1]
