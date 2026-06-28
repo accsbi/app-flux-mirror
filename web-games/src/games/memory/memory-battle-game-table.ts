@@ -1991,7 +1991,6 @@ export class MemoryBattleGameTable extends LitElement {
           <section class="region-footer" aria-label="Footer Area">
             <game-footer-bar
               showFeedback
-              .feedbackLabel=${t.feedbackButton}
               @footer-feedback=${this.onFooterFeedback}
             ></game-footer-bar>
           </section>
@@ -2195,7 +2194,6 @@ export class MemoryBattleGameTable extends LitElement {
       <game-feedback
         .lang=${this.language}
         gameTitle="memory-battle-game"
-        .titleLabel=${t.feedbackTitle}
         .placeholder=${t.feedbackPlaceholder}
         .okLabel=${t.feedbackOk}
         .cancelLabel=${t.feedbackCancel}
