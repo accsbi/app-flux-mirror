@@ -74,6 +74,7 @@ const LEGACY_APPFLUX_STORE: Record<string, string> = {
   simple_poker: 'https://play.google.com/store/apps/details?id=com.game.simple_poker',
   simpleblackjack: 'https://play.google.com/store/apps/details?id=com.game.simpleblackjack',
   numtaplangquiz: 'https://play.google.com/store/apps/details?id=com.numberquiz.app',
+  number_quiz: 'https://play.google.com/store/apps/details?id=com.numberquiz.app',
   flagsoftheworld: 'https://play.google.com/store/apps/details?id=com.app.flagsoftheworld',
   kaitensushimaster: 'https://play.google.com/store/apps/details?id=com.game.kaitensushimaster',
 }
@@ -93,8 +94,11 @@ function legacyGamesAppsRedirect(serveDir: string): Connect.NextHandleFunction {
     // mobile-app 配下に実ページは無いので、未知 slug は触らず通常処理（→404）に流す。
     const mob = pathname.match(/^\/([^/]+)\/mobile-app\/([^/]+)\/?$/)
     if (mob) {
-      const storeUrl = LEGACY_APPFLUX_STORE[mob[2]]
+      const mLang = mob[1], mSlug = mob[2]
+      const storeUrl = LEGACY_APPFLUX_STORE[mSlug]
       if (storeUrl) { res.statusCode = 301; res.setHeader('Location', storeUrl); res.end(); return }
+      // mobile-app を剥がした言語直下ページが実在するなら 301（item_terms_of_use / privacy-policy 等）。
+      if (indexExists(`/${mLang}/${mSlug}`)) return redirect(res, `/${mLang}/${mSlug}/`, query)
       return next()
     }
     const m = pathname.match(/^\/([^/]+)\/games-apps(\/.*)?$/)
