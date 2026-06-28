@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Memory Battle — テストケース仕様書（00005_memory-battle）</title>
+<style>
+  :root { color-scheme: dark; }
+  body { font-family: system-ui, "Noto Sans JP", sans-serif; background:#0d1215; color:#e7eef0; margin:0; padding:24px; line-height:1.6; }
+  h1 { font-size:20px; border-bottom:2px solid #d4af37; padding-bottom:8px; }
+  h2 { font-size:16px; color:#d4af37; margin-top:28px; }
+  p.note { color:#9fb0b5; font-size:13px; }
+  table { border-collapse:collapse; width:100%; margin:12px 0 24px; font-size:13px; }
+  th, td { border:1px solid #2a3a40; padding:6px 8px; vertical-align:top; text-align:left; }
+  th { background:#16232a; color:#d4af37; position:sticky; top:0; }
+  td.no { white-space:nowrap; font-weight:bold; color:#9fd; }
+  .j { font-weight:bold; }
+  .j-pend { color:#e0b020; }      /* 未実施 */
+  .j-ok   { color:#5fd35f; }      /* OK */
+  .j-ng   { color:#ff6b6b; }      /* NG */
+  .j-na   { color:#888; }         /* 対象外 */
+  code { background:#16232a; padding:1px 5px; border-radius:4px; color:#9fd; }
+  .legend span { margin-right:16px; }
+</style>
+</head>
+<body>
+<h1>Memory Battle — テストケース仕様書（00005_memory-battle / com.game.highandlow ハブ系・WEB描画）</h1>
+<p class="note">
+  ルール §0「テストケース先行」に基づき<strong>期待結果を先に確定</strong>。確証（Playwright render 実測）は
+  <code>e2e_test/00005_memory-battle/test-log.html</code> へ時系列追記＋<code>screenshots/*.jpg</code>（軽量・ライトボックス）で証跡を残す。
+  <strong>ミスを OK と書かない</strong>。手本＝<code>00006_high-low</code> / <code>00004_old-maid</code>。
+</p>
+<p class="note">
+  対象入口＝<code>web-games/android/memory-battle.html</code>（Android ローダー・WEB で描画／Flutter 不要）。
+  カスタム要素＝<code>memorymonsters-standalone-app</code>（メニュー）→ START → <code>memory-battle-standalone-app</code>
+  → <code>memory-battle-game-table</code>（タイトル＝ステージ選択 → 練習/CPU 対戦）。共通部品＝
+  <code>standalone-game-menu</code> / <code>settings-panel</code> / <code>guide-overview-panel</code> / <code>remove-ads-dialog-panel</code>。
+  実行＝<code>GAME=memory-battle npx playwright test e2e_test/00005_memory-battle/specs</code>（Pixel5 393×851）。
+</p>
+<p class="legend note">判定:
+  <span class="j j-pend">未実施</span>
+  <span class="j j-ok">OK</span>
+  <span class="j j-ng">NG</span>
+  <span class="j j-na">対象外</span>
+  （自動確証の最終結果は test-log.html 参照）
+</p>
+
+<h2>A. 起動・WebView ホスト・テーマ（実機・人間確認）</h2>
+<table>
+<tr><th>NO</th><th>対象画面</th><th>前提</th><th>操作</th><th>期待結果</th><th>判定</th></tr>
+<tr><td class="no">A-01</td><td>アプリ起動</td><td>debug APK を実機/エミュへ install</td><td>ランチャーから起動</td><td>クラッシュ無く WebView に Memory Battle メニュー表示。白画面/ANR 無し。</td><td class="j j-pend">未実施(実機)</td></tr>
+<tr><td class="no">A-02</td><td>ステータスバー/SafeArea</td><td>ノッチ端末</td><td>上下端を目視</td><td>WebView がバー内側へ inset。隙間・見切れ・重なり無し。</td><td class="j j-pend">未実施(実機)</td></tr>
+<tr><td class="no">A-03</td><td>ランチャーアイコン</td><td>—</td><td>アイコン目視</td><td>Memory Battle のアイコン。マスクで欠けない。</td><td class="j j-pend">未実施(実機)</td></tr>
+</table>
+
+<h2>B. メニュー（Android 入口・共通化）— specs: menu.spec.ts</h2>
+<table>
+<tr><th>NO</th><th>対象画面</th><th>前提</th><th>操作</th><th>期待結果</th><th>判定</th></tr>
+<tr><td class="no">APP-001</td><td>メニュー描画</td><td><code>__ANDROID_APP__=true</code> 注入</td><td>メニュー表示</td><td><code>standalone-game-menu</code> 可視・タイトル非空・<code>.menu-btn</code> ちょうど6個（START / Guide / Settings / Remove Ads / Other Card Games / News）。</td><td class="j j-ok">OK</td></tr>
+<tr><td class="no">APP-002</td><td>Ver 表示</td><td>—</td><td>「Ver :」確認</td><td>版数が非空で表示。memory は Flutter 未移行のため config 静的値 <code>1.0.0</code>（__APP_VERSION__ 同期は対象外）。</td><td class="j j-ok">OK</td></tr>
+<tr><td class="no">MENU-001</td><td>START 遷移</td><td>—</td><td>START をタップ</td><td><code>memory-battle-game-table</code> 表示＝ステージ選択 <code>.stage-select-grid</code>。<code>.stage-select-btn</code> は 練習(1)+STAGE1..10(10)=<strong>11個</strong>・敵サムネ表示。</td><td class="j j-ok">OK</td></tr>
+<tr><td class="no">MENU-002</td><td>Guide/概要</td><td>—</td><td>Guide をタップ</td><td><code>guide-overview-panel</code> 表示・h3 非空・本文/画像あり（ゲーム内ガイドと同一 config ソース）。</td><td class="j j-ok">OK</td></tr>
+<tr><td class="no">MENU-003</td><td>Settings</td><td>—</td><td>Settings をタップ</td><td><code>settings-panel</code> 表示・タイトル非空。</td><td class="j j-ok">OK</td></tr>
+<tr><td class="no">MENU-004</td><td>Remove Ads</td><td>—</td><td>Remove Ads をタップ</td><td><code>remove-ads-dialog-panel</code> 表示・タイトル非空。</td><td class="j j-ok">OK</td></tr>
+<tr><td class="no">MENU-004b</td><td>Remove Ads 閉じ</td><td>ダイアログ表示中</td><td>Cancel をタップ</td><td>ダイアログが閉じる（<code>remove-ads-close</code> 配線あり）。</td><td class="j j-ok">OK</td></tr>
+<tr><td class="no">MENU-005</td><td>Other Card Games</td><td>—</td><td>Other Card Games をタップ</td><td><strong>期待（手本=high-low/old-maid）：<code>other-games-modal-panel</code> が開く</strong>。実際＝<strong>何も起きない</strong>（ボタンは出るが遷移しない）。<code>memorymonsters-standalone-app</code> が <code>@menu-other-games</code> を購読していない（high-low が FIX-2 で直した BUG-2 と同型の未配線）。</td><td class="j j-ng">NG(欠陥)</td></tr>
+<tr><td class="no">MENU-006</td><td>News / Updates</td><td>—</td><td>News をタップ</td><td><strong>期待：<code>news-info-modal-panel</code> が開く</strong>。実際＝<strong>何も起きない</strong>。<code>@menu-news</code> 未配線（同上 BUG-2 同型）。</td><td class="j j-ng">NG(欠陥)</td></tr>
+</table>
+
+<h2>C. 設定・言語 — specs: settings.spec.ts</h2>
+<table>
+<tr><th>NO</th><th>対象画面</th><th>前提</th><th>操作</th><th>期待結果</th><th>判定</th></tr>
+<tr><td class="no">SETTINGS-001</td><td>効果音トグル</td><td>設定表示</td><td>OFF→ON</td><td><code>.binary-toggle</code> の active が切替わる。</td><td class="j j-ok">OK</td></tr>
+<tr><td class="no">SETTINGS-002</td><td>BGM トグル</td><td>設定表示</td><td>ON→OFF</td><td>active が切替わる。</td><td class="j j-ok">OK</td></tr>
+<tr><td class="no">SETTINGS-003</td><td>設定閉じ</td><td>設定表示</td><td>OK</td><td>設定が閉じてメニュー復帰。</td><td class="j j-ok">OK</td></tr>
+<tr><td class="no">LANG-001</td><td>言語切替</td><td>en/ja/zh</td><td>language-select で切替→OK</td><td><code>playingcardshub_language</code> が更新され、メニュー文言（Guide ボタン等）が切替後言語で再描画。</td><td class="j j-ok">OK(en↔ja↔zh)</td></tr>
+</table>
+
+<h2>D. ゲーム（START→ステージ選択→練習盤面 smoke）— specs: game.spec.ts</h2>
+<p class="note">CPU 対戦の完走・勝敗ロジック詳細は対象外（§1.3）。一人用(練習)を最短で開始し盤面描画まで確認。</p>
+<table>
+<tr><th>NO</th><th>対象画面</th><th>前提</th><th>操作</th><th>期待結果</th><th>判定</th></tr>
+<tr><td class="no">GAME-001</td><td>ステージ選択</td><td>START 済</td><td>画面確認</td><td>練習+STAGE1..10=11ボタン・敵サムネ(<code>.stage-select-thumb</code>)1枚以上。</td><td class="j j-ok">OK</td></tr>
+<tr><td class="no">GAME-002</td><td>練習設定</td><td>ステージ選択</td><td>「1人用(練習)で遊ぶ」をタップ</td><td><code>.practice-select</code>（カード数）＋開始ボタン(<code>.primary-btn</code>)が操作可能。</td><td class="j j-ok">OK</td></tr>
+<tr><td class="no">GAME-003</td><td>練習盤面描画</td><td>練習設定</td><td>開始</td><td><code>.battle-panel</code>＋<code>.card-grid</code>＋<code>.memory-card</code>（配り完了で12枚以上＝既定20）＋離脱(<code>.quit-battle-btn</code>)。</td><td class="j j-ok">OK</td></tr>
+<tr><td class="no">GAME-004</td><td>カード1手 smoke</td><td>練習盤面</td><td>操作可能カードを1枚タップ</td><td>例外なく盤面(<code>.card-grid</code>)が保持される。</td><td class="j j-ok">OK</td></tr>
+<tr><td class="no">GAME-005</td><td>STAGE 1（CPU 入口）</td><td>ステージ選択</td><td>STAGE 1 をタップ</td><td>対戦前画面(<code>.content-card</code>＋<code>.stack-actions</code>)が表示（CPU 戦入口・smoke）。</td><td class="j j-ok">OK</td></tr>
+</table>
+
+<h2>E. UI 寸法・重なり（§2 観点・WebView 基準・目視）— specs: ui.spec.ts</h2>
+<table>
+<tr><th>NO</th><th>対象</th><th>前提</th><th>操作</th><th>期待結果</th><th>判定</th></tr>
+<tr><td class="no">UI-001</td><td>ステージ選択 11ボタン</td><td>START 済</td><td>寸法/配置を実測</td><td>各ボタン縦≥44px・縦に整列・重ならない・横スクロール無。</td><td class="j j-ok">OK</td></tr>
+<tr><td class="no">UI-002</td><td>練習盤面 card-grid</td><td>練習盤面</td><td>位置/横幅を実測</td><td>card-grid が画面内・横スクロール無。<strong>所見：離脱(Stop)ボタンは on-screen ≈26px と小さい</strong>（既存設計・≥88px 未満。本タスクで盤面UIは改修せず所見として記録）。</td><td class="j j-ok">OK（所見あり）</td></tr>
+<tr><td class="no">UI-003</td><td>初回ルール説明</td><td><code>memory-battle_rules_hidden</code> 未設定</td><td>START→オーバーレイ</td><td>OK ボタン縦≥48px・本文可読・枠内に収まる。「次回から表示しない」＋OK で閉じる。</td><td class="j j-ok">OK</td></tr>
+</table>
+
+<h2>F. レスポンシブ（360×800 / 412×915）— specs: responsive.spec.ts</h2>
+<table>
+<tr><th>NO</th><th>対象</th><th>前提</th><th>操作</th><th>期待結果</th><th>判定</th></tr>
+<tr><td class="no">RESPONSIVE-001</td><td>メニュー</td><td>各 viewport</td><td>表示</td><td>横スクロール無・6ボタン タップ可寸法（縦≥36/横≥48）。</td><td class="j j-ok">OK</td></tr>
+<tr><td class="no">RESPONSIVE-002</td><td>メニューモーダル</td><td>各 viewport</td><td>Guide/Settings/RemoveAds 開閉</td><td>各モーダルが画面幅内・横スクロール無・各々閉じられる。</td><td class="j j-ok">OK</td></tr>
+<tr><td class="no">RESPONSIVE-003</td><td>ステージ選択ボタン</td><td>各 viewport</td><td>配置確認</td><td>11ボタンが縦に整列・重ならない・横スクロール無。</td><td class="j j-ok">OK</td></tr>
+<tr><td class="no">RESPONSIVE-004</td><td>練習盤面</td><td>各 viewport</td><td>練習開始</td><td>card-grid が画面幅内・横スクロール無。</td><td class="j j-ok">OK</td></tr>
+</table>
+
+<h2>G. エラー（console / network）— specs: errors.spec.ts</h2>
+<p class="note">広告・解析・音(ogg/mp3 等)の想定失敗は除外（IGNORE 正規表現）。</p>
+<table>
+<tr><th>NO</th><th>対象</th><th>前提</th><th>操作</th><th>期待結果</th><th>判定</th></tr>
+<tr><td class="no">ERROR-001</td><td>メニュー初期表示</td><td>networkidle</td><td>表示</td><td><code>console.error</code> / 未処理例外が 0 件。</td><td class="j j-ok">OK</td></tr>
+<tr><td class="no">ERROR-002</td><td>練習盤面まで</td><td>networkidle</td><td>START→練習→盤面</td><td>HTTP≥400 / 読込失敗 / 例外が 0 件（設定・アセット実フェッチ一巡）。</td><td class="j j-ok">OK</td></tr>
+</table>
+
+<h2>H. 広告・課金（Web モック挙動のみ・実広告/実購入は実機）</h2>
+<p class="note">広告タイミング（Web 現状）= CPU対戦:プレイヤー5ペア折返し / 一人用:ゲーム終了。実広告・実購入・払い戻し救済 consume は実機で人間確認。</p>
+<table>
+<tr><th>NO</th><th>対象</th><th>前提</th><th>操作</th><th>期待結果</th><th>判定</th></tr>
+<tr><td class="no">ADS-01</td><td>インタースティシャル</td><td>実機・オンライン</td><td>広告点到達</td><td>本番ユニットでテスト広告→onComplete で続行。</td><td class="j j-pend">未実施(実機)</td></tr>
+<tr><td class="no">BILL-01</td><td>Remove Ads 購入/復元/DEBUG consume</td><td>テストアカウント</td><td>購入/復元/consume</td><td>removeAds 反映・復元・払い戻し救済 consume（§0b 必須）。</td><td class="j j-pend">未実施(実機)</td></tr>
+</table>
+
+<p class="note">
+  ※ 確証の最終結果（OK/NG・根拠・スクショ）は <a href="test-log.html" style="color:#9fd">test-log.html</a> に時系列で残す。
+  <strong>MENU-005 / MENU-006 は NG（既知欠陥：Other/News ボタンが未配線で遷移しない）</strong>。
+</p>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Memory Battle — テストログ（00005_memory-battle）時系列</title>
+<style>
+  :root { color-scheme: dark; }
+  body { font-family: system-ui,"Noto Sans JP",sans-serif; background:#0d1215; color:#e7eef0; margin:0; padding:24px; line-height:1.6; }
+  h1 { font-size:20px; border-bottom:2px solid #d4af37; padding-bottom:8px; }
+  h2 { font-size:16px; color:#d4af37; margin-top:30px; border-left:4px solid #d4af37; padding-left:8px; }
+  table { border-collapse:collapse; width:100%; margin:12px 0 20px; font-size:13px; }
+  th,td { border:1px solid #2a3a40; padding:6px 8px; vertical-align:top; }
+  th { background:#16232a; color:#d4af37; }
+  td.no { white-space:nowrap; font-weight:bold; color:#9fd; }
+  .j { font-weight:bold; white-space:nowrap; }
+  .ok{color:#5fd35f;} .ng{color:#ff6b6b;} .pend{color:#e0b020;} .na{color:#888;}
+  code { background:#16232a; padding:1px 5px; border-radius:4px; color:#9fd; font-size:12px; }
+  img.thumb { height:150px; border:1px solid #2a3a40; border-radius:6px; cursor:zoom-in; vertical-align:middle; background:#000; margin:2px; }
+  .meta { color:#9fb0b5; font-size:13px; }
+  .fix { background:#13251a; border:1px solid #2f6b3f; border-radius:6px; padding:10px 14px; margin:8px 0; }
+  .bug { background:#2a1414; border:1px solid #6b2f2f; border-radius:6px; padding:10px 14px; margin:8px 0; }
+  #lb { display:none; position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:99; align-items:center; justify-content:center; cursor:zoom-out; }
+  #lb img { max-width:96vw; max-height:96vh; }
+</style>
+</head>
+<body>
+<h1>Memory Battle — テストログ（00005_memory-battle / WEB 描画・Android ローダー）</h1>
+<p class="meta">
+  期待結果＝<a href="test-cases.html" style="color:#9fd">test-cases.html</a>。本ログは確証（Playwright render 実測）を時系列で追記。
+  画像はサムネ→クリックで拡大（ライトボックス）。<strong>ミスを OK と書かない</strong>＝根拠（操作結果・console・実フェッチ先）を併記。
+</p>
+
+<h2>① 実行情報</h2>
+<table>
+<tr><th>項目</th><th>内容</th></tr>
+<tr><td>実行日</td><td>2026-06-28</td></tr>
+<tr><td>対象</td><td>Android ローダー <code>web-games/android/memory-battle.html</code> を Android モード(<code>__ANDROID_APP__=true</code>)で WEB 描画（Flutter 不要）</td></tr>
+<tr><td>手段</td><td>Playwright Chromium / Pixel5 相当（393×851, dpr2）。vite <code>:5210</code>。<code>GAME=memory-battle npx playwright test e2e_test/00005_memory-battle/specs --reporter=list</code></td></tr>
+<tr><td>注入</td><td><code>playingcardshub_language</code>=en/ja/zh / <code>playingcardshub_initial_setup_completed=true</code> / <code>memory-battle_rules_hidden=true</code>（ルール overlay を決定的に省略。UI-003 のみ false で overlay 検証）/ <code>AndroidBilling</code> モック</td></tr>
+<tr><td>結果</td><td><strong>77 passed / 0 failed</strong>（en/ja/zh × menu/settings/game/ui/responsive/errors）。証跡 JPG 77枚 <code>screenshots/</code>。</td></tr>
+</table>
+
+<h2>② 確認した欠陥（NG・要修正）</h2>
+<div class="bug">
+<strong>BUG-A（Other Card Games / News ボタンが無反応＝遷移しない）</strong>：
+共通メニュー部品 <code>standalone-game-menu</code> は <code>menu-other-games</code> / <code>menu-news</code> イベントを発火するだけ。
+<code>memorymonsters-standalone-app</code> は <code>@menu-other-games</code> / <code>@menu-news</code> を<strong>購読しておらず、対応モーダル(<code>other-games-modal-panel</code> / <code>news-info-modal-panel</code>)も配線していない</strong>。
+→ ボタンは6個表示されるが、Other/News をタップしても<strong>モーダルも外部遷移も起きずメニューに留まる</strong>（証跡 MENU-005 / MENU-006）。
+これは high-low が <code>00006_high-low/test-log.html</code> の <strong>BUG-2/FIX-2</strong> で既に修正した欠陥と<strong>同型</strong>（high-low は <code>news-info-modal-panel</code> / <code>other-games-modal-panel</code> を配線済）。memory は未修正のまま残存。
+<br><strong>判定＝NG（遷移欠落）。修正方針＝high-low FIX-2 と同じく共有部品を配線（独自実装せず再利用）。本タスクは E2E 作成のためゲーム本体は改修せず、回帰として現状(無反応)を固定＋ここに明記。</strong>
+</div>
+
+<h2>③ 所見（既存設計・要観察）</h2>
+<div class="fix">
+<strong>OBS-1（離脱 Stop ボタンが小さい）</strong>：練習/対戦盤面の離脱(Stop)ボタンは on-screen ≈26px。
+8px グリッド/操作ボタン≥88px の基準に対し小さい（既存ゲームの設計値）。本タスクで盤面UIは改修せず所見として記録（UI-002）。
+盤面カードグリッド・ヘッダー(Home/Settings/Guide)・COIN は重なり/見切れ無しで描画。
+</div>
+
+<h2>④ 確証結果（レンダー実測・スクショ証跡）</h2>
+<table>
+<tr><th>NO</th><th>対象</th><th>操作</th><th>期待</th><th>結果（根拠）</th><th>判定</th><th>証跡(en/ja/zh)</th></tr>
+
+<tr><td class="no">APP-001</td><td>メニュー描画</td><td>表示</td><td>6ボタン・タイトル非空</td><td>標準メニュー6個(START/Guide/Settings/Remove Ads/Other Card Games/News)・タイトル「Classic Simple Memory Battle」</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/APP-001-en.jpg"><img class="thumb" src="screenshots/APP-001-ja.jpg"><img class="thumb" src="screenshots/APP-001-zh.jpg"></td></tr>
+
+<tr><td class="no">APP-002</td><td>Ver 表示</td><td>確認</td><td>版数非空</td><td>「Ver : 1.0.0」表示（config 静的値。memory は Flutter 未移行）</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/APP-002-en.jpg"></td></tr>
+
+<tr><td class="no">MENU-001</td><td>START 遷移</td><td>START</td><td>ステージ選択(11)</td><td><code>memory-battle-game-table</code>＋<code>.stage-select-grid</code>・<code>.stage-select-btn</code>×11（練習+STAGE1..10）・敵サムネ表示</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/MENU-001-en.jpg"><img class="thumb" src="screenshots/MENU-001-ja.jpg"><img class="thumb" src="screenshots/MENU-001-zh.jpg"></td></tr>
+
+<tr><td class="no">MENU-002</td><td>Guide</td><td>Guide</td><td>ガイド表示</td><td><code>guide-overview-panel</code> 可視・h3「Guide / Overview」・本文あり</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/MENU-002-en.jpg"><img class="thumb" src="screenshots/MENU-002-ja.jpg"><img class="thumb" src="screenshots/MENU-002-zh.jpg"></td></tr>
+
+<tr><td class="no">MENU-003</td><td>Settings</td><td>Settings</td><td>設定表示</td><td><code>settings-panel</code> 可視・タイトル非空</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/MENU-003-en.jpg"><img class="thumb" src="screenshots/MENU-003-ja.jpg"><img class="thumb" src="screenshots/MENU-003-zh.jpg"></td></tr>
+
+<tr><td class="no">MENU-004</td><td>Remove Ads</td><td>Remove Ads</td><td>ダイアログ表示</td><td><code>remove-ads-dialog-panel</code> 可視・タイトル非空</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/MENU-004-en.jpg"><img class="thumb" src="screenshots/MENU-004-ja.jpg"><img class="thumb" src="screenshots/MENU-004-zh.jpg"></td></tr>
+
+<tr><td class="no">MENU-004b</td><td>Remove Ads 閉じ</td><td>Cancel</td><td>閉じる</td><td>Cancel で <code>remove-ads-dialog-panel</code> が hidden</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/MENU-004b-en.jpg"><img class="thumb" src="screenshots/MENU-004b-ja.jpg"><img class="thumb" src="screenshots/MENU-004b-zh.jpg"></td></tr>
+
+<tr><td class="no">MENU-005</td><td>Other Card Games</td><td>タップ</td><td>(手本)モーダルが開く</td><td><strong>何も起きない</strong>＝<code>other-games-modal-panel</code> 0件・メニューに留まる。<code>@menu-other-games</code> 未配線（BUG-A）</td><td class="j ng">NG</td>
+<td><img class="thumb" src="screenshots/MENU-005-en.jpg"><img class="thumb" src="screenshots/MENU-005-ja.jpg"><img class="thumb" src="screenshots/MENU-005-zh.jpg"></td></tr>
+
+<tr><td class="no">MENU-006</td><td>News / Updates</td><td>タップ</td><td>(手本)モーダルが開く</td><td><strong>何も起きない</strong>＝<code>news-info-modal-panel</code> 0件・メニューに留まる。<code>@menu-news</code> 未配線（BUG-A）</td><td class="j ng">NG</td>
+<td><img class="thumb" src="screenshots/MENU-006-en.jpg"><img class="thumb" src="screenshots/MENU-006-ja.jpg"><img class="thumb" src="screenshots/MENU-006-zh.jpg"></td></tr>
+
+<tr><td class="no">SETTINGS-001/002</td><td>効果音/BGM トグル</td><td>OFF→ON / ON→OFF</td><td>active 切替</td><td><code>.binary-toggle</code> の <code>.mini-btn</code> active が両トグルで切替わる</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/SETTINGS-001-en.jpg"><img class="thumb" src="screenshots/SETTINGS-002-ja.jpg"></td></tr>
+
+<tr><td class="no">SETTINGS-003</td><td>設定閉じ</td><td>OK</td><td>メニュー復帰</td><td>設定 hidden→<code>standalone-game-menu</code> 復帰</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/SETTINGS-003-en.jpg"><img class="thumb" src="screenshots/SETTINGS-003-zh.jpg"></td></tr>
+
+<tr><td class="no">LANG-001</td><td>言語切替</td><td>en→ja / en→zh / ja→en</td><td>保存値＋文言変化</td><td><code>playingcardshub_language</code> 更新・Guide ボタン文言が切替後言語へ再描画（例 ja「ガイド / 概要」zh「指南」）</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/LANG-001-en-ja.jpg"><img class="thumb" src="screenshots/LANG-001-en-zh.jpg"><img class="thumb" src="screenshots/LANG-001-ja-en.jpg"></td></tr>
+
+<tr><td class="no">GAME-001</td><td>ステージ選択</td><td>確認</td><td>11ボタン＋敵サムネ</td><td>練習+STAGE1..10、<code>.stage-select-thumb</code> 多数（村人/盗賊/暗黒王…）</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/GAME-001-en.jpg"><img class="thumb" src="screenshots/GAME-001-ja.jpg"><img class="thumb" src="screenshots/GAME-001-zh.jpg"></td></tr>
+
+<tr><td class="no">GAME-002</td><td>練習設定</td><td>練習を選ぶ</td><td>カード数＋開始</td><td><code>.practice-select</code>＋<code>.primary-btn</code>(Start Practice) 操作可</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/GAME-002-en.jpg"><img class="thumb" src="screenshots/GAME-002-ja.jpg"><img class="thumb" src="screenshots/GAME-002-zh.jpg"></td></tr>
+
+<tr><td class="no">GAME-003</td><td>練習盤面描画</td><td>開始</td><td>card-grid＋カード</td><td><code>.battle-panel</code>＋<code>.card-grid</code>＋<code>.memory-card</code>（配り完了で20枚＝10ペア）＋Stop。ヘッダー/COIN/カードが重なり無し</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/GAME-003-en.jpg"><img class="thumb" src="screenshots/GAME-003-ja.jpg"><img class="thumb" src="screenshots/GAME-003-zh.jpg"></td></tr>
+
+<tr><td class="no">GAME-004</td><td>カード1手 smoke</td><td>1枚タップ</td><td>盤面保持</td><td>操作可能カードをタップしても例外なく card-grid 保持</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/GAME-004-en.jpg"><img class="thumb" src="screenshots/GAME-004-ja.jpg"></td></tr>
+
+<tr><td class="no">GAME-005</td><td>STAGE 1（CPU 入口）</td><td>STAGE 1</td><td>対戦前画面</td><td><code>.content-card</code>＋<code>.stack-actions</code> 表示（CPU 戦入口 smoke。完走は対象外）</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/GAME-005-en.jpg"><img class="thumb" src="screenshots/GAME-005-ja.jpg"><img class="thumb" src="screenshots/GAME-005-zh.jpg"></td></tr>
+
+<tr><td class="no">UI-001</td><td>ステージ選択寸法</td><td>実測</td><td>整列・重なり無</td><td>11ボタン 縦70-75px・縦整列・横スクロール無</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/UI-001-en.jpg"><img class="thumb" src="screenshots/UI-001-ja.jpg"></td></tr>
+
+<tr><td class="no">UI-002</td><td>練習盤面 収まり</td><td>実測</td><td>画面内・横スクロール無</td><td>card-grid 画面幅内・横スクロール無。<strong>所見：Stop ボタン≈26px と小（OBS-1）</strong></td><td class="j ok">OK(所見)</td>
+<td><img class="thumb" src="screenshots/UI-002-en.jpg"><img class="thumb" src="screenshots/UI-002-zh.jpg"></td></tr>
+
+<tr><td class="no">UI-003</td><td>初回ルール説明</td><td>START(rules 未非表示)</td><td>OK大・本文可読</td><td><code>.rules-overlay</code> 表示・OK ボタン大・本文4行可読・「Don't show again」あり・OK で閉じる</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/UI-003-en.jpg"><img class="thumb" src="screenshots/UI-003-ja.jpg"><img class="thumb" src="screenshots/UI-003-zh.jpg"></td></tr>
+
+<tr><td class="no">RESPONSIVE-001/003</td><td>360×800 / 412×915 メニュー・ステージ</td><td>表示</td><td>横スクロール無・整列</td><td>6ボタン タップ可寸法・ステージ11ボタン整列・横スクロール無（両 viewport）</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/RESPONSIVE-001-360x800.jpg"><img class="thumb" src="screenshots/RESPONSIVE-003-412x915.jpg"></td></tr>
+
+<tr><td class="no">RESPONSIVE-002/004</td><td>モーダル・練習盤面 収まり</td><td>開閉/開始</td><td>画面幅内</td><td>Guide/Settings/RemoveAds・card-grid いずれも画面幅内・横スクロール無</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/RESPONSIVE-002-360x800.jpg"><img class="thumb" src="screenshots/RESPONSIVE-004-412x915.jpg"></td></tr>
+
+<tr><td class="no">ERROR-001</td><td>メニュー初期</td><td>networkidle</td><td>console.error/例外 0</td><td>0 件（広告/解析/音は IGNORE 除外）</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/ERROR-001-en.jpg"></td></tr>
+
+<tr><td class="no">ERROR-002</td><td>練習盤面まで</td><td>START→練習→盤面</td><td>HTTP400+/失敗/例外 0</td><td>0 件（設定・アセット実フェッチ一巡）</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/ERROR-002-en.jpg"><img class="thumb" src="screenshots/ERROR-002-ja.jpg"></td></tr>
+
+<tr><td class="no">ADS/BILL</td><td>実広告・課金</td><td>実機</td><td>—</td><td>Web モックのみ。実広告/実購入/払い戻し救済 consume は実機で人間確認（§0b）</td><td class="j pend">未実施(実機)</td><td>—</td></tr>
+</table>
+
+<h2>⑤ FIX（2026-06-28・BUG-A 修正＝Other/News 配線）</h2>
+<div class="fix">
+<strong>FIX-A（BUG-A を解消）</strong>：<code>memorymonsters-standalone-app.ts</code> に high-low(<code>high-low-standalone-app.ts</code>) と<strong>同型</strong>で
+<code>@menu-other-games</code> / <code>@menu-news</code> を配線し、共通部品 <code>other-games-modal-panel</code> / <code>news-info-modal-panel</code> を再利用（独自実装せず）。
+移植内容：パネル import＋<code>OtherGameItem</code> 型／<code>@state isNewsOpen・isOtherGamesOpen・cardGames</code>／
+<code>onNews・closeNews・onOtherGames・closeOtherGames・loadCardGamesList・otherGameItems()</code>／<code>handleSystemBack</code> の両モーダル閉じ分岐／メニュー2配線／モーダル2描画。
+データソースは high-low と同一（<code>card-games-list.json</code>・<code>getSharedChromeText</code>・<code>buildAboutUrl</code>・<code>memoryConfig.app_info.play_store_url</code>）でハードコード無し。フォールバック不使用（§1c）。
+<br><strong>検証</strong>：<code>tsc --noEmit</code> エラー0／playwright メニュー spec <strong>27/27 OK</strong>（en/ja/zh で Other・News とも開く→✕で閉じてメニュー復帰）／全 spec <strong>77/77 OK</strong>（回帰なし）／<code>node tools/sync-android.mjs memory-battle</code> 成功（00005/assets 平坦化同期）。
+<br><strong>News の「最新版を確認」ボタンは非表示が正</strong>：<code>memory-battle_app_config.json</code> の <code>app_info.play_store_url</code> が空（<code>store_state=comingsoon</code>＝未公開）のため、<code>news-info-modal-panel</code> が仕様通り当該ボタンを出さない（単一 config ソース・偽 URL を足さない＝§1c）。
+<br><strong>証跡注記（正直記録）</strong>：上の ④ 表 MENU-005/006 の NG サムネ(<code>MENU-005/006-*.jpg</code>)は、本 FIX の playwright 再実行で<strong>同名上書き</strong>され現在はモーダル開状態（=FIX 後）を表示する（screenshots は git 未追跡で旧 NG 画像は復元不可）。NG 当時の判定根拠は ② BUG-A／④ NG 行の<strong>記述</strong>として保全。FIX 後の確定証跡は下表 <code>MENU-005/006-FIX-*.jpg</code>。
+</div>
+<table>
+<tr><th>NO</th><th>対象</th><th>操作</th><th>期待</th><th>結果（根拠）</th><th>判定</th><th>証跡(en/ja/zh)</th></tr>
+<tr><td class="no">MENU-005 (FIX)</td><td>Other Card Games</td><td>タップ→✕</td><td>モーダル開→閉</td><td><code>other-games-modal-panel</code> 可視・h3 非空（一覧に Simple Blackjack/Poker 等・memory-battle は自身除外）。✕で hidden→メニュー復帰</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/MENU-005-FIX-en.jpg"><img class="thumb" src="screenshots/MENU-005-FIX-ja.jpg"><img class="thumb" src="screenshots/MENU-005-FIX-zh.jpg"></td></tr>
+
+<tr><td class="no">MENU-006 (FIX)</td><td>News / Updates</td><td>タップ→✕</td><td>モーダル開→閉</td><td><code>news-info-modal-panel</code> 可視・h3「お知らせ・更新情報」等。「このアプリについて」「戻る」表示（store URL 空のため「最新版を確認」は仕様通り非表示）。✕で hidden→メニュー復帰</td><td class="j ok">OK</td>
+<td><img class="thumb" src="screenshots/MENU-006-FIX-en.jpg"><img class="thumb" src="screenshots/MENU-006-FIX-ja.jpg"><img class="thumb" src="screenshots/MENU-006-FIX-zh.jpg"></td></tr>
+</table>
+
+<div id="lb" onclick="this.style.display='none'"><img></div>
+<script>
+  document.querySelectorAll('img.thumb').forEach(function(t){
+    t.addEventListener('click', function(){
+      var lb = document.getElementById('lb');
+      lb.querySelector('img').src = t.src;
+      lb.style.display = 'flex';
+    });
+  });
+</script>
+</body>
+</html>

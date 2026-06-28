@@ -25,7 +25,7 @@ import {
   saveBgmEnabledSetting
 } from '../../shared/infra/bgm-setting'
 import { clearLocalStoragePreservingProgress } from '../../shared/infra/storage-utils'
-import { MEMORY_BATTLE_WEB_LINKS, buildNewsUrl, buildDetailUrl, buildOtherCardGamesUrl } from '../../shared/infra/web-store-links'
+import { MEMORY_BATTLE_WEB_LINKS, buildNewsUrl, buildDetailUrl, buildOtherCardGamesUrl, buildAboutUrl, buildLiveDataUrl } from '../../shared/infra/web-store-links'
 import { buildGameAssetUrl } from '../../shared/infra/game-asset-url'
 import { playTrackedEffect, stopAllEffects, clearEffectSuppression } from '../../shared/infra/submit-sound'
 import { applyInitialDefaultLanguage, markInitialSetupCompleted, shouldShowInitialSetup } from '../../shared/infra/initial-setup'
@@ -37,6 +37,10 @@ import '../../shared/ui/panels/guide-overview-panel'
 import '../../shared/ui/panels/remove-ads-dialog-panel'
 import { renderSettingsModal } from '../../shared/ui/panels/settings-modal'
 import '../../shared/ui/menu/standalone-game-menu'
+// お知らせ・別のカードゲームのモーダルは共通部品を再利用（high-low / old-maid と同一）。
+import '../../shared/ui/panels/news-info-modal-panel'
+import '../../shared/ui/panels/other-games-modal-panel'
+import type { OtherGameItem } from '../../shared/ui/panels/other-games-modal-panel'
 import './memory-battle-standalone-app'
 import { SceneFadeController, renderSceneFade, sceneFadeStyles, SCENE_FADE_MS } from '../../shared/ui/scene-fade'
 
@@ -99,6 +103,21 @@ export class MemoryMonstersStandaloneApp extends LitElement {
   @state()
   private isInitialSetupNoticeOpen = false
 
+  // お知らせ・更新情報 / 別のカードゲーム のアプリ内モーダル（high-low と同方式）。
+  @state()
+  private isNewsOpen = false
+
+  @state()
+  private isOtherGamesOpen = false
+
+  // card-games-list.json（games-list.csv 由来）。別のカードゲーム一覧に使う。
+  @state()
+  private cardGames: Array<{
+    file_name: string; title: string; google_play_store_url: string
+    store_state: string; web_published: boolean
+    google_description?: Record<string, string>
+  }> = []
+
   connectedCallback(): void {
     super.connectedCallback()
     { const t = getGameTitle('memory-battle'); if (t) document.title = t }
@@ -106,6 +125,8 @@ export class MemoryMonstersStandaloneApp extends LitElement {
     this.evaluateInitialSetup()
     this.syncRemoveAdsStateFromBridge()
     void this.loadConfig()
+    // 「別のカードゲーム」一覧（Android=ライブ→失敗時バンドル / WEB=同一オリジン）。high-low と同方式。
+    void this.loadCardGamesList()
     this.updateScale()
     window.addEventListener('resize', this.updateScale)
     window.visualViewport?.addEventListener('resize', this.updateScale)
@@ -361,6 +382,70 @@ export class MemoryMonstersStandaloneApp extends LitElement {
     this.isRemoveAdsOpen = false
   }
 
+  // 「お知らせ・更新情報」: 2ボタン式モーダル（最新版を確認/このアプリについて）。high-low onNews と同方式。
+  private onNews = (): void => {
+    this.playSubmit()
+    this.isNewsOpen = true
+    this.route = 'menu'
+    this.isRemoveAdsOpen = false
+    this.isCacheConfirmOpen = false
+    this.isSoundHelpOpen = false
+  }
+
+  private closeNews = (): void => {
+    this.playSubmit()
+    this.isNewsOpen = false
+  }
+
+  // 「別のカードゲーム」: アプリ内モーダルで一覧（Android のみメニューに表示）。high-low onOtherGames と同方式。
+  private onOtherGames = (): void => {
+    this.playSubmit()
+    this.isOtherGamesOpen = true
+    this.route = 'menu'
+    this.isRemoveAdsOpen = false
+    this.isCacheConfirmOpen = false
+    this.isSoundHelpOpen = false
+  }
+
+  private closeOtherGames = (): void => {
+    this.playSubmit()
+    this.isOtherGamesOpen = false
+  }
+
+  // 一覧 JSON（card-games-list.json）を読む。Android=ライブ(app-flux-mirror)→失敗時バンドル / WEB=同一オリジン。
+  // high-low loadCardGamesList と同一ロジック。全滅時は一覧空でモーダルは開く（致命的でない）。
+  private async loadCardGamesList(): Promise<void> {
+    const urls = [
+      this.isAndroidApp() ? buildLiveDataUrl('web-games/game-assets/configs/card-games-list.json') : '',
+      buildGameAssetUrl('configs/card-games-list.json'),
+    ].filter(Boolean)
+    for (const url of urls) {
+      try {
+        const res = await fetch(url, { cache: 'no-store' })
+        if (!res.ok) continue
+        const data = (await res.json()) as { games?: typeof this.cardGames }
+        if (Array.isArray(data.games)) { this.cardGames = data.games; return }
+      } catch {
+        // 次(フォールバック)へ。
+      }
+    }
+  }
+
+  // モーダルに渡す項目：現在のゲーム(memory-battle)を除外し、web_published かつ非hidden を動的に。high-low otherGameItems と同一。
+  private otherGameItems(): OtherGameItem[] {
+    return this.cardGames
+      .filter((g) => g.file_name !== 'memory-battle' && g.web_published && g.store_state !== 'hidden')
+      .map((g) => ({
+        title: g.title,
+        description: g.google_description?.[this.language] ?? g.google_description?.en ?? '',
+        featImageUrl: this.isAndroidApp()
+          ? buildLiveDataUrl(`site-assets/images/games-apps/${g.file_name}/${g.file_name}-feat.webp`)
+          : buildFeatureImageUrl(g.file_name),
+        storeUrl: g.store_state === 'button' ? g.google_play_store_url : '',
+        comingSoon: g.store_state === 'comingsoon',
+      }))
+  }
+
   private openClearCacheConfirm = (): void => {
     this.playSubmit()
     this.isCacheConfirmOpen = true
@@ -506,6 +591,16 @@ export class MemoryMonstersStandaloneApp extends LitElement {
       this.isRemoveAdsOpen = false
       return true
     }
+    if (this.isNewsOpen) {
+      this.playSubmit()
+      this.isNewsOpen = false
+      return true
+    }
+    if (this.isOtherGamesOpen) {
+      this.playSubmit()
+      this.isOtherGamesOpen = false
+      return true
+    }
     if (this.route === 'guide' || this.route === 'settings') {
       this.playSubmit()
       this.route = 'menu'
@@ -583,6 +678,13 @@ export class MemoryMonstersStandaloneApp extends LitElement {
       otherCardGames: chrome.otherCardGames,
       externalLinkNote: chrome.externalLinkNote,
       newsUrl: buildDetailUrl('memory-battle', this.language),
+      // お知らせモーダル（high-low と同じ chrome 単一ソース）
+      newsModalTitle: chrome.newsModalTitle,
+      checkLatest: chrome.checkLatest,
+      aboutThisApp: chrome.aboutThisApp,
+      comingSoon: chrome.comingSoon,
+      storeUrl: this.memoryConfig?.app_info?.play_store_url ?? '',
+      aboutUrl: buildAboutUrl('memory-battle', this.language),
       initialSetupTitle: chrome.initialSetupTitle,
       initialSetupDoneTitle: chrome.initialSetupDoneTitle,
       initialSetupDoneMessage: chrome.initialSetupDoneMessage,
@@ -638,6 +740,8 @@ export class MemoryMonstersStandaloneApp extends LitElement {
           @menu-guide=${this.openGuide}
           @menu-settings=${this.openSettings}
           @menu-extra=${this.openRemoveAds}
+          @menu-news=${this.onNews}
+          @menu-other-games=${this.onOtherGames}
         ></standalone-game-menu>
         ${this.route === 'guide'
         ? html`
@@ -691,6 +795,39 @@ export class MemoryMonstersStandaloneApp extends LitElement {
                     @remove-ads-purchase=${this.onRemoveAdsPurchase}
                     @remove-ads-close=${this.closeRemoveAds}
                   ></remove-ads-dialog-panel>
+                </section>
+              </main>
+            `
+        : null}
+        ${this.isNewsOpen
+        ? html`
+              <main class="modal-shell">
+                <section class="modal-card">
+                  <news-info-modal-panel
+                    .title=${t.newsModalTitle}
+                    .checkLatestLabel=${t.checkLatest}
+                    .aboutLabel=${t.aboutThisApp}
+                    .backLabel=${t.backLabel}
+                    .storeUrl=${t.storeUrl}
+                    .aboutUrl=${t.aboutUrl}
+                    @news-info-close=${this.closeNews}
+                  ></news-info-modal-panel>
+                </section>
+              </main>
+            `
+        : null}
+        ${this.isOtherGamesOpen
+        ? html`
+              <main class="modal-shell">
+                <section class="modal-card">
+                  <other-games-modal-panel
+                    .title=${t.otherCardGames}
+                    .games=${this.otherGameItems()}
+                    .playLabel=${'Google Play'}
+                    .comingSoonLabel=${t.comingSoon}
+                    .okLabel=${t.backLabel}
+                    @other-games-close=${this.closeOtherGames}
+                  ></other-games-modal-panel>
                 </section>
               </main>
             `
