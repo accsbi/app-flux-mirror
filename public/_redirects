@@ -4,6 +4,7 @@
 # 旧アプリに残った /{lang}/games-apps/... のレガシー URL を現行構造へ 301。
 # :lang は 1 セグメント（en / ja / zh …）にマッチ。言語はそのまま維持する。
 #
+
 # 重要: /{lang}/games-apps/{game}/（blackjack 等）は **現行の実在詳細ページ**。
 #       ここでは privacy-policy と素のハブだけを明示マッチさせ、ワイルドカード(*)で
 #       games-apps 全体を剥がさない＝詳細ページを壊さない。
