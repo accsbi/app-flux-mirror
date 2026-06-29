@@ -5,7 +5,7 @@
 //     `## [en]` / `## [ja]` / `## [zh]` の言語ブロック。各ブロックの先頭 `### 見出し`
 //     が記事タイトル、それ以降が本文（markdown 原文）。
 //   - 記事を増やすときは catalog/blog/ に MD を足すだけ（コード変更不要）。
-//     HTML スタブは `node scripts/build_blog_pages.mjs` で全記事ぶん生成する。
+//     HTML スタブは `node scripts/node/build_blog_pages.mjs` で全記事ぶん生成する。
 //
 // games-catalog.ts と同じ方針：データは catalog/ に集約し、Vite の import.meta.glob で
 // build 時に取り込み、JSON に潰さず markdown のまま描画する（人間が .md をレビューできる）。

@@ -270,3 +270,169 @@ No sign-up and no online play. Just a quick, relaxing card game with a classic, 
 ### [ 隐私政策（外部链接） ] {guide_overview_app}
 
 * [Privacy policy link](https://app-flux.com/zh/privacy-policy/)
+
+
+## [zh-TW] {Google / APP}
+
+### [ 應用程式標題 ] {google_description}
+
+經典二十一點 單機紙牌遊戲
+
+### [ 概述 ] {google_description}
+
+一款外觀經典、簡單的二十一點（Blackjack）紙牌遊戲。
+
+### [ 應用程式說明 ] {all}
+
+**Classic Simple Blackjack** 是一款可以獨自輕鬆遊玩、容易上手的二十一點。
+
+下注、抽牌，在不超過 21 點的前提下，盡量接近 21 點。
+
+無需註冊，也沒有線上對戰。這是一款外觀經典、沉穩的紙牌遊戲，很適合利用零碎時間遊玩。所有牌皆為隨機發放。
+
+### [ 應用程式特色 ] {google_description / site_description}
+
+* 專為直式畫面遊玩設計，單手握持手機也方便操作。
+* 即使在小螢幕手機上，也調整得清晰易讀、易於操作。
+* 支援 Android 8 以上，較舊的 Android 裝置也能流暢運行。
+* 已精簡並最佳化特殊演出與特效，輕巧又流暢。
+
+### [ 快速上手 ] {quick_start_app}
+
+* 在不超過 21 點的前提下，盡量接近 21 點。
+* 點 HIT 抽一張牌，點 STAND 停止。
+* 數字牌按數字計，J / Q / K 計為 10，A 計為 1 或 11。
+* 手牌強過莊家即可獲勝。
+
+### [ 玩法 ] {guide_overview_app / site_description}
+
+#### 牌面點數
+
+* 2〜10：按數字計。
+* J、Q、K：計為 10。
+* A：按對手牌更有利的方式計為 1 或 11。
+
+#### 步驟
+
+1. 你和莊家各發兩張牌（莊家有一張為暗牌）。
+2. 點 HIT 再抽一張，點 STAND 停止。
+3. 點數超過 21 即「爆牌」，本回合判負。
+4. 你停牌後，莊家會抽牌直到點數達到 17 或以上。
+5. 未爆牌且更接近 21 點的一方獲勝。
+
+* 如需退出，請點選左上角 HOME。
+
+#### 簡單提示
+
+* 12 或以上、且莊家明牌為 6 或以下時 → STAND。
+* 手牌含 A 且為 17 或以下時 → HIT。
+* 莊家明牌為 7 或以上時 → 爭取 17 或以上。
+
+### [ 內購項目 ] {google_description / guide_overview_app / site_description}
+
+* 廣告能協助我們持續製作與營運這款應用程式，感謝您的理解。
+* 一次購買即可移除廣告，還能在離線時（飛航模式、無訊號的地方等）遊玩。
+* 注：更新應用程式或開啟外部連結時，仍需要連網。
+
+### [ 注意事項 ] {google_description / guide_overview_app / site_description}
+
+* 不使用任何現金、獎品或加密資產。本應用程式並非用於賭博。
+* 如果運行變慢，請在選單的設定中清除快取。
+* 如果仍有問題，可在裝置設定中刪除這款應用程式的資料，恢復到初始狀態。
+
+### [ 支援語言 ] {google_description / site_description}
+
+* 英語 / 日語 / 中文（簡體）
+- 注：遊玩過程中的部分文字可能以英文顯示。
+
+### [ 聯絡我們 / 故障回報 ] {guide_overview_app}
+
+* 回報故障，請使用遊戲畫面的 FEEDBACK。
+* 如需回覆，請透過 [Contact form](https://app-flux.com/zh/contact/) 與我們聯絡。
+
+### [ 隱私權政策（外部連結） ] {guide_overview_app}
+
+* [Privacy policy link](https://app-flux.com/zh/privacy-policy/)
+
+
+## [zh-HK] {Google / APP}
+
+### [ 應用程式標題 ] {google_description}
+
+經典二十一點 單機紙牌遊戲
+
+### [ 概述 ] {google_description}
+
+一款外觀經典、玩法簡單嘅二十一點（Blackjack）紙牌遊戲。
+
+### [ 應用程式說明 ] {all}
+
+**Classic Simple Blackjack** 係一款可以自己一個輕鬆玩、好易上手嘅二十一點。
+
+落注、抽牌，喺唔超過 21 點嘅前提下，盡量接近 21 點。
+
+唔使註冊，亦冇網上對戰。呢款紙牌遊戲外觀經典、沉穩，好啱用零碎時間嚟玩。啲牌全部都係隨機派。
+
+### [ 應用程式特色 ] {google_description / site_description}
+
+* 專為直向畫面而設計，單手揸住部手機都易操作。
+* 就算喺細螢幕手機上面，都調校到清晰易睇、易操作。
+* 支援 Android 8 或以上，舊嘅 Android 裝置一樣可以順暢咁玩。
+* 已經精簡同優化咗特殊演出同特效，輕巧又流暢。
+
+### [ 快速上手 ] {quick_start_app}
+
+* 喺唔超過 21 點嘅前提下，盡量接近 21 點。
+* 撳 HIT 抽一張牌，撳 STAND 停手。
+* 數字牌就照數字計，J / Q / K 計做 10，A 計做 1 或者 11。
+* 手牌大過莊家就贏。
+
+### [ 玩法 ] {guide_overview_app / site_description}
+
+#### 牌面點數
+
+* 2〜10：照數字計。
+* J、Q、K：計做 10。
+* A：邊個對手牌有利就計做 1 或者 11。
+
+#### 步驟
+
+1. 你同莊家各發兩張牌（莊家有一張係暗牌）。
+2. 撳 HIT 再抽一張，撳 STAND 停手。
+3. 點數超過 21 就「爆牌」，呢個回合就輸。
+4. 你停牌之後，莊家會一路抽牌，抽到點數夠 17 或以上為止。
+5. 冇爆牌而又更接近 21 點嗰方就贏。
+
+* 想唔玩，撳左上角 HOME 就得。
+
+#### 簡單貼士
+
+* 12 或以上、而莊家明牌係 6 或以下嗰陣 → STAND。
+* 手牌有 A 而又係 17 或以下嗰陣 → HIT。
+* 莊家明牌係 7 或以上嗰陣 → 爭取 17 或以上。
+
+### [ 內購項目 ] {google_description / guide_overview_app / site_description}
+
+* 廣告可以幫我哋繼續製作同營運呢款應用程式，多謝你嘅體諒。
+* 課金一次就可以移除廣告，仲可以喺離線（飛行模式、冇訊號嘅地方等等）嗰陣玩。
+* 注：更新應用程式或者開外部連結嗰陣，一樣要連網。
+
+### [ 注意事項 ] {google_description / guide_overview_app / site_description}
+
+* 唔會用到任何現金、獎品或者加密資產。呢款應用程式唔係用嚟賭博。
+* 如果運行慢咗，可以喺選單嘅設定度清除快取。
+* 如果仲有問題，可以喺裝置設定度刪除呢款應用程式嘅資料，回復到最初狀態。
+
+### [ 支援語言 ] {google_description / site_description}
+
+* 英文 / 日文 / 中文（簡體）
+- 注：玩嗰陣有啲文字可能會用英文顯示。
+
+### [ 聯絡我哋 / 故障回報 ] {guide_overview_app}
+
+* 報告故障，請用遊戲畫面嘅 FEEDBACK。
+* 如果需要回覆，請透過 [Contact form](https://app-flux.com/zh/contact/) 搵我哋。
+
+### [ 私隱政策（外部連結） ] {guide_overview_app}
+
+* [Privacy policy link](https://app-flux.com/zh/privacy-policy/)

@@ -68,7 +68,7 @@
       "web_published": true,
       "google_description": {
         "ja": "クラシックなデザインのシンプルなカジノウォーです。",
-        "en": "A simple Casino War card game with a classic look. The higher card wins in a quick one-on-one showdown.",
+        "en": "A simple Casino War card game with a classic look. Higher card wins the duel.",
         "zh": "一款外观经典、简单的 Casino War。在快速的一对一对决中，点数大的牌获胜。"
       }
     },
@@ -88,11 +88,11 @@
       "file_name": "memory-battle",
       "title": "Classic Simple Memory Battle",
       "google_play_store_url": "https://play.google.com/store/apps/details?id=com.games.memorymonsters",
-      "store_state": "comingsoon",
+      "store_state": "button",
       "web_published": true,
       "google_description": {
         "ja": "クラシックデザインのシンプルな神経衰弱です。",
-        "en": "A simple memory-matching card game with a classic look. Play solo practice, or take on CPU rivals in battle mode.",
+        "en": "A simple memory-matching card game with a classic look. Solo or CPU battles.",
         "zh": "一款外观经典、简单的翻牌配对（记忆）游戏。可单人练习，也可在对战模式中挑战 CPU。"
       }
     },
@@ -104,7 +104,7 @@
       "web_published": true,
       "google_description": {
         "ja": "クラシックデザインのハイ＆ローです。",
-        "en": "A simple High & Low card game with a classic look. Play one-on-one against the CPU.",
+        "en": "A simple High & Low card game with a classic look. Play one-on-one vs CPU.",
         "zh": "一款外观经典、简单的高低牌（High & Low）。与 CPU 一对一对战。"
       }
     }

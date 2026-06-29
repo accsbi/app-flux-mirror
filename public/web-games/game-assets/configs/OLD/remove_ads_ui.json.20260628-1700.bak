@@ -1,0 +1,35 @@
+﻿{
+    "default_language":  "en",
+    "languages":  {
+                      "en":  {
+                                 "close_label":  "X",
+                                 "purchase_label":  "Purchase",
+                                 "cancel_label":  "Cancel",
+                                 "terms_label":  "Purchase Terms",
+                                 "terms_title":  "Terms of Service",
+                                 "terms_close_label":  "Close",
+                                 "purchase_message":  "Purchase is not implemented yet.",
+                                 "terms_content":  "Paid Item (In-App Purchase) Terms\n\nThese terms (\"Terms\") define the conditions for using paid items (\"Item\") provided in this app. By using this app, you agree to these Terms.\n\n1. About the Item\nThe Item is one-time purchase digital content. After purchase, users gain the right to use the Item in this app. Permanent availability is not guaranteed.\n\n2. Usage Environment\nThe Item is provided for the app/environment at purchase time. It may stop working due to OS updates, device changes, carrier/vendor changes, or similar reasons.\n\n3. Updates and Continuity\nThe developer is not obligated to continuously update or improve this app or the Item, and may change/suspend/terminate them without prior notice.\n\n4. Service Termination\nThe app or Item may be terminated for operational or technical reasons. After termination, the Item may no longer be usable.\n\n5. Refunds\nBecause this is digital content, refunds are generally not available after purchase. Platform policies (e.g. Google Play) apply.\n\n6. Disclaimer\nThe developer is not liable for any damages arising from use of this app or the Item. The app and Item are provided \"as is\".\n\n7. Changes to Terms\nThe developer may change these Terms as needed. Updated Terms take effect when posted in the app or related website."
+                             },
+                      "ja":  {
+                                 "close_label":  "X",
+                                 "purchase_label":  "購入する",
+                                 "cancel_label":  "キャンセル",
+                                 "terms_label":  "購入規約",
+                                 "terms_title":  "利用規約",
+                                 "terms_close_label":  "閉じる",
+                                 "purchase_message":  "購入機能は未実装です。",
+                                 "terms_content":  "有料アイテム（アプリ内課金）利用規約\n\n本規約（「本規約」）は、本アプリで提供される有料アイテム（「本アイテム」）の利用条件を定めるものです。本アプリを利用した時点で、本規約に同意したものとみなします。\n\n1. 本アイテムについて\n本アイテムは買い切り型のデジタルコンテンツです。購入後、利用者は本アプリ内で本アイテムを利用する権利を得ます。永続的な提供を保証するものではありません。\n\n2. 利用環境\n本アイテムは購入時点のアプリ・環境向けに提供されます。OS更新、端末変更、通信事業者・提供元の仕様変更などにより利用できなくなる場合があります。\n\n3. 更新・継続\n開発者は本アプリまたは本アイテムを継続して更新・改善する義務を負いません。予告なく変更・停止・終了する場合があります。\n\n4. サービス終了\n運営上または技術上の理由により、本アプリまたは本アイテムを終了する場合があります。終了後は本アイテムを利用できない場合があります。\n\n5. 返金\n本アイテムはデジタルコンテンツのため、購入後の返金は原則できません。返金可否はプラットフォーム（例：Google Play）の規定に従います。\n\n6. 免責\n本アプリまたは本アイテムの利用により生じた損害について、開発者は責任を負いません。本アプリおよび本アイテムは現状有姿で提供されます。\n\n7. 規約変更\n開発者は必要に応じて本規約を変更できるものとします。変更後の規約はアプリ内または関連サイトに掲載した時点で効力を生じます。"
+                             },
+                      "zh":  {
+                                 "close_label":  "X",
+                                 "purchase_label":  "购买",
+                                 "cancel_label":  "取消",
+                                 "terms_label":  "购买条款",
+                                 "terms_title":  "使用条款",
+                                 "terms_close_label":  "关闭",
+                                 "purchase_message":  "购买功能尚未实现。",
+                                 "terms_content":  "付费项目（应用内购买）使用条款\n\n本条款（“本条款”）规定了本应用提供的付费项目（“本项目”）的使用条件。使用本应用即视为您同意本条款。\n\n1. 关于本项目\n本项目为一次性购买的数字内容。购买后，用户获得在本应用内使用本项目的权利。我们不保证永久提供。\n\n2. 使用环境\n本项目面向购买时的应用与设备环境提供。由于系统更新、设备更换、运营商或服务提供方变更等原因，可能出现无法使用的情况。\n\n3. 更新与持续提供\n开发者不承担持续更新或改进本应用及本项目的义务。开发者可在不另行通知的情况下进行变更、暂停或终止。\n\n4. 服务终止\n出于运营或技术原因，本应用或本项目可能被终止。终止后，本项目可能无法继续使用。\n\n5. 退款\n本项目属于数字内容，购买后原则上不支持退款。是否退款以平台政策（例如 Google Play）为准。\n\n6. 免责声明\n因使用本应用或本项目产生的任何损失，开发者不承担责任。本应用与本项目按“现状”提供。\n\n7. 条款变更\n开发者可在必要时修改本条款。修改后的条款在应用内或相关网站发布后即生效。"
+                             }
+                  }
+}

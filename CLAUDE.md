@@ -57,3 +57,10 @@
 ## 5. 文章規範（日本語の説明・ガイド文）
 - `catalog/base_markdown/*_base.md` の日本語（概略・アプリの説明・ガイド・概要など）を書く/推敲するときは **[docs/japanese-writing-standard.md](docs/japanese-writing-standard.md)** に従う。
 - 特に「LLM っぽい表現の禁止」「冗長の排除」「演出の抑制」を点検する。
+
+## 6. scripts/ ディレクトリ規律（散らかし禁止・厳守）
+- **`scripts/` 直下は Python 実行の場**。`*.py`（と pyproject/uv.lock 等の Python 設定）だけを置く。**ファイルをバラバラに直下へ新規作成しない**。
+- **`.mjs`（Node 製の生成スクリプト）は `scripts/node/` に集約**。直下に置かない。新規 mjs も必ず `scripts/node/` に作る。呼び出しは `node scripts/node/<name>.mjs`。
+- **base MD 等のバックアップは `scripts/backup_base_md/<YYYY_MMDD>/` に集約**。スクリプト実行時に日次フォルダを **scripts/ 直下へ作らない**（`build_content.py` の `BACKUP_DIR` がこの規約。変更時も維持）。
+- **編集前の `.bak` は同階層 `scripts/OLD/`**（§3 の OLD 規約と同じ）。
+- 迷ったら新規ファイルを直下に置かず、用途別の既存フォルダ（`node/` `backup_base_md/` `OLD/`）に入れる。**勝手に直下へ散らかすのは違反**。

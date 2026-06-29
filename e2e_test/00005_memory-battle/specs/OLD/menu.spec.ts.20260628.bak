@@ -1,0 +1,101 @@
+import { test, expect } from '@playwright/test'
+import { LANGS, gotoMenu, snapAttach } from './_helpers'
+
+// APP-xxx 初期表示 / MENU-xxx メニュー全ボタン疎通（START/Guide/Settings/RemoveAds/Other/News）。
+// 全テストにケースID＋最低1 expect。固定 waitForTimeout は使わない（状態待ち）。
+
+for (const lang of LANGS) {
+  test.describe(`menu [${lang}]`, () => {
+    test.beforeEach(async ({ page }) => {
+      await gotoMenu(page, lang)
+    })
+
+    test(`APP-001 初期表示: メニュー描画・タイトル非空・6ボタン [${lang}]`, async ({ page }, info) => {
+      const menu = page.locator('standalone-game-menu')
+      await expect(menu).toBeVisible()
+      await expect(page.locator('.menu-btn')).toHaveCount(6)
+      const title = (await menu.locator('h1').first().innerText()).trim()
+      expect(title.length).toBeGreaterThan(0)
+      await snapAttach(page, info, `APP-001-${lang}`)
+    })
+
+    test(`APP-002 VER 表示が非空（memory は config 静的値 1.0.0・Flutter 未移行）[${lang}]`, async ({ page }, info) => {
+      // memory はまだ Flutter 未移行のため版数は config 静的値(1.0.0)。__APP_VERSION__ 同期は対象外。
+      const ver = page.locator('standalone-game-menu .version-text')
+      await expect(ver).toBeVisible()
+      await expect(ver).toContainText('1.0.0')
+      await snapAttach(page, info, `APP-002-${lang}`)
+    })
+
+    test(`MENU-001 START → 盤面のステージ選択(練習+STAGE1..10=11)へ遷移 [${lang}]`, async ({ page }, info) => {
+      await page.locator('.menu-btn').nth(0).click()
+      await expect(page.locator('memory-battle-game-table')).toBeVisible()
+      await expect(page.locator('.stage-select-grid')).toBeVisible()
+      await expect(page.locator('.stage-select-btn')).toHaveCount(11)
+      await expect(page.locator('.stage-select-btn--practice')).toBeVisible()
+      await snapAttach(page, info, `MENU-001-${lang}`)
+    })
+
+    test(`MENU-002 Guide → ガイド画面表示・本文非空 [${lang}]`, async ({ page }, info) => {
+      await page.locator('.menu-btn').nth(1).click()
+      const panel = page.locator('guide-overview-panel')
+      await expect(panel).toBeVisible()
+      await expect(panel.locator('h3')).not.toBeEmpty()
+      const bodyText = (await panel.locator('.guide-body').first().innerText().catch(() => '')).trim()
+      const hasImage = await panel.locator('.guide-image').count()
+      expect(bodyText.length > 0 || hasImage > 0).toBeTruthy()
+      await snapAttach(page, info, `MENU-002-${lang}`)
+    })
+
+    test(`MENU-003 Settings → 設定画面表示・タイトル非空 [${lang}]`, async ({ page }, info) => {
+      await page.locator('.menu-btn').nth(2).click()
+      const panel = page.locator('settings-panel')
+      await expect(panel).toBeVisible()
+      await expect(panel.locator('h3')).not.toBeEmpty()
+      await snapAttach(page, info, `MENU-003-${lang}`)
+    })
+
+    test(`MENU-004 Remove Ads → 広告削除モーダル表示・タイトル非空 [${lang}]`, async ({ page }, info) => {
+      await page.locator('.menu-btn').nth(3).click()
+      const panel = page.locator('remove-ads-dialog-panel')
+      await expect(panel).toBeVisible()
+      await expect(panel.locator('h3')).not.toBeEmpty()
+      await snapAttach(page, info, `MENU-004-${lang}`)
+    })
+
+    test(`MENU-004b Remove Ads → Cancel で閉じられる [${lang}]`, async ({ page }, info) => {
+      await page.locator('.menu-btn').nth(3).click()
+      const panel = page.locator('remove-ads-dialog-panel')
+      await expect(panel).toBeVisible()
+      await panel.locator('.cancel-btn').click()
+      await expect(panel).toBeHidden()
+      await snapAttach(page, info, `MENU-004b-${lang}`)
+    })
+
+    // MENU-005 / MENU-006 = NG 既知欠陥のドキュメント化（捏造禁止）。
+    // memorymonsters-standalone-app は標準メニューの 'menu-other-games' / 'menu-news' を購読していない
+    // （high-low は @menu-other-games/@menu-news でモーダルを開く）。ボタンは出るがタップしても何も起きない。
+    // ここでは「ボタンは存在し・タップしても例外なくメニューに留まる」現状を回帰として固定し、
+    // 『遷移しない＝NG』を test-cases.html / test-log.html に判定根拠付きで残す。
+    test(`MENU-005 Other Card Games ボタン: 表示されるがタップしても遷移しない（NG=ハンドラ未配線）[${lang}]`, async ({ page }, info) => {
+      const btn = page.locator('.menu-btn').nth(4)
+      await expect(btn).toBeVisible()
+      expect((await btn.innerText()).trim().length).toBeGreaterThan(0)
+      await btn.click()
+      // 現状: モーダルも外部遷移もなく、メニューに留まる（=遷移欠落）。
+      await expect(page.locator('other-games-modal-panel')).toHaveCount(0)
+      await expect(page.locator('standalone-game-menu')).toBeVisible()
+      await snapAttach(page, info, `MENU-005-${lang}`)
+    })
+
+    test(`MENU-006 News/Updates ボタン: 表示されるがタップしても遷移しない（NG=ハンドラ未配線）[${lang}]`, async ({ page }, info) => {
+      const btn = page.locator('.menu-btn').nth(5)
+      await expect(btn).toBeVisible()
+      expect((await btn.innerText()).trim().length).toBeGreaterThan(0)
+      await btn.click()
+      await expect(page.locator('news-info-modal-panel')).toHaveCount(0)
+      await expect(page.locator('standalone-game-menu')).toBeVisible()
+      await snapAttach(page, info, `MENU-006-${lang}`)
+    })
+  })
+}

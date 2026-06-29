@@ -8,7 +8,7 @@
 - ローダ: **`src/data/blog.ts`**（`import.meta.glob` で取り込み、`parseMdByLang` で言語分割、`loadPosts(lang)` 日付降順、`getPost`、`formatPostDate`）。games-catalog.ts と同方針。
 - 一覧: `static-page.ts` の `renderBlog` を**データ駆動の記事カード一覧**に（日付/タイトル/抜粋/続きを読む → `/{lang}/blog/{slug}/`）。
 - 個別記事: **`ccg-blog-post`**（`src/components/blog-post.ts` + `src/main-blog-post.ts`）。パンくず・日付・タイトル・markdown 本文・戻る。
-- HTML 量産: **`scripts/build_blog_pages.mjs`** が全記事×3言語の `{lang}/blog/{slug}/index.html` を生成（削除記事の残骸も掃除）。100記事でも 300 ファイルを機械生成＝破綻しない。
+- HTML 量産: **`scripts/node/build_blog_pages.mjs`** が全記事×3言語の `{lang}/blog/{slug}/index.html` を生成（削除記事の残骸も掃除）。100記事でも 300 ファイルを機械生成＝破綻しない。
 - ハードコード撤去: translations.ts の `blog` 文言ブロック（3言語）を削除。UI ラベルのみ `pages.readMore` を追加。
 
 ## 確証
@@ -20,7 +20,7 @@
 | 個別ページ | title+本文+戻る、パンくず | OK | `img/blog-post-ja.png` / `blog-post-en.png`、md-p×4 |
 | ルーティング | /{lang}/blog/{slug}/ が 200 | OK | ja/en/zh の一覧・記事とも HTTP 200 |
 | 多言語 | en/ja/zh で表示 | OK | en 記事・zh 記事ページ確認 |
-| 拡張性 | 記事追加=MD追加→スクリプト | OK | `node scripts/build_blog_pages.mjs` → 9ページ生成 |
+| 拡張性 | 記事追加=MD追加→スクリプト | OK | `node scripts/node/build_blog_pages.mjs` → 9ページ生成 |
 | ハードコード排除 | translations に記事本文無し | OK | `blog:` 本文ブロック削除済み |
 | ビルド | MPA入口に記事ページが入る | OK | `npm run build` exit 0、dist に 9 記事ページ＋main-blog-post バンドル |
 | CJK 生UTF-8 | エスケープ無し | OK | catalog/blog/*.md は Python 直書き、grep でエスケープ 0 |
@@ -40,5 +40,5 @@
 ## 記事の増やし方（運用メモ）
 1. `catalog/blog/<連番>_<slug>.md` を追加。先頭に `date: YYYY-MM-DD`、任意で `image: /site-assets/images/blog/<file>.webp`（サムネ兼ヒーロー）。続けて `## [en]/[ja]/[zh]` ＋ 各言語 `### タイトル` ＋ 本文。本文中の図版は `![alt](/site-assets/images/blog/...)`。
 2. 画像は `public/site-assets/images/blog/` に webp で置く（1024×500 目安）。
-3. `node scripts/build_blog_pages.mjs` を実行（HTMLスタブ生成・削除記事の掃除）。
+3. `node scripts/node/build_blog_pages.mjs` を実行（HTMLスタブ生成・削除記事の掃除）。
 4. 一覧は自動で新しい順に並ぶ。コード変更は不要。

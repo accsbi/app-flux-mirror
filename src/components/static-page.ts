@@ -349,7 +349,7 @@ export class CcgStaticPage extends LitElement {
   }
 
   // Blog 一覧（データ駆動。記事は catalog/blog/*.md が唯一ソース＝src/data/blog.ts）。
-  // 個別記事は /{lang}/blog/{slug}/（HTML は scripts/build_blog_pages.mjs で生成）。
+  // 個別記事は /{lang}/blog/{slug}/（HTML は scripts/node/build_blog_pages.mjs で生成）。
   private renderBlog(): TemplateResult {
     const t = getTranslation(this.lang)
     const posts = loadPosts(this.lang)

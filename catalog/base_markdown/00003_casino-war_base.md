@@ -115,7 +115,7 @@ Classic Simple Casino War
 
 ### [ Overview ] {google_description}
 
-A simple Casino War card game with a classic look. The higher card wins in a quick one-on-one showdown.
+A simple Casino War card game with a classic look. Higher card wins the duel.
 
 ### [ App Description ] {all}
 
@@ -255,3 +255,154 @@ No sign-up and no online play. Just a quick, relaxing card game with a classic, 
 ### [ 隐私政策（外部链接） ] {guide_overview_app}
 
 * [Privacy policy link](https://app-flux.com/zh/privacy-policy/)
+
+
+## [zh-TW] {Google / APP}
+
+### [ 應用程式標題 ] {google_description}
+
+經典賭場戰爭 單機紙牌遊戲
+
+### [ 概述 ] {google_description}
+
+一款外觀經典、簡單的 Casino War。在快速的一對一對決中，點數大的牌獲勝。
+
+### [ 應用程式說明 ] {all}
+
+**Classic Simple Casino War** 是一款可以獨自輕鬆遊玩、容易上手的紙牌遊戲。
+
+你和莊家各出一張牌，點數大的一方獲勝。就這麼簡單，任何人都能馬上上手。
+
+無需註冊，也沒有線上對戰。這是一款外觀經典、沉穩的紙牌遊戲，很適合利用零碎時間遊玩。所有牌皆為隨機發放。
+
+### [ 應用程式特色 ] {google_description / site_description}
+
+* 專為直式畫面遊玩設計，單手握持手機也方便操作。
+* 即使在小螢幕手機上，也調整得清晰易讀、易於操作。
+* 支援 Android 8 以上，較舊的 Android 裝置也能流暢運行。
+* 已精簡並最佳化特殊演出與特效，輕巧又流暢。
+
+### [ 快速上手 ] {quick_start_app}
+
+* 設定 BET 並開始一局。
+* 你和莊家各翻開一張牌。
+* 點數大的牌獲勝，COIN 會增加或減少。
+* 平手時，可以選擇進入 War：再各出一張牌定勝負。
+
+### [ 玩法 ] {guide_overview_app / site_description}
+
+#### 步驟
+
+1. 設定 BET 並開始一局。
+2. 你和莊家各亮出一張牌。
+3. 點數大的牌贏得該局。
+4. 根據勝負結果，COIN 會增加或減少。
+
+#### 平手時
+
+* 點數相同即為平手。
+* 進入「War」後，可再各出一張牌來決出勝者。
+
+* 如需退出，請點選左上角 HOME。
+
+### [ 內購項目 ] {google_description / guide_overview_app / site_description}
+
+* 廣告能協助我們持續製作與營運這款應用程式，感謝您的理解。
+* 一次購買即可移除廣告，還能在離線時（飛航模式、無訊號的地方等）遊玩。
+* 注：更新應用程式或開啟外部連結時，仍需要連網。
+
+### [ 注意事項 ] {google_description / guide_overview_app / site_description}
+
+* 不使用任何現金、獎品或加密資產。本應用程式並非用於賭博。
+* 如果運行變慢，請在選單的設定中清除快取。
+* 如果仍有問題，可在裝置設定中刪除這款應用程式的資料，恢復到初始狀態。
+
+### [ 支援語言 ] {google_description / site_description}
+
+* 英語 / 日語 / 中文（簡體）
+- 注：遊玩過程中的部分文字可能以英文顯示。
+
+### [ 聯絡我們 / 故障回報 ] {guide_overview_app}
+
+* 回報故障，請使用遊戲畫面的 FEEDBACK。
+* 如需回覆，請透過 [Contact form](https://app-flux.com/zh/contact/) 與我們聯絡。
+
+### [ 隱私權政策（外部連結） ] {guide_overview_app}
+
+* [Privacy policy link](https://app-flux.com/zh/privacy-policy/)
+
+
+## [zh-HK] {Google / APP}
+
+### [ 應用程式標題 ] {google_description}
+
+經典賭場戰爭 單機紙牌遊戲
+
+### [ 概述 ] {google_description}
+
+一款外觀經典、玩法簡單嘅 Casino War，喺快速嘅一對一對決入面，點數大嗰張牌就贏。
+
+### [ 應用程式說明 ] {all}
+
+**Classic Simple Casino War** 係一款可以自己一個輕鬆玩、好易上手嘅紙牌遊戲。
+
+你同莊家各出一張牌，點數大嗰方就贏。就係咁簡單，任何人都即刻識玩。
+
+唔使註冊，亦冇網上對戰。呢款紙牌遊戲外觀經典、沉穩，好啱用零碎時間嚟玩。啲牌全部都係隨機派。
+
+### [ 應用程式特色 ] {google_description / site_description}
+
+* 專為直向畫面而設計，單手揸住部手機都易操作。
+* 就算喺細螢幕手機上面，都調校到清晰易睇、易操作。
+* 支援 Android 8 或以上，舊嘅 Android 裝置一樣可以順暢咁玩。
+* 已經精簡同優化咗特殊演出同特效，輕巧又流暢。
+
+### [ 快速上手 ] {quick_start_app}
+
+* 設定 BET 就開始一局。
+* 你同莊家各揭一張牌。
+* 點數大嗰張牌贏，COIN 會加或者減。
+* 平手嗰陣，可以揀入 War：再各出一張牌定勝負。
+
+### [ 玩法 ] {guide_overview_app / site_description}
+
+#### 步驟
+
+1. 設定 BET 就開始一局。
+2. 你同莊家各亮一張牌。
+3. 點數大嗰張牌贏咗呢局。
+4. 睇勝負結果，COIN 會加或者減。
+
+#### 平手嗰陣
+
+* 點數一樣就算平手。
+* 入咗「War」之後，可以再各出一張牌嚟決出勝者。
+
+* 想唔玩，撳左上角 HOME 就得。
+
+### [ 內購項目 ] {google_description / guide_overview_app / site_description}
+
+* 廣告可以幫我哋繼續製作同營運呢款應用程式，多謝你嘅體諒。
+* 課金一次就可以移除廣告，仲可以喺離線（飛行模式、冇訊號嘅地方等等）嗰陣玩。
+* 注：更新應用程式或者開外部連結嗰陣，一樣要連網。
+
+### [ 注意事項 ] {google_description / guide_overview_app / site_description}
+
+* 唔會用到任何現金、獎品或者加密資產。呢款應用程式唔係用嚟賭博。
+* 如果運行慢咗，可以喺選單嘅設定度清除快取。
+* 如果仲有問題，可以喺裝置設定度刪除呢款應用程式嘅資料，回復到最初狀態。
+
+### [ 支援語言 ] {google_description / site_description}
+
+* 英文 / 日文 / 中文（簡體）
+- 注：玩嗰陣有啲文字可能會用英文顯示。
+
+### [ 聯絡我哋 / 故障回報 ] {guide_overview_app}
+
+* 報告故障，請用遊戲畫面嘅 FEEDBACK。
+* 如果需要回覆，請透過 [Contact form](https://app-flux.com/zh/contact/) 搵我哋。
+
+### [ 私隱政策（外部連結） ] {guide_overview_app}
+
+* [Privacy policy link](https://app-flux.com/zh/privacy-policy/)
+

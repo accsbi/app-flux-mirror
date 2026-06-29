@@ -243,3 +243,165 @@ This simple Old Maid was designed with a classic look, conceived and developed a
 ### [ 隐私政策(外部链接) ] {guide_overview_app}
 
 * [Privacy policy link](https://app-flux.com/zh/privacy-policy)
+
+
+## [zh-TW] {Google / APP}
+
+### [ 應用程式標題 ] {google_description}
+
+經典抽鬼牌 單機紙牌遊戲
+
+### [ 概述 ] {google_description}
+
+一款採用經典設計的簡單抽鬼牌紙牌遊戲，與 3 名電腦玩家爭奪排名。
+
+### [ 應用程式說明 ] {all}
+
+**Classic Simple Old Maid** 是一款由 YOU(USER) 對戰 CPU×3 的簡單抽鬼牌遊戲。
+
+採用標準的抽鬼牌規則：從其他玩家處抽取一張牌，湊成相同數字的對子並丟棄。
+
+最先出完手牌即獲勝，最後還拿著鬼牌則落敗。
+
+此外，新增了**使用遊戲內 COIN 的 BET 功能**。遊戲開始前先 BET，並根據名次獲得遊戲內 COIN。
+
+這款簡單的抽鬼牌採用經典設計，以面向成人的抽鬼牌為構想，精心設計並開發而成。
+
+### [ 應用程式特色 ] {google_description / site_description}
+
+* 專為直式畫面遊玩設計，單手握持手機也方便操作。
+* 即使在小螢幕手機上，也調整得清晰易讀、易於操作。
+* 支援 Android 8 以上，較舊的 Android 裝置也能流暢運行。
+* 已精簡並最佳化特殊演出與特效，輕巧又流暢。
+
+### [ 快速上手 ] {quick_start_app}
+
+* 開始時先決定莊家。
+* 按順時針方向，從左側的 CPU 抽取手牌，最後還拿著鬼牌的人失敗。
+* 詳細規則可在指南中查看。
+
+### [ 玩法 ] {guide_overview_app / site_description}
+
+#### 步驟
+
+1. 決定 BET 後點擊 [START]。給四位玩家發牌（52 張加 1 張鬼牌）。
+2. 手牌中相同數字的對子會自動丟棄到中央。
+3. 輪到你時，從下一位玩家的手牌中抽一張。
+4. 抽到的牌若能湊成對子，就立刻丟棄。
+5. 手牌清空即「完成」。按完成順序排為 第1、第2、第3、第4。
+6. 直到最後還拿著鬼牌的人，排在最後一名。
+
+#### BET倍率
+
+* BET倍率：第1名×2.0／第2名×1.5／第3名×0.5／第4名×0
+* BET 10 COIN 時：20／15／5／0 COIN
+* 小數部分向下取整（例：5×0.5＝2.5 → 2 COIN）
+* 不收取台費。
+* BET倍率為試驗性設定，今後可能變更。
+
+### [ 內購項目 ] {google_description / guide_overview_app / site_description}
+
+* 廣告能協助我們持續製作與營運這款應用程式，感謝您的理解。
+* 透過應用程式內購買，可隱藏廣告並支援離線遊玩（飛航模式、無訊號的地方等）。
+* 注：更新應用程式或開啟外部連結時，仍需要連網。
+
+### [ 注意事項 ] {google_description / guide_overview_app / site_description}
+
+* 不使用任何現金、獎品或加密資產。本應用程式並非用於賭博。
+* 如果運行變慢，請在選單的設定中清除快取。
+* 如果仍有問題，可在裝置設定中刪除這款應用程式的資料，恢復到初始狀態。
+
+### [ 支援語言 ] {google_description / site_description}
+
+* 英語 / 日語 / 中文（簡體）
+- 注：遊玩過程中的部分文字可能以英文顯示。
+
+### [ 聯絡我們 / 故障回報 ] {guide_overview_app}
+
+* 回報故障，請使用遊戲畫面的 FEEDBACK。
+* 如需回覆，請透過 [Contact form](https://app-flux.com/zh/contact/) 與我們聯絡。
+
+### [ 隱私權政策（外部連結） ] {guide_overview_app}
+
+* [Privacy policy link](https://app-flux.com/zh/privacy-policy/)
+
+
+## [zh-HK] {Google / APP}
+
+### [ 應用程式標題 ] {google_description}
+
+經典抽鬼牌 單機紙牌遊戲
+
+### [ 概述 ] {google_description}
+
+一款採用經典設計、玩法簡單嘅抽鬼牌紙牌遊戲，同 3 個電腦玩家爭排名。
+
+### [ 應用程式說明 ] {all}
+
+**Classic Simple Old Maid** 係一款由 YOU(USER) 對戰 CPU×3 嘅簡單抽鬼牌遊戲。
+
+採用標準嘅抽鬼牌規則：喺其他玩家度抽一張牌，湊夠相同數字嘅對子就掉走。
+
+最先出完手牌就贏，最後仲拎住鬼牌就輸。
+
+另外，仲新增咗**用遊戲內 COIN 嘅 BET 功能**。遊戲開始前先 BET，再按名次攞遊戲內 COIN。
+
+呢款簡單嘅抽鬼牌採用經典設計，以面向成人嘅抽鬼牌為構想，精心設計同開發而成。
+
+### [ 應用程式特色 ] {google_description / site_description}
+
+* 專為直向畫面而設計，單手揸住部手機都易操作。
+* 就算喺細螢幕手機上面，都調校到清晰易睇、易操作。
+* 支援 Android 8 或以上，舊嘅 Android 裝置一樣可以順暢咁玩。
+* 已經精簡同優化咗特殊演出同特效，輕巧又流暢。
+
+### [ 快速上手 ] {quick_start_app}
+
+* 開始嗰陣先決定莊家。
+* 按順時針方向，喺左邊嘅 CPU 度抽手牌，最後仲拎住鬼牌嗰個就輸。
+* 詳細規則可以喺指南度睇。
+
+### [ 玩法 ] {guide_overview_app / site_description}
+
+#### 步驟
+
+1. 決定 BET 之後撳 [START]。會派牌畀四位玩家（52 張加 1 張鬼牌）。
+2. 手牌入面相同數字嘅對子會自動掉去中央。
+3. 輪到你嗰陣，喺下一位玩家嘅手牌度抽一張。
+4. 抽到嘅牌如果湊到對子，就即刻掉走。
+5. 手牌清晒就「完成」。按完成次序排做 第1、第2、第3、第4。
+6. 去到最後仲拎住鬼牌嗰個，排最後一名。
+
+#### BET倍率
+
+* BET倍率：第1名×2.0／第2名×1.5／第3名×0.5／第4名×0
+* BET 10 COIN 嗰陣：20／15／5／0 COIN
+* 小數位向下取整（例：5×0.5＝2.5 → 2 COIN）
+* 唔收台費。
+* BET倍率係試驗性設定，日後可能會改。
+
+### [ 內購項目 ] {google_description / guide_overview_app / site_description}
+
+* 廣告可以幫我哋繼續製作同營運呢款應用程式，多謝你嘅體諒。
+* 透過應用程式內課金，可以隱藏廣告，仲可以離線（飛行模式、冇訊號嘅地方等等）玩。
+* 注：更新應用程式或者開外部連結嗰陣，一樣要連網。
+
+### [ 注意事項 ] {google_description / guide_overview_app / site_description}
+
+* 唔會用到任何現金、獎品或者加密資產。呢款應用程式唔係用嚟賭博。
+* 如果運行慢咗，可以喺選單嘅設定度清除快取。
+* 如果仲有問題，可以喺裝置設定度刪除呢款應用程式嘅資料，回復到最初狀態。
+
+### [ 支援語言 ] {google_description / site_description}
+
+* 英文 / 日文 / 中文（簡體）
+- 注：玩嗰陣有啲文字可能會用英文顯示。
+
+### [ 聯絡我哋 / 故障回報 ] {guide_overview_app}
+
+* 報告故障，請用遊戲畫面嘅 FEEDBACK。
+* 如果需要回覆，請透過 [Contact form](https://app-flux.com/zh/contact/) 搵我哋。
+
+### [ 私隱政策（外部連結） ] {guide_overview_app}
+
+* [Privacy policy link](https://app-flux.com/zh/privacy-policy/)

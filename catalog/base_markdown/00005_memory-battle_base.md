@@ -14,7 +14,7 @@
 
 **Classic Simple Memory Battle** は、1人で気軽に遊べる、神経衰弱のトランプカードゲームです。
 
-1人用とCPU対戦が選択できます。神経衰弱が初心者でも簡単に楽しめます。
+1人用(4枚、8枚、12枚、16枚、20枚選択可)とCPU対戦が選択できます。神経衰弱が初心者でも簡単に楽しめます。
 
 さらに、通常の神経衰弱に**ゲーム内COINを使った、BET機能**を追加しています。ゲーム開始前にCOINをBETし、勝利することで、COINを獲得できます。クラシックなデザインを採用、大人向けの神経衰弱をイメージして、開発をいたしました。
 
@@ -101,13 +101,13 @@ Classic Simple Memory Battle
 
 ### [ Overview ] {google_description}
 
-A simple memory-matching card game with a classic look. Play solo practice, or take on CPU rivals in battle mode.
+A simple memory-matching card game with a classic look. Solo or CPU battles.
 
 ### [ App Description ] {all}
 
 **Classic Simple Memory Battle** is an easy memory-matching card game you can play on your own.
 
-Flip cards two at a time and find matching pairs. Warm up in solo practice, or face CPU rivals turn by turn in battle mode.
+You can choose solo play (selectable: 4, 8, 12, 16, or 20 cards) or CPU battles. Even beginners can easily enjoy memory matching.
 
 No sign-up and no online play. Just a quick, relaxing card game with a classic, vintage design. Cards are dealt at random.
 
@@ -185,7 +185,7 @@ No sign-up and no online play. Just a quick, relaxing card game with a classic, 
 
 **Classic Simple Memory Battle** 是一款可以独自轻松游玩、上手简单的翻牌配对（记忆）游戏。
 
-每次翻开两张牌，找出相同的一对。可在单人练习中热身，也可在对战模式中与 CPU 轮流对战。
+可选择单人模式（可选 4、8、12、16、20 张）与 CPU 对战。即使是初学者，也能轻松享受翻牌配对的乐趣。
 
 无需注册，也没有在线对战。这是一款外观经典、沉稳的纸牌游戏，很适合零碎时间游玩。所有牌均为随机。
 
@@ -245,5 +245,161 @@ No sign-up and no online play. Just a quick, relaxing card game with a classic, 
 * 如需回复，请通过 [Contact form](https://app-flux.com/zh/contact/) 联系我们。
 
 ### [ 隐私政策（外部链接） ] {guide_overview_app}
+
+* [Privacy policy link](https://app-flux.com/zh/privacy-policy/)
+
+
+## [zh-TW]
+
+### [ 應用程式標題 ] {google_description}
+
+經典翻牌配對 記憶紙牌遊戲
+
+### [ 概述 ] {google_description}
+
+一款外觀經典、簡單的翻牌配對（記憶）遊戲。可單人練習，也可在對戰模式中挑戰 CPU。
+
+### [ 應用程式說明 ] {all}
+
+**Classic Simple Memory Battle** 是一款可以獨自輕鬆遊玩、容易上手的翻牌配對（記憶）遊戲。
+
+可選擇單人模式（可選 4、8、12、16、20 張）與 CPU 對戰。即使是初學者，也能輕鬆享受翻牌配對的樂趣。
+
+無需註冊，也沒有線上對戰。這是一款外觀經典、沉穩的紙牌遊戲，很適合利用零碎時間遊玩。所有牌皆為隨機發放。
+
+### [ 應用程式特色 ] {google_description / site_description}
+
+* 專為直式畫面遊玩設計，單手握持手機也方便操作。
+* 即使在小螢幕手機上，也調整得清晰易讀、易於操作。
+* 支援 Android 8 以上，較舊的 Android 裝置也能流暢運行。
+* 已精簡並最佳化特殊演出與特效，輕巧又流暢。
+
+### [ 快速上手 ] {quick_start_app}
+
+* 點選 START，然後選擇關卡。
+* 抽牌決定先後手（點數大者可選擇）。
+* 輪到你時翻開兩張牌，配對成功可繼續。
+* 所有牌消失後，配對較多的一方獲勝。
+
+### [ 玩法 ] {guide_overview_app / site_description}
+
+#### 步驟
+
+1. 在選單中點選 START。
+2. 在關卡選擇畫面選擇關卡（已通關的關卡隨時可再次挑戰）。
+3. 查看對手資訊後，點選「開始對戰」。
+4. 抽牌決定先後手（點數大者獲得選擇權）。
+5. 輪流每次翻開兩張牌，配對成功可繼續行動。
+6. 所有牌消失後，配對較多的一方獲勝。獲勝後解鎖下一關卡並獲得 COIN。
+
+* 單人練習模式可從 4、8、12、16、20 張中選擇，獨自遊玩。
+* 如需退出，請點選左上角 HOME。
+
+#### 關卡獎勵
+
+* 關卡 1〜5：20〜70 COIN
+* 關卡 6〜10：90〜300 COIN
+
+### [ 內購項目 ] {google_description / guide_overview_app}
+
+* 廣告能協助我們持續製作與營運這款應用程式，感謝您的理解。
+* 一次購買即可移除廣告，還能在離線時（飛航模式、無訊號的地方等）遊玩。
+* 注：更新應用程式或開啟外部連結時，仍需要連網。
+
+### [ 注意事項 ] {google_description / guide_overview_app}
+
+* 不使用任何現金、獎品或加密資產。本應用程式並非用於賭博。
+* 如果運行變慢，請在選單的設定中清除快取。
+* 如果仍有問題，可在裝置設定中刪除這款應用程式的資料，恢復到初始狀態。
+
+### [ 支援語言 ] {google_description / guide_overview_app}
+
+* 英語 / 日語 / 中文（簡體）
+- 注：遊玩過程中的部分文字可能以英文顯示。
+
+### [ 聯絡我們 / 故障回報 ] {guide_overview_app}
+
+* 回報故障，請使用遊戲畫面的 FEEDBACK。
+* 如需回覆，請透過 [Contact form](https://app-flux.com/zh/contact/) 與我們聯絡。
+
+### [ 隱私權政策（外部連結） ] {guide_overview_app}
+
+* [Privacy policy link](https://app-flux.com/zh/privacy-policy/)
+
+
+## [zh-HK]
+
+### [ 應用程式標題 ] {google_description}
+
+經典翻牌配對 記憶紙牌遊戲
+
+### [ 概述 ] {google_description}
+
+一款外觀經典、玩法簡單嘅翻牌配對（記憶）遊戲。可以單人練習，亦可以喺對戰模式度挑戰電腦。
+
+### [ 應用程式說明 ] {all}
+
+**Classic Simple Memory Battle** 係一款可以自己一個輕鬆玩、好易上手嘅翻牌配對（記憶）遊戲。
+
+可以揀單人模式（可揀 4、8、12、16、20 張）同 CPU 對戰。就算係初學者，都可以輕鬆享受翻牌配對嘅樂趣。
+
+唔使註冊，亦冇網上對戰。呢款紙牌遊戲外觀經典、沉穩，好啱用零碎時間嚟玩。啲牌全部都係隨機派。
+
+### [ 應用程式特色 ] {google_description / site_description}
+
+* 專為直向畫面而設計，單手揸住部手機都易操作。
+* 就算喺細螢幕手機上面，都調校到清晰易睇、易操作。
+* 支援 Android 8 或以上，舊嘅 Android 裝置一樣可以順暢咁玩。
+* 已經精簡同優化咗特殊演出同特效，輕巧又流暢。
+
+### [ 快速上手 ] {quick_start_app}
+
+* 撳 START，然後揀關卡。
+* 抽牌決定邊個先行（點數大嗰個可以揀）。
+* 輪到你嗰陣揭開兩張牌，配對成功就可以繼續。
+* 所有牌消失之後，配對多嗰方就贏。
+
+### [ 玩法 ] {guide_overview_app / site_description}
+
+#### 步驟
+
+1. 喺選單度撳 START。
+2. 喺關卡選擇畫面揀關卡（通咗關嘅關卡隨時都可以再玩）。
+3. 睇咗對手資料之後，撳「開始對戰」。
+4. 抽牌決定邊個先行（點數大嗰個攞到選擇權）。
+5. 輪流每次揭開兩張牌，配對成功就可以繼續行動。
+6. 所有牌消失之後，配對多嗰方就贏。贏咗就解鎖下一關，仲會攞到 COIN。
+
+* 單人練習模式可以喺 4、8、12、16、20 張入面揀，自己一個玩。
+* 想唔玩，撳左上角 HOME 就得。
+
+#### 關卡獎勵
+
+* 關卡 1〜5：20〜70 COIN
+* 關卡 6〜10：90〜300 COIN
+
+### [ 內購項目 ] {google_description / guide_overview_app}
+
+* 廣告可以幫我哋繼續製作同營運呢款應用程式，多謝你嘅體諒。
+* 課金一次就可以移除廣告，仲可以喺離線（飛行模式、冇訊號嘅地方等等）嗰陣玩。
+* 注：更新應用程式或者開外部連結嗰陣，一樣要連網。
+
+### [ 注意事項 ] {google_description / guide_overview_app}
+
+* 唔會用到任何現金、獎品或者加密資產。呢款應用程式唔係用嚟賭博。
+* 如果運行慢咗，可以喺選單嘅設定度清除快取。
+* 如果仲有問題，可以喺裝置設定度刪除呢款應用程式嘅資料，回復到最初狀態。
+
+### [ 支援語言 ] {google_description / guide_overview_app}
+
+* 英文 / 日文 / 中文（簡體）
+- 注：玩嗰陣有啲文字可能會用英文顯示。
+
+### [ 聯絡我哋 / 故障回報 ] {guide_overview_app}
+
+* 報告故障，請用遊戲畫面嘅 FEEDBACK。
+* 如果需要回覆，請透過 [Contact form](https://app-flux.com/zh/contact/) 搵我哋。
+
+### [ 私隱政策（外部連結） ] {guide_overview_app}
 
 * [Privacy policy link](https://app-flux.com/zh/privacy-policy/)

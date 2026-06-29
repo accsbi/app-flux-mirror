@@ -87,7 +87,7 @@ const USE_STAGE_START_CONFIRM = false
 //   true  … 全ステージを解放（テスト用・どのステージも選べる）
 //   false … 通常プレイ（クリア状況に応じて順次解放）
 // 出荷時は必ず false に戻すこと。
-const UNLOCK_ALL_STAGES = true
+const UNLOCK_ALL_STAGES = false
 
 // BET 機能（POKER/CASINO WAR と共通の共有部品を利用）。
 const MEMORY_GAME_ID = 'memory'
@@ -1916,8 +1916,8 @@ export class MemoryBattleGameTable extends LitElement {
 
 
   // 「BET / STAGE」を出すのは CPU 対戦で BET 確定後だけ（先行・後攻を決める draw-battle /
-   // turn-select と実戦 battle）。練習モードと、BET 前の enemy-intro（村人＝BET & スタート画面）
-   // では出さない（COIN のみ）。BET 未確定で「◯」を見せる違和感も無くす。
+  // turn-select と実戦 battle）。練習モードと、BET 前の enemy-intro（村人＝BET & スタート画面）
+  // では出さない（COIN のみ）。BET 未確定で「◯」を見せる違和感も無くす。
   public shouldShowEnemyStatus(): boolean {
     if (this.isPracticeMode() || !this.isBetPlaced) return false
     return this.screen === 'draw-battle' || this.screen === 'turn-select' || this.screen === 'battle'

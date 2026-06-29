@@ -109,7 +109,7 @@ Classic Simple High & Low
 
 ### [ Overview ] {google_description}
 
-A simple High & Low card game with a classic look. Play one-on-one against the CPU.
+A simple High & Low card game with a classic look. Play one-on-one vs CPU.
 
 ### [ App Description ] {all}
 

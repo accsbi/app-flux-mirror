@@ -41,7 +41,7 @@ Classic Simple High & Low は、PlayerとCPUの対戦型トランプカードゲ
 Classic Simple High & Low
 
 [Short description]
-A simple High & Low card game with a classic look. Play one-on-one against the CPU.
+A simple High & Low card game with a classic look. Play one-on-one vs CPU.
 
 [Full description]
 [ App Description ]
