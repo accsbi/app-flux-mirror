@@ -281,13 +281,6 @@ export class MemoryMonstersStandaloneApp extends LitElement {
     return runtimeWindow.__ANDROID_APP__ === true
   }
 
-  // VER-1: メニューの VER は Flutter 注入の window.__APP_VERSION__（pubspec の versionName）**のみ**＝yaml と同期。
-  // config・ハードコードへフォールバックしない（フォールバック禁止＝§1c）。未注入なら空（＝表面化）。手本=high-low。
-  private androidAppVersion(): string {
-    const injected = (window as Window & { __APP_VERSION__?: string }).__APP_VERSION__
-    return (injected ?? '').trim()
-  }
-
   private playSubmit(): void {
     if (!this.isEffectEnabled || !this.memoryConfig?.assets?.submit_sound) {
       return
@@ -727,7 +720,8 @@ export class MemoryMonstersStandaloneApp extends LitElement {
       aboutUrl: buildAboutUrl('memory-battle', this.language),
       initialSetupTitle: chrome.initialSetupTitle,
       initialSetupDoneTitle: chrome.initialSetupDoneTitle,
-      initialSetupDoneMessage: chrome.initialSetupDoneMessage
+      initialSetupDoneMessage: chrome.initialSetupDoneMessage,
+      version: '1.0.0'
     }
   }
 
@@ -768,7 +762,7 @@ export class MemoryMonstersStandaloneApp extends LitElement {
           .otherGamesUrl=${this.isAndroidApp() ? buildOtherCardGamesUrl(this.language) : ''}
           .externalIconSrc=${this.isAndroidApp() ? buildGameAssetUrl('common/images/external_link.svg') : ''}
           .externalNote=${this.isAndroidApp() ? t.externalLinkNote : ''}
-          .version=${this.isAndroidApp() ? this.androidAppVersion() : ''}
+          .version=${this.isAndroidApp() ? t.version : ''}
           @menu-back=${this.goExternalHome}
           @menu-start=${() => {
         clearEffectSuppression() // BG-3: 直前のホーム戻り抑止が残っていても開始音を鳴らす
