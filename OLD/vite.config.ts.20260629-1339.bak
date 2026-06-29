@@ -150,50 +150,12 @@ function trailingSlashPlugin(): PluginOption {
   }
 }
 
-// Google Analytics (gtag.js) — サイト全 HTML の <head> 先頭へ単一ソースで注入する。
-//   ・MeasurementID は下の定数（公開 ID）が唯一ソース。各 HTML へコピペしない（§1 共通化）。
-//   ・新しいページ(言語/ゲーム/記事)が増えても HTML 入口を走査して自動で載る（vite.config 不変）。
-//   ・Android(WebView)版は別ビルド vite.android.config.ts ＝このプラグイン非適用なので GA は入らない。
-//     さらに web ビルドが拾う Android 入口 web-games/android/*.html にも注入しない（実機は別アセット由来＝不要）。
-const GA_MEASUREMENT_ID = 'G-VWEYBN8B5T'
-function gtagPlugin(): PluginOption {
-  return {
-    name: 'inject-gtag',
-    transformIndexHtml: {
-      order: 'pre',
-      handler(html, ctx) {
-        const file = (ctx.filename || ctx.path || '').replace(/\\/g, '/')
-        if (file.includes('/web-games/android/')) return html // Android 入口は除外
-        return {
-          html,
-          tags: [
-            {
-              tag: 'script',
-              attrs: { async: true, src: `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}` },
-              injectTo: 'head-prepend',
-            },
-            {
-              tag: 'script',
-              children:
-                `window.dataLayer = window.dataLayer || [];\n` +
-                `function gtag(){dataLayer.push(arguments);}\n` +
-                `gtag('js', new Date());\n` +
-                `gtag('config', '${GA_MEASUREMENT_ID}');`,
-              injectTo: 'head-prepend',
-            },
-          ],
-        }
-      },
-    },
-  }
-}
-
 export default defineConfig({
   // ルート配信前提。BASE_URL が '/' になり、実行時 fetch('/data/…') が
   // どの言語ページ(/en/ 等)や仮メニュー(/web-games/…)からでも site root に正しく解決される。
   // 将来サブパス配信する場合は base を '/subpath/' にすれば withBase() がそれを尊重する。
   base: '/',
-  plugins: [gtagPlugin(), trailingSlashPlugin()],
+  plugins: [trailingSlashPlugin()],
   build: {
     target: 'es2019',
     outDir: 'dist',

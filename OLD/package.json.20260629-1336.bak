@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build:sitemap": "node scripts/node/build_sitemap.mjs",
-    "build": "npm run build:sitemap && tsc && vite build",
+    "build": "tsc && vite build",
     "build:android": "vite build --config vite.android.config.ts",
     "sync:android": "node tools/sync-android.mjs",
     "preview": "vite preview"
