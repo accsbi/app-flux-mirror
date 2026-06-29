@@ -1,0 +1,24 @@
+{
+  "name": "classic-card-games-collection",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build:sitemap": "node scripts/node/build_sitemap.mjs",
+    "build": "npm run build:sitemap && tsc && vite build",
+    "build:android": "vite build --config vite.android.config.ts",
+    "sync:android": "node tools/sync-android.mjs",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lit": "^3.3.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "@types/node": "^20.19.43",
+    "playwright": "^1.61.1",
+    "typescript": "~5.9.3",
+    "vite": "^5.4.21"
+  }
+}
