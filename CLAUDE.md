@@ -64,3 +64,11 @@
 - **base MD 等のバックアップは `scripts/backup_base_md/<YYYY_MMDD>/` に集約**。スクリプト実行時に日次フォルダを **scripts/ 直下へ作らない**（`build_content.py` の `BACKUP_DIR` がこの規約。変更時も維持）。
 - **編集前の `.bak` は同階層 `scripts/OLD/`**（§3 の OLD 規約と同じ）。
 - 迷ったら新規ファイルを直下に置かず、用途別の既存フォルダ（`node/` `backup_base_md/` `OLD/`）に入れる。**勝手に直下へ散らかすのは違反**。
+
+## 7. システムバー/起動時の初期表示色（全アプリ・全 Android 共通）
+- **ステータスバー/ナビゲーションバー/起動時(スプラッシュ)背景は黒で固定する**（手本＝Memory / HIGH&LOW = `statusBarColor: Colors.black`）。
+- 既定テーマ任せにしない。任せると **起動時=薄紫(Android12+ の Material You)** / **Android8=緑(colorPrimaryDark 由来)** と環境ごとにバラつき、イメージに合わない。
+- Native(Kotlin) の実装＝テーマに `android:statusBarColor` / `android:navigationBarColor` / `android:windowBackground` を黒、`windowLight*StatusBar=false`。さらに `enableEdgeToEdge` はバーを透明化するので、適用後に `window.statusBarColor/navigationBarColor = Color.BLACK` で上書き（Android14 以下で有効）。手本＝simpleblackJack `SystemBarStyleApplier` + `themes.xml`。
+- **ダイアログ(AlertDialog)も OS/メーカー既定依存にしない**＝機種で色が変わる。**背景=白・文字=黒に固定**（Light 固定テーマを全 `AlertDialog.Builder(ctx, R.style.WhiteAlertDialog)` に渡す）。手本＝simpleblackJack `WhiteAlertDialog`。
+- **固定 px/dp で「機種に合わせて無理やり表示」しない＝割合(0dp+weight/constraint, %)で組む**。例：成績バーは `0dp` で残り幅いっぱいに広げ、緑背景は伸びる側(ScrollView)に付ける（wrap_content 側に付けると小型機で枠が空く）。手本＝simpleblackJack `activity_game*.xml` statsScroll。
+- このような OS 既定依存・固定値依存の初期設定は、新規・既存問わず最初に正す（再発防止）。**WEB 実装は WEB に合わせてあるので Native とは切り分ける**。
